@@ -171,7 +171,7 @@ VERSES = [
     {
         "reference": "1 Corinthiens 13:13",
         "text": (
-        "Maintenant, trois choses sont toujours là : la foi, l’espérance et l’amour. Mais la plus grande des trois, c’est l’amour."
+        "Maintenant, trois choses sont toujours là : la foi, l'espérance et l'amour. Mais la plus grande des trois, c'est l'amour."
         ),
     },
     {
@@ -189,14 +189,14 @@ VERSES = [
     {
         "reference":"Éphésiens 4:31",
         "text": (
-            "Ne gardez pas dans votre cœur le mal qu’on vous a fait. Ne vous énervez pas, ne vous mettez pas en colère, faites disparaître de chez vous les cris, les insultes, le mal sous toutes ses formes."
+            "Ne gardez pas dans votre cœur le mal qu'on vous a fait. Ne vous énervez pas, ne vous mettez pas en colère, faites disparaître de chez vous les cris, les insultes, le mal sous toutes ses formes."
         ),
 
     },
     {
         "reference": "Proverbes 22:24 ",
         "text":(
-            "Ne deviens pas l’ami d’un homme coléreux. Ne va pas avec quelqu’un qui se met en colère facilement."
+            "Ne deviens pas l'ami d'un homme coléreux. Ne va pas avec quelqu'un qui se met en colère facilement."
         )
     }
 ]
@@ -297,7 +297,11 @@ def init_db(db_path: str) -> None:
 def choose_verse(db_path: str = DB_FILE) -> dict[str, str]:
     """Tire un verset au hasard depuis la base en évitant de répéter les
     derniers déjà vus (table 'history'). Dès que tous les versets sont
-    passés, le cycle recommence automatiquement."""
+    passés, le cycle recommence automatiquement.
+
+    Utilisé uniquement par le CLI local (run_once/run_daemon) : la version
+    web utilise get_daily_verse(), qui est déterministe et ne dépend pas de
+    la persistance du fichier SQLite (voir plus bas)."""
 
     conn = get_connection(db_path)
     try:
@@ -328,31 +332,25 @@ def choose_verse(db_path: str = DB_FILE) -> dict[str, str]:
 
 
 def get_daily_verse(db_path: str = DB_FILE) -> dict[str, str]:
-    """Renvoie le verset déjà tiré aujourd'hui s'il existe (cohérent pour
-    tous les visiteurs du site le même jour), sinon en tire un nouveau via
-    choose_verse(). Ne change rien au comportement du CLI, qui continue
-    d'appeler choose_verse() directement à chaque exécution."""
+    """Renvoie le même verset toute la journée, calculé de façon déterministe
+    à partir de la date du jour (aucune base de données requise).
 
-    conn = get_connection(db_path)
-    try:
-        today = datetime.now().strftime("%Y-%m-%d")
-        row = conn.execute(
-            """
-            SELECT v.reference, v.text
-            FROM history h
-            JOIN verses v ON v.id = h.verse_id
-            WHERE date(h.shown_at) = ?
-            ORDER BY h.id DESC
-            LIMIT 1
-            """,
-            (today,),
-        ).fetchone()
-        if row:
-            return {"reference": row[0], "text": row[1]}
-    finally:
-        conn.close()
+    Comme le plan gratuit de Render a un système de fichiers éphémère (le
+    fichier SQLite est réinitialisé à chaque redémarrage/mise en veille du
+    service), on ne peut pas se fier à un historique persistant pour savoir
+    quel verset a déjà été montré aujourd'hui. À la place, on calcule un
+    index à partir du nombre ordinal du jour (today.toordinal()), qui est
+    identique pour tous les visiteurs et ne change qu'une fois par jour,
+    peu importe combien de fois le serveur redémarre entre-temps.
 
-    return choose_verse(db_path)
+    Le paramètre db_path est conservé pour compatibilité avec les appelants
+    existants (server.py), mais n'est plus utilisé ici.
+    """
+
+    today = datetime.now().date()
+    index = today.toordinal() % len(VERSES)
+    verse = VERSES[index]
+    return {"reference": verse["reference"], "text": verse["text"]}
 
 
 def save_subscription(subscription: dict, db_path: str = DB_FILE) -> None:
