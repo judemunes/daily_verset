@@ -1,12 +1,13 @@
 import argparse
 import asyncio
 import json
+import os
 import random
 import sqlite3
 import shutil
 import textwrap
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from colorama import Fore, Style, init
 
@@ -332,23 +333,37 @@ def choose_verse(db_path: str = DB_FILE) -> dict[str, str]:
 
 
 def get_daily_verse(db_path: str = DB_FILE) -> dict[str, str]:
-    """Renvoie le même verset toute la journée, calculé de façon déterministe
-    à partir de la date du jour (aucune base de données requise).
+    """Renvoie le même verset jusqu'à la prochaine bascule, calculée de
+    façon déterministe (aucune base de données requise).
 
     Comme le plan gratuit de Render a un système de fichiers éphémère (le
     fichier SQLite est réinitialisé à chaque redémarrage/mise en veille du
     service), on ne peut pas se fier à un historique persistant pour savoir
-    quel verset a déjà été montré aujourd'hui. À la place, on calcule un
-    index à partir du nombre ordinal du jour (today.toordinal()), qui est
-    identique pour tous les visiteurs et ne change qu'une fois par jour,
-    peu importe combien de fois le serveur redémarre entre-temps.
+    quel verset a déjà été montré. À la place, on calcule un index à partir
+    d'un "jour effectif" qui ne bascule qu'à l'heure définie par la variable
+    d'environnement PUSH_TIME (8h par défaut, la même heure que la
+    notification quotidienne) plutôt qu'à minuit :
+    - avant 8h, on affiche encore le verset d'hier
+    - à partir de 8h (inclus), on affiche le verset du jour
+
+    Ce calcul est identique pour tous les visiteurs et ne change qu'une
+    fois par jour, peu importe combien de fois le serveur redémarre
+    entre-temps.
 
     Le paramètre db_path est conservé pour compatibilité avec les appelants
     existants (server.py), mais n'est plus utilisé ici.
     """
 
-    today = datetime.now().date()
-    index = today.toordinal() % len(VERSES)
+    push_hour, push_minute = (
+        int(part) for part in os.environ.get("PUSH_TIME", "08:00").split(":")
+    )
+
+    now = datetime.now()
+    threshold_today = now.replace(hour=push_hour, minute=push_minute, second=0, microsecond=0)
+
+    effective_date = now.date() if now >= threshold_today else (now - timedelta(days=1)).date()
+
+    index = effective_date.toordinal() % len(VERSES)
     verse = VERSES[index]
     return {"reference": verse["reference"], "text": verse["text"]}
 
