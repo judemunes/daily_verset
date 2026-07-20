@@ -2,3 +2,5 @@ verset_du_jour.db
 vapid_private.pem
 __pycache__/
 *.pyc
+static/uploads/
+.env

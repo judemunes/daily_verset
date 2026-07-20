@@ -14,7 +14,7 @@ self.addEventListener('push', (event) => {
     tag: 'verset-du-jour',
     renotify: true,
   };
-
+//explication:
   event.waitUntil(self.registration.showNotification(title, options));
 });
 //explication: ce fichier est le service worker qui permet de recevoir les notifications push

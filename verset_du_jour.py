@@ -3,11 +3,14 @@ import asyncio
 import json
 import os
 import random
-import sqlite3
+import secrets
 import shutil
 import textwrap
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
+
+import psycopg2
+import psycopg2.errors
 
 from colorama import Fore, Style, init
 
@@ -27,8 +30,18 @@ except ImportError:
 # Autres bonnes options : "fr-FR-DeniseNeural", "fr-CA-JeanNeural", "fr-CA-SylvieNeural"
 DEFAULT_EDGE_VOICE = "fr-FR-HenriNeural"
 
-# Base SQLite utilisée pour les versets, l'anti-répétition et le journal.
-DB_FILE = "verset_du_jour.db"
+# Connexion PostgreSQL utilisée pour les versets, les commentaires, les
+# réactions et les abonnements aux notifications.
+#explication: chaîne de connexion PostgreSQL, surchargeable via la variable
+#d'environnement DATABASE_URL — c'est le nom standard fourni automatiquement
+#par Render/Railway/Fly.io/Heroku lorsqu'on attache une base Postgres gérée
+#à l'application. DB_FILE reste lisible en repli pour les anciens
+#déploiements qui définissaient déjà cette variable (son contenu doit alors
+#être une URL postgresql://, pas un chemin de fichier).
+DB_FILE = os.environ.get(
+    "DATABASE_URL",
+    os.environ.get("DB_FILE", "postgresql://postgres:postgres@localhost:5432/verset_du_jour"),
+)
 
 
 VERSES = [
@@ -236,8 +249,22 @@ def display_verse(verse: dict[str, str]) -> None:
     print()
 
 
-def get_connection(db_path: str) -> sqlite3.Connection:
-    return sqlite3.connect(db_path)
+def get_connection(db_path: str) -> "psycopg2.extensions.connection":
+    return psycopg2.connect(db_path)
+
+
+def _column_exists(cur, table: str, column: str) -> bool:
+    """Vérifie si une colonne existe déjà (équivalent Postgres de
+    PRAGMA table_info, utilisé sous SQLite auparavant)."""
+
+    cur.execute(
+        """
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = %s AND column_name = %s
+        """,
+        (table, column),
+    )
+    return cur.fetchone() is not None
 
 
 def init_db(db_path: str) -> None:
@@ -246,48 +273,90 @@ def init_db(db_path: str) -> None:
 
     conn = get_connection(db_path)
     try:
-        conn.execute(
+        cur = conn.cursor()
+        cur.execute(
             """
             CREATE TABLE IF NOT EXISTS verses (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 reference TEXT NOT NULL,
                 text TEXT NOT NULL
             )
             """
         )
-        conn.execute(
+        cur.execute(
             """
             CREATE TABLE IF NOT EXISTS history (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 verse_id INTEGER NOT NULL REFERENCES verses(id),
                 shown_at TEXT NOT NULL
             )
             """
         )
-        conn.execute(
+        cur.execute(
             """
             CREATE TABLE IF NOT EXISTS journal (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 verse_id INTEGER NOT NULL REFERENCES verses(id),
                 logged_at TEXT NOT NULL
             )
             """
         )
-        conn.execute(
+        cur.execute(
             """
             CREATE TABLE IF NOT EXISTS subscriptions (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 endpoint TEXT NOT NULL UNIQUE,
                 subscription_json TEXT NOT NULL,
                 created_at TEXT NOT NULL
             )
             """
         )
+        #explication: table des commentaires de l'onglet Communauté (parent_id
+        #NULL = commentaire principal, sinon = réponse à un autre commentaire).
+        #edit_token permet de vérifier que seule la personne qui a écrit le
+        #commentaire peut le modifier (dans les 5 minutes suivant l'envoi).
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS comments (
+                id SERIAL PRIMARY KEY,
+                pseudo TEXT NOT NULL,
+                text TEXT NOT NULL,
+                parent_id INTEGER REFERENCES comments(id),
+                created_at TEXT NOT NULL,
+                edit_token TEXT,
+                edited_at TEXT
+            )
+            """
+        )
+        # Migration légère pour les bases déjà créées avant l'ajout de la
+        # fonctionnalité de modification / des pièces jointes.
+        if not _column_exists(cur, "comments", "edit_token"):
+            cur.execute("ALTER TABLE comments ADD COLUMN edit_token TEXT")
+        if not _column_exists(cur, "comments", "edited_at"):
+            cur.execute("ALTER TABLE comments ADD COLUMN edited_at TEXT")
+        if not _column_exists(cur, "comments", "image_url"):
+            cur.execute("ALTER TABLE comments ADD COLUMN image_url TEXT")
+        if not _column_exists(cur, "comments", "media_type"):
+            cur.execute("ALTER TABLE comments ADD COLUMN media_type TEXT")
+        #explication: table des réactions (emoji) sur un commentaire, un
+        #compteur par (commentaire, emoji)
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS reactions (
+                id SERIAL PRIMARY KEY,
+                comment_id INTEGER NOT NULL REFERENCES comments(id),
+                emoji TEXT NOT NULL,
+                count INTEGER NOT NULL DEFAULT 0,
+                UNIQUE(comment_id, emoji)
+            )
+            """
+        )
 
-        already_seeded = conn.execute("SELECT COUNT(*) FROM verses").fetchone()[0]
+        cur.execute("SELECT COUNT(*) FROM verses")
+        already_seeded = cur.fetchone()[0]
         if already_seeded == 0:
-            conn.executemany(
-                "INSERT INTO verses (reference, text) VALUES (?, ?)",
+            cur.executemany(
+                "INSERT INTO verses (reference, text) VALUES (%s, %s)",
                 [(v["reference"], v["text"]) for v in VERSES],
             )
         conn.commit()
@@ -306,24 +375,24 @@ def choose_verse(db_path: str = DB_FILE) -> dict[str, str]:
 
     conn = get_connection(db_path)
     try:
-        all_verses = conn.execute("SELECT id, reference, text FROM verses").fetchall()
+        cur = conn.cursor()
+        cur.execute("SELECT id, reference, text FROM verses")
+        all_verses = cur.fetchall()
         if not all_verses:
             raise RuntimeError("La table 'verses' est vide.")
 
         max_history = max(len(all_verses) - 1, 1)
-        recent_ids = {
-            row[0]
-            for row in conn.execute(
-                "SELECT verse_id FROM history ORDER BY id DESC LIMIT ?",
-                (max_history,),
-            ).fetchall()
-        }
+        cur.execute(
+            "SELECT verse_id FROM history ORDER BY id DESC LIMIT %s",
+            (max_history,),
+        )
+        recent_ids = {row[0] for row in cur.fetchall()}
 
         remaining = [v for v in all_verses if v[0] not in recent_ids] or all_verses
         verse_id, reference, text = random.choice(remaining)
 
-        conn.execute(
-            "INSERT INTO history (verse_id, shown_at) VALUES (?, ?)",
+        cur.execute(
+            "INSERT INTO history (verse_id, shown_at) VALUES (%s, %s)",
             (verse_id, datetime.now().isoformat(timespec="seconds")),
         )
         conn.commit()
@@ -333,37 +402,23 @@ def choose_verse(db_path: str = DB_FILE) -> dict[str, str]:
 
 
 def get_daily_verse(db_path: str = DB_FILE) -> dict[str, str]:
-    """Renvoie le même verset jusqu'à la prochaine bascule, calculée de
-    façon déterministe (aucune base de données requise).
+    """Renvoie le même verset toute la journée, calculé de façon déterministe
+    à partir de la date du jour (aucune base de données requise).
 
     Comme le plan gratuit de Render a un système de fichiers éphémère (le
     fichier SQLite est réinitialisé à chaque redémarrage/mise en veille du
     service), on ne peut pas se fier à un historique persistant pour savoir
-    quel verset a déjà été montré. À la place, on calcule un index à partir
-    d'un "jour effectif" qui ne bascule qu'à l'heure définie par la variable
-    d'environnement PUSH_TIME (8h par défaut, la même heure que la
-    notification quotidienne) plutôt qu'à minuit :
-    - avant 8h, on affiche encore le verset d'hier
-    - à partir de 8h (inclus), on affiche le verset du jour
-
-    Ce calcul est identique pour tous les visiteurs et ne change qu'une
-    fois par jour, peu importe combien de fois le serveur redémarre
-    entre-temps.
+    quel verset a déjà été montré aujourd'hui. À la place, on calcule un
+    index à partir du nombre ordinal du jour (today.toordinal()), qui est
+    identique pour tous les visiteurs et ne change qu'une fois par jour,
+    peu importe combien de fois le serveur redémarre entre-temps.
 
     Le paramètre db_path est conservé pour compatibilité avec les appelants
     existants (server.py), mais n'est plus utilisé ici.
     """
 
-    push_hour, push_minute = (
-        int(part) for part in os.environ.get("PUSH_TIME", "08:00").split(":")
-    )
-
-    now = datetime.now()
-    threshold_today = now.replace(hour=push_hour, minute=push_minute, second=0, microsecond=0)
-
-    effective_date = now.date() if now >= threshold_today else (now - timedelta(days=1)).date()
-
-    index = effective_date.toordinal() % len(VERSES)
+    today = datetime.now().date()
+    index = today.toordinal() % len(VERSES)
     verse = VERSES[index]
     return {"reference": verse["reference"], "text": verse["text"]}
 
@@ -373,11 +428,12 @@ def save_subscription(subscription: dict, db_path: str = DB_FILE) -> None:
 
     conn = get_connection(db_path)
     try:
-        conn.execute(
+        cur = conn.cursor()
+        cur.execute(
             """
             INSERT INTO subscriptions (endpoint, subscription_json, created_at)
-            VALUES (?, ?, ?)
-            ON CONFLICT(endpoint) DO UPDATE SET subscription_json = excluded.subscription_json
+            VALUES (%s, %s, %s)
+            ON CONFLICT (endpoint) DO UPDATE SET subscription_json = EXCLUDED.subscription_json
             """,
             (subscription["endpoint"], json.dumps(subscription), datetime.now().isoformat(timespec="seconds")),
         )
@@ -389,7 +445,9 @@ def save_subscription(subscription: dict, db_path: str = DB_FILE) -> None:
 def list_subscriptions(db_path: str = DB_FILE) -> list[dict]:
     conn = get_connection(db_path)
     try:
-        rows = conn.execute("SELECT subscription_json FROM subscriptions").fetchall()
+        cur = conn.cursor()
+        cur.execute("SELECT subscription_json FROM subscriptions")
+        rows = cur.fetchall()
         return [json.loads(row[0]) for row in rows]
     finally:
         conn.close()
@@ -400,21 +458,266 @@ def remove_subscriptions(endpoints: list[str], db_path: str = DB_FILE) -> None:
         return
     conn = get_connection(db_path)
     try:
-        conn.executemany("DELETE FROM subscriptions WHERE endpoint = ?", [(e,) for e in endpoints])
+        cur = conn.cursor()
+        cur.executemany("DELETE FROM subscriptions WHERE endpoint = %s", [(e,) for e in endpoints])
         conn.commit()
     finally:
         conn.close()
 
 
-def export_verse_journal(verse: dict[str, str], db_path: str = DB_FILE) -> None:
-    """Ajoute le verset du jour à la table 'journal' de la base SQLite."""
+#explication: emojis de réaction autorisés dans l'onglet Communauté
+ALLOWED_REACTIONS = ["❤️", "🙏", "👏", "🙌"]
+
+# Limites pour éviter les abus (spam, textes énormes, etc.)
+MAX_PSEUDO_LENGTH = 30
+MAX_COMMENT_LENGTH = 500
+
+# Durée pendant laquelle une personne peut modifier son propre commentaire.
+EDIT_WINDOW_SECONDS = 5 * 60
+
+
+def add_comment(
+    pseudo: str,
+    text: str,
+    parent_id: int | None = None,
+    image_url: str | None = None,
+    media_type: str | None = None,
+    db_path: str = DB_FILE,
+) -> dict:
+    """Ajoute un commentaire (ou une réponse si parent_id est fourni) et
+    renvoie le commentaire créé sous forme de dict, avec son edit_token
+    (à conserver côté client : c'est lui qui permettra de modifier ce
+    commentaire plus tard)."""
+
+    pseudo = pseudo.strip()
+    text = text.strip()
+
+    if not pseudo:
+        raise ValueError("Le pseudo est requis.")
+    if not text:
+        raise ValueError("Le commentaire ne peut pas être vide.")
+    if len(pseudo) > MAX_PSEUDO_LENGTH:
+        raise ValueError(f"Le pseudo est limité à {MAX_PSEUDO_LENGTH} caractères.")
+    if len(text) > MAX_COMMENT_LENGTH:
+        raise ValueError(f"Le commentaire est limité à {MAX_COMMENT_LENGTH} caractères.")
 
     conn = get_connection(db_path)
     try:
-        row = conn.execute(
-            "SELECT id FROM verses WHERE reference = ? AND text = ?",
+        cur = conn.cursor()
+        if parent_id is not None:
+            cur.execute("SELECT id FROM comments WHERE id = %s", (parent_id,))
+            if cur.fetchone() is None:
+                raise ValueError("Le commentaire auquel tu réponds n'existe plus.")
+
+        created_at = datetime.now().isoformat(timespec="seconds")
+        edit_token = secrets.token_hex(16)
+        cur.execute(
+            """
+            INSERT INTO comments
+                (pseudo, text, parent_id, created_at, edit_token, image_url, media_type)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            RETURNING id
+            """,
+            (pseudo, text, parent_id, created_at, edit_token, image_url, media_type),
+        )
+        new_id = cur.fetchone()[0]
+        conn.commit()
+        return {
+            "id": new_id,
+            "pseudo": pseudo,
+            "text": text,
+            "parent_id": parent_id,
+            "created_at": created_at,
+            "edited_at": None,
+            "edit_token": edit_token,
+            "image_url": image_url,
+            "media_type": media_type,
+            "reactions": {},
+            "replies": [],
+        }
+
+    finally:
+        conn.close()
+
+
+def edit_comment(
+    comment_id: int,
+    edit_token: str,
+    text: str,
+    db_path: str = DB_FILE,
+) -> dict:
+    """Modifie le texte d'un commentaire si le edit_token correspond et que
+    les 5 minutes suivant l'envoi ne sont pas écoulées."""
+
+    text = text.strip()
+    if not text:
+        raise ValueError("Le commentaire ne peut pas être vide.")
+    if len(text) > MAX_COMMENT_LENGTH:
+        raise ValueError(f"Le commentaire est limité à {MAX_COMMENT_LENGTH} caractères.")
+
+    conn = get_connection(db_path)
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT edit_token, created_at FROM comments WHERE id = %s",
+            (comment_id,),
+        )
+        row = cur.fetchone()
+        if row is None:
+            raise ValueError("Ce commentaire n'existe plus.")
+
+        stored_token, created_at = row
+        if not stored_token or not edit_token or stored_token != edit_token:
+            raise ValueError("Tu ne peux modifier que tes propres commentaires.")
+
+        elapsed = (datetime.now() - datetime.fromisoformat(created_at)).total_seconds()
+        if elapsed > EDIT_WINDOW_SECONDS:
+            raise ValueError("Le délai de modification (5 minutes) est dépassé.")
+
+        edited_at = datetime.now().isoformat(timespec="seconds")
+        cur.execute(
+            "UPDATE comments SET text = %s, edited_at = %s WHERE id = %s",
+            (text, edited_at, comment_id),
+        )
+        conn.commit()
+        return {"id": comment_id, "text": text, "edited_at": edited_at}
+    finally:
+        conn.close()
+
+
+def add_reaction(comment_id: int, emoji: str, db_path: str = DB_FILE) -> dict[str, int]:
+    """Incrémente le compteur d'une réaction (emoji) sur un commentaire et
+    renvoie l'ensemble des compteurs de réactions mis à jour pour ce
+    commentaire."""
+
+    if emoji not in ALLOWED_REACTIONS:
+        raise ValueError("Cette réaction n'est pas autorisée.")
+
+    conn = get_connection(db_path)
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT id FROM comments WHERE id = %s", (comment_id,))
+        if cur.fetchone() is None:
+            raise ValueError("Ce commentaire n'existe plus.")
+
+        cur.execute(
+            """
+            INSERT INTO reactions (comment_id, emoji, count) VALUES (%s, %s, 1)
+            ON CONFLICT (comment_id, emoji) DO UPDATE SET count = reactions.count + 1
+            """,
+            (comment_id, emoji),
+        )
+        conn.commit()
+
+        cur.execute(
+            "SELECT emoji, count FROM reactions WHERE comment_id = %s",
+            (comment_id,),
+        )
+        rows = cur.fetchall()
+        return {row[0]: row[1] for row in rows}
+    finally:
+        conn.close()
+
+
+def remove_reaction(comment_id: int, emoji: str, db_path: str = DB_FILE) -> dict[str, int]:
+    """Décrémente le compteur d'une réaction (emoji) sur un commentaire
+    (utilisé quand une personne retire sa réaction) et renvoie l'ensemble
+    des compteurs de réactions mis à jour pour ce commentaire."""
+
+    if emoji not in ALLOWED_REACTIONS:
+        raise ValueError("Cette réaction n'est pas autorisée.")
+
+    conn = get_connection(db_path)
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT id FROM comments WHERE id = %s", (comment_id,))
+        if cur.fetchone() is None:
+            raise ValueError("Ce commentaire n'existe plus.")
+
+        # Note : contrairement à SQLite, MAX() n'est pas une fonction scalaire
+        # en PostgreSQL (uniquement une fonction d'agrégation) — on utilise
+        # donc GREATEST() pour éviter un compteur négatif.
+        cur.execute(
+            "UPDATE reactions SET count = GREATEST(count - 1, 0) WHERE comment_id = %s AND emoji = %s",
+            (comment_id, emoji),
+        )
+        cur.execute(
+            "DELETE FROM reactions WHERE comment_id = %s AND emoji = %s AND count <= 0",
+            (comment_id, emoji),
+        )
+        conn.commit()
+
+        cur.execute(
+            "SELECT emoji, count FROM reactions WHERE comment_id = %s",
+            (comment_id,),
+        )
+        rows = cur.fetchall()
+        return {row[0]: row[1] for row in rows}
+    finally:
+        conn.close()
+
+
+def list_comments(db_path: str = DB_FILE) -> list[dict]:
+    """Renvoie tous les commentaires principaux (les plus récents en
+    premier), chacun avec ses réactions et la liste imbriquée de ses
+    réponses (triées par ordre chronologique)."""
+
+    conn = get_connection(db_path)
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, pseudo, text, parent_id, created_at, edited_at, image_url, media_type FROM comments"
+        )
+        comment_rows = cur.fetchall()
+        cur.execute("SELECT comment_id, emoji, count FROM reactions")
+        reaction_rows = cur.fetchall()
+
+        reactions_by_comment: dict[int, dict[str, int]] = {}
+        for comment_id, emoji, count in reaction_rows:
+            reactions_by_comment.setdefault(comment_id, {})[emoji] = count
+
+        by_id: dict[int, dict] = {}
+        for comment_id, pseudo, text, parent_id, created_at, edited_at, image_url, media_type in comment_rows:
+            by_id[comment_id] = {
+                "id": comment_id,
+                "pseudo": pseudo,
+                "text": text,
+                "parent_id": parent_id,
+                "created_at": created_at,
+                "edited_at": edited_at,
+                "image_url": image_url,
+                "media_type": media_type,
+                "reactions": reactions_by_comment.get(comment_id, {}),
+                "replies": [],
+            }
+
+        top_level: list[dict] = []
+        for comment in by_id.values():
+            if comment["parent_id"] is not None and comment["parent_id"] in by_id:
+                by_id[comment["parent_id"]]["replies"].append(comment)
+            else:
+                top_level.append(comment)
+
+        top_level.sort(key=lambda c: c["created_at"], reverse=True)
+        for comment in by_id.values():
+            comment["replies"].sort(key=lambda c: c["created_at"])
+
+        return top_level
+    finally:
+        conn.close()
+
+
+def export_verse_journal(verse: dict[str, str], db_path: str = DB_FILE) -> None:
+    """Ajoute le verset du jour à la table 'journal' de la base PostgreSQL."""
+
+    conn = get_connection(db_path)
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id FROM verses WHERE reference = %s AND text = %s",
             (verse["reference"], verse["text"]),
-        ).fetchone()
+        )
+        row = cur.fetchone()
         if row is None:
             print(
                 Fore.YELLOW
@@ -423,13 +726,13 @@ def export_verse_journal(verse: dict[str, str], db_path: str = DB_FILE) -> None:
             )
             return
 
-        conn.execute(
-            "INSERT INTO journal (verse_id, logged_at) VALUES (?, ?)",
+        cur.execute(
+            "INSERT INTO journal (verse_id, logged_at) VALUES (%s, %s)",
             (row[0], datetime.now().isoformat(timespec="seconds")),
         )
         conn.commit()
         print(Fore.GREEN + f"Verset ajouté au journal (base : {db_path})" + Style.RESET_ALL)
-    except sqlite3.Error as exc:
+    except psycopg2.Error as exc:
         print(Fore.YELLOW + f"Impossible d'écrire dans le journal ({exc})." + Style.RESET_ALL)
     finally:
         conn.close()
@@ -641,7 +944,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--db-path",
         type=str,
         default=DB_FILE,
-        help=f"Fichier de base de données SQLite (versets, historique, journal). Défaut : {DB_FILE}.",
+        help=f"Chaîne de connexion PostgreSQL (versets, historique, journal). Défaut : {DB_FILE}.",
     )
     parser.add_argument(
         "--export-json",
