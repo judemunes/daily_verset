@@ -19,7 +19,6 @@ body {
 
 .container { display: flex; max-width: 1265px; margin: 0 auto; min-height: 100vh; }
 
-/* Sidebar gauche */
 .sidebar-left { 
   width: 275px; 
   padding: 20px; 
@@ -71,7 +70,6 @@ body {
 }
 .btn-publish-sidebar:hover { opacity: 0.9; }
 
-/* Header principal */
 .main-header {
   position: sticky;
   top: 0;
@@ -93,7 +91,6 @@ body {
 .header-title { font-size: 20px; font-weight: bold; color: #f7d658; letter-spacing: 1px; }
 .header-date { font-size: 13px; color: #71767b; }
 
-/* Onglets */
 .tabs {
   display: flex;
   width: 100%;
@@ -130,7 +127,6 @@ body {
   border-radius: 9999px;
 }
 
-/* Contenu principal */
 .main-content { 
   flex: 1; 
   margin-left: 0;
@@ -143,12 +139,10 @@ body {
 .panel { display: none; padding: 20px; width: 100%; }
 .panel.active { display: block; }
 
-/* Layout Communauté */
 .community-layout { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
 .comments-section { max-width: 600px; }
 .section-title { font-size: 16px; font-weight: bold; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #2f3336; }
 
-/* Composer */
 .composer { 
   background: #15202b; 
   border: 1px solid #2f3336; 
@@ -215,7 +209,6 @@ body {
 .btn-submit:hover { opacity: 0.9; }
 .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* Emoji Picker */
 .emoji-picker {
   position: absolute;
   bottom: 60px;
@@ -238,7 +231,6 @@ body {
 }
 .emoji-btn:hover { background: rgba(247, 214, 88, 0.2); }
 
-/* Modal */
 .modal, .edit-modal {
   display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0, 0, 0, 0.8); z-index: 1000; align-items: center; justify-content: center;
@@ -283,13 +275,12 @@ body {
 .btn-primary { background: #f7d658; color: #0f1419; border: none; padding: 12px 24px; border-radius: 9999px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 16px; }
 .btn-primary:hover { opacity: 0.9; }
 
-/* Media Preview */
 .media-preview { display: none; margin-top: 12px; padding: 12px; background: #0f1419; border-radius: 12px; border: 1px solid #2f3336; }
 .media-preview.active { display: block; }
-.media-preview img, .media-preview video { max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: cover; }
+.media-preview img { max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: cover; }
+.media-preview video { max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: cover; width: 100%; }
 .media-preview-remove { background: #f4212e; color: white; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; margin-top: 8px; font-size: 13px; }
 
-/* Style Twitter pour les commentaires */
 .comment { 
   background: #15202b; 
   border: 1px solid #2f3336; 
@@ -299,6 +290,26 @@ body {
   transition: border-color 0.2s; 
 }
 .comment.reply { margin-left: 40px; border-left: 2px solid #2f3336; border-radius: 0 16px 16px 16px; background: #0f1419; }
+.comment-repost {
+  background: #0f1419;
+  border: 1px solid #2f3336;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 12px;
+}
+.comment-repost .repost-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #71767b;
+}
+.comment-repost .repost-header .avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+}
 
 .comment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .avatar { 
@@ -309,19 +320,47 @@ body {
 .comment-date { color: #71767b; font-size: 12px; }
 .comment-text { color: #e7e9ea; line-height: 1.5; margin-bottom: 12px; font-size: 14px; white-space: pre-wrap; word-break: break-word; }
 
+.comment-text img,
+.comment-text video {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 12px;
+  margin-top: 12px;
+  object-fit: cover;
+  width: 100%;
+}
+
 .comment-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
 .reaction-btn { 
-  background: #2f3336; border: none; padding: 4px 12px; border-radius: 9999px; font-size: 13px; cursor: pointer; transition: background 0.2s; color: #e7e9ea; display: flex; align-items: center; gap: 4px; 
+  background: #2f3336; 
+  border: none; 
+  padding: 4px 12px; 
+  border-radius: 9999px; 
+  font-size: 13px; 
+  cursor: pointer; 
+  transition: background 0.2s; 
+  color: #e7e9ea; 
+  display: flex; 
+  align-items: center; 
+  gap: 4px; 
 }
 .reaction-btn:hover { background: rgba(247, 214, 88, 0.2); }
 .reaction-btn.active { background: #f7d658; color: #0f1419; }
 
-.action-btn { background: transparent; border: none; color: #71767b; cursor: pointer; font-size: 12px; padding: 4px 8px; border-radius: 6px; transition: all 0.2s; }
+.action-btn { 
+  background: transparent; 
+  border: none; 
+  color: #71767b; 
+  cursor: pointer; 
+  font-size: 12px; 
+  padding: 4px 8px; 
+  border-radius: 6px; 
+  transition: all 0.2s; 
+}
 .action-btn:hover { color: #f7d658; background: rgba(247, 214, 88, 0.1); }
 .action-btn.delete:hover { color: #f4212e; background: rgba(244, 33, 46, 0.1); }
 
-/* Formulaires inline */
 .inline-form { margin-top: 12px; padding-top: 12px; border-top: 1px solid #2f3336; display: none; }
 .inline-form.active { display: block; }
 .inline-form textarea { 
@@ -334,7 +373,6 @@ body {
 .btn-small.primary { background: #f7d658; color: #0f1419; }
 .btn-small.secondary { background: transparent; color: #e7e9ea; border: 1px solid #2f3336; }
 
-/* Sidebar droite */
 .sidebar-right { width: 350px; padding: 20px; transition: all 0.3s ease; }
 .widget { background: #15202b; border: 1px solid #2f3336; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
 .widget-title { font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-size: 15px; }
@@ -345,10 +383,10 @@ body {
 
 .countdown { font-size: 20px; font-weight: bold; color: #f7d658; margin: 8px 0; }
 .shabbat-info { margin: 12px 0; padding: 8px 0; border-bottom: 1px solid #2f3336; }
+.shabbat-info:last-child { border-bottom: none; }
 .shabbat-label { color: #71767b; font-size: 13px; }
 .shabbat-value { color: #e7e9ea; font-weight: 600; font-size: 14px; margin-top: 4px; }
 
-/* Carte de verset */
 .verse-card { 
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
   border: 1px solid #2f3336; 
@@ -356,13 +394,14 @@ body {
   padding: 60px 40px; 
   text-align: center; 
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  max-width: 700px; width: 100%; margin: 0 auto;
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
 }
 .verse-text { font-size: 24px; font-style: italic; line-height: 1.6; margin-bottom: 20px; color: #ede6d6; font-family: Georgia, serif; }
 .verse-reference { color: #f7d658; font-weight: 600; font-size: 18px; margin-bottom: 20px; }
 .verse-note { color: #71767b; font-size: 14px; }
 
-/* Page Profil */
 .profile-container { max-width: 800px; margin: 0 auto; }
 .profile-banner { height: 200px; background: linear-gradient(135deg, #1e3a5f 0%, #0f1419 100%); border-radius: 16px; position: relative; overflow: hidden; }
 .profile-banner-image { width: 100%; height: 100%; object-fit: cover; }
@@ -386,21 +425,22 @@ body {
 .profile-tab:hover { background: rgba(247, 214, 88, 0.1); }
 .profile-tab.active { color: #f7d658; font-weight: bold; border-bottom: 4px solid #f7d658; }
 
+.edit-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1000; align-items: center; justify-content: center; }
+.edit-modal.active { display: flex; }
+.edit-modal-content { background: #15202b; border-radius: 16px; padding: 24px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
+.edit-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.edit-modal-title { font-size: 20px; font-weight: bold; }
+.edit-modal-close { background: none; border: none; color: #71767b; font-size: 24px; cursor: pointer; }
 .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
 .file-input-wrapper input[type=file] { position: absolute; left: -9999px; }
 .file-input-label { display: block; background: #2f3336; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; transition: background 0.2s; }
 .file-input-label:hover { background: #3a3f4b; }
 
-/* Médias dans les commentaires */
-.comment-media { max-width: 100%; border-radius: 12px; margin-top: 12px; overflow: hidden; }
-.comment-media img { max-width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px; display: block; }
-.comment-media video { max-width: 100%; max-height: 300px; border-radius: 12px; display: block; }
-
-/* Responsive */
 @media (max-width: 1024px) {
   .sidebar-right { display: none !important; }
   .community-layout { grid-template-columns: 1fr; }
 }
+
 @media (max-width: 768px) {
   .sidebar-left { display: none !important; }
   .main-content { margin-left: 0 !important; border: none !important; }
@@ -408,8 +448,9 @@ body {
   .verse-card { padding: 40px 20px; }
   .verse-text { font-size: 20px; }
   .profile-stats { flex-direction: column; gap: 12px; }
-  .form-row, .time-row { grid-template-columns: 1fr; }
-  .comment-media img, .comment-media video { max-height: 250px; }
+  .form-row { grid-template-columns: 1fr; }
+  .time-row { grid-template-columns: 1fr; }
+  .comment-text img, .comment-text video { max-height: 250px; }
 }
 </style>
 </head>
@@ -431,8 +472,8 @@ body {
       <div class="nav-item active" onclick="switchTab('verse')"><span class="nav-icon">🏠</span><span>Accueil</span></div>
       <div class="nav-item" onclick="switchTab('community')"><span class="nav-icon">💬</span><span>Communauté</span></div>
       <div class="nav-item"><span class="nav-icon">🔍</span><span>Explorer</span></div>
-      <div class="nav-item"><span class="nav-icon">🔔</span><span>Notifications</span></div>
-      <div class="nav-item" onclick="showProfile()"><span class="nav-icon">👤</span><span>Profil</span></div>
+      <div class="nav-item"><span class="nav-icon"></span><span>Notifications</span></div>
+      <div class="nav-item" onclick="showProfile()"><span class="nav-icon"></span><span>Profil</span></div>
       <button class="btn-publish-sidebar" onclick="switchTab('community'); focusComposer()">Publier</button>
     </div>
 
@@ -452,8 +493,7 @@ body {
             <div class="composer">
               <textarea class="composer-input" placeholder="Quoi de neuf ?" id="comment-text"></textarea>
               <div class="media-preview" id="media-preview">
-                <img src="" alt="Aperçu" id="media-preview-img" style="display: none;">
-                <video src="" alt="Aperçu" id="media-preview-video" style="display: none;" controls></video>
+                <img src="" alt="Aperçu" id="media-preview-img">
                 <button class="media-preview-remove" onclick="removeMedia()">Supprimer</button>
               </div>
               <div class="composer-toolbar">
@@ -586,7 +626,6 @@ body {
   </div>
 
 <script>
-// --- État local ---
 let currentPseudo = localStorage.getItem('versetPseudo') || '';
 let editTokens = JSON.parse(localStorage.getItem('versetEditTokens') || '{}');
 let userReactions = JSON.parse(localStorage.getItem('versetUserReactions') || '{}');
@@ -596,9 +635,8 @@ let selectedMedia = null;
 let selectedMediaType = null;
 let scheduledPost = null;
 
-const emojis = ['😀', '😂', '😍', '🥰', '😎', '🤔', '👍', '👏', '❤️', '🔥', '🎉', '🙌', '😢', '💯', '✨', '🙏'];
+const emojis = ['😀', '😂', '😍', '🥰', '😎', '', '👍', '👏', '❤️', '🔥', '', '🙌', '😢', '💯', '✨', '🙏'];
 
-// --- Initialisation ---
 document.addEventListener('DOMContentLoaded', () => {
   const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   document.getElementById('current-date').textContent = new Date().toLocaleDateString('fr-FR', dateOptions);
@@ -611,19 +649,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateCountdown, 1000);
   loadShabbat();
   loadCommentsData();
-  
-  // Mise à jour en temps réel du temps relatif toutes les secondes
-  setInterval(() => {
-    document.querySelectorAll('.comment-date').forEach(el => {
-      const commentDiv = el.closest('.comment');
-      if (!commentDiv) return;
-      const commentId = commentDiv.dataset.id;
-      const comment = findCommentById(allComments, commentId);
-      if (comment) {
-        el.textContent = getRelativeTime(comment.created_at) + (comment.edited_at ? ' · (modifié)' : '');
-      }
-    });
-  }, 1000);
   
   switchTab('verse');
 });
@@ -735,12 +760,15 @@ function handleMediaSelect(event) {
         selectedMediaType = 'video';
         document.getElementById('media-preview-img').style.display = 'none';
         const videoEl = document.getElementById('media-preview-video');
-        videoEl.src = selectedMedia;
-        videoEl.style.display = 'block';
-        videoEl.play();
+        if (videoEl) {
+          videoEl.src = selectedMedia;
+          videoEl.style.display = 'block';
+          videoEl.play();
+        }
       } else {
         selectedMediaType = 'image';
-        document.getElementById('media-preview-video').style.display = 'none';
+        const videoEl = document.getElementById('media-preview-video');
+        if (videoEl) videoEl.style.display = 'none';
         const imgEl = document.getElementById('media-preview-img');
         imgEl.src = selectedMedia;
         imgEl.style.display = 'block';
@@ -756,8 +784,10 @@ function removeMedia() {
   selectedMediaType = null;
   document.getElementById('media-input').value = '';
   document.getElementById('media-preview').classList.remove('active');
-  document.getElementById('media-preview-img').style.display = 'none';
-  document.getElementById('media-preview-video').style.display = 'none';
+  const imgEl = document.getElementById('media-preview-img');
+  const videoEl = document.getElementById('media-preview-video');
+  if (imgEl) imgEl.style.display = 'none';
+  if (videoEl) videoEl.style.display = 'none';
 }
 
 function openScheduleModal() {
@@ -912,13 +942,14 @@ function renderProfileComment(c) {
         <div class="avatar">${initial}</div>
         <div class="comment-meta">
           <div class="comment-author">${c.pseudo}</div>
-          <div class="comment-date">${getRelativeTime(c.created_at)}</div>
+          <div class="comment-date">${formatCommentDate(c.created_at)}</div>
         </div>
       </div>
       <div class="comment-text">${escapeHtml(c.text)}</div>
       ${c.image_url ? renderMedia(c.image_url, c.media_type) : ''}
       <div class="comment-actions">
         <button class="action-btn" onclick="toggleForm('reply-form-${c.id}')">💬 Répondre</button>
+        <button class="action-btn" onclick="repost(${c.id}, '${escapeHtml(c.pseudo)}', '${escapeHtml(c.text).replace(/'/g, "\\'")}', '${c.image_url || ''}', '${c.media_type || ''}')">🔄 Repartager</button>
         <button class="reaction-btn" onclick="react(${c.id}, '❤️')">❤️ ${c.reactions?.['❤️'] || 0}</button>
       </div>
       <div class="inline-form" id="reply-form-${c.id}">
@@ -957,7 +988,7 @@ function showUserMedia() {
   container.innerHTML = userComments.map(c => `
     <div style="margin-bottom: 16px;">
       ${renderMedia(c.image_url, c.media_type)}
-      <div style="margin-top: 8px; color: #71767b; font-size: 14px;">${getRelativeTime(c.created_at)}</div>
+      <div style="margin-top: 8px; color: #71767b; font-size: 14px;">${formatCommentDate(c.created_at)}</div>
     </div>
   `).join('');
 }
@@ -1144,7 +1175,6 @@ async function postComment(parentId = null) {
     alert('Veuillez écrire un message ou sélectionner un média');
     return;
   }
-
   try {
     const res = await fetch('/api/comments', {
       method: 'POST',
@@ -1169,14 +1199,11 @@ async function postComment(parentId = null) {
   }
 }
 
-// --- FONCTION TOGGLE RÉACTION CORRIGÉE ---
 async function react(commentId, emoji) {
   if (!requirePseudo()) return;
   const currentReaction = userReactions[commentId];
-
   try {
     if (currentReaction === emoji) {
-      // L'utilisateur a déjà mis cette réaction : on l'enlève
       await fetch(`/api/comments/${commentId}/unreact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1184,16 +1211,13 @@ async function react(commentId, emoji) {
       });
       delete userReactions[commentId];
     } else {
-      // L'utilisateur a une réaction différente (ou aucune)
       if (currentReaction) {
-        // On enlève l'ancienne réaction
         await fetch(`/api/comments/${commentId}/unreact`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ emoji: currentReaction })
         });
       }
-      // On ajoute la nouvelle réaction
       await fetch(`/api/comments/${commentId}/react`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1201,7 +1225,6 @@ async function react(commentId, emoji) {
       });
       userReactions[commentId] = emoji;
     }
-
     localStorage.setItem('versetUserReactions', JSON.stringify(userReactions));
     loadComments();
     updateProfileStats();
@@ -1255,36 +1278,55 @@ async function submitEdit(commentId) {
   }
 }
 
-// --- FONCTION TEMPS RELATIF CORRIGÉE (Plus de négatif) ---
-function getRelativeTime(dateString) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now - date) / 1000);
+// Fonction de repost
+async function repost(originalId, originalPseudo, originalText, originalImage, originalMediaType) {
+  if (!requirePseudo()) return;
   
-  if (diffInSeconds < 1) {
-    return "à l'instant";
+  const repostText = prompt(
+    `Repartager le commentaire de @${originalPseudo}\n\nAjoute ton commentaire (optionnel) :`,
+    ''
+  );
+  
+  if (repostText === null) return; // Annulé
+  
+  const fullText = repostText.trim() 
+    ? `🔄 Repost de @${originalPseudo} :\n${repostText.trim()}\n\n---\n${originalText}`
+    : `🔄 Repost de @${originalPseudo} :\n${originalText}`;
+  
+  try {
+    const res = await fetch('/api/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        pseudo: currentPseudo, 
+        text: fullText, 
+        parent_id: null,
+        image: null 
+      })
+    });
+    
+    if (res.ok) {
+      const data = await res.json();
+      editTokens[data.id] = data.edit_token;
+      localStorage.setItem('versetEditTokens', JSON.stringify(editTokens));
+      loadComments();
+      loadCommentsData();
+      alert('Commentaire repartagé avec succès !');
+    } else {
+      const err = await res.json();
+      alert(err.error || 'Erreur lors du repost');
+    }
+  } catch (e) {
+    alert('Erreur réseau');
   }
-  if (diffInSeconds < 60) {
-    return `il y a ${diffInSeconds} seconde${diffInSeconds > 1 ? 's' : ''}`;
-  }
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  if (diffInMinutes < 60) {
-    return `il y a ${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''}`;
-  }
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) {
-    return `il y a ${diffInHours} heure${diffInHours > 1 ? 's' : ''}`;
-  }
-  const diffInDays = Math.floor(diffInHours / 24);
-  return `il y a ${diffInDays} jour${diffInDays > 1 ? 's' : ''}`;
 }
 
 function renderMedia(url, type) {
   if (!url) return '';
   if (type === 'video' || url.includes('video')) {
-    return `<div class="comment-media"><video src="${url}" controls autoplay muted loop style="max-width: 100%; max-height: 300px; border-radius: 12px;"></video></div>`;
+    return `<div style="margin-top: 12px;"><video src="${url}" controls autoplay loop muted style="max-width: 100%; border-radius: 12px; max-height: 300px;"></video></div>`;
   } else {
-    return `<div class="comment-media"><img src="${url}" alt="Média" style="max-width: 100%; max-height: 300px; border-radius: 12px; object-fit: cover;"></div>`;
+    return `<img src="${url}" alt="Média" style="max-width: 100%; border-radius: 12px; margin-top: 12px; max-height: 300px; object-fit: cover;">`;
   }
 }
 
@@ -1292,7 +1334,6 @@ function renderComment(c, isReply) {
   const initial = c.pseudo.charAt(0).toUpperCase();
   const canEdit = !!editTokens[c.id];
   
-  // Affichage des réactions : Cœur toujours visible + autres
   let reactionsHtml = '';
   const heartCount = c.reactions?.['❤️'] || 0;
   const userHasHeart = userReactions[c.id] === '❤️';
@@ -1326,6 +1367,8 @@ function renderComment(c, isReply) {
   `;
 
   let actionsHtml = `<button class="action-btn" onclick="toggleForm('reply-form-${c.id}')">💬 Répondre</button>`;
+  actionsHtml += `<button class="action-btn" onclick="repost(${c.id}, '${escapeHtml(c.pseudo)}', '${escapeHtml(c.text).replace(/'/g, "\\'")}', '${c.image_url || ''}', '${c.media_type || ''}')">🔄 Repartager</button>`;
+  
   if (canEdit) {
     actionsHtml += `<button class="action-btn" onclick="toggleForm('edit-form-${c.id}')">✏️ Modifier</button>`;
     actionsHtml += `<button class="action-btn delete" onclick="deleteComment(${c.id})">🗑️ Supprimer</button>`;
@@ -1339,7 +1382,7 @@ function renderComment(c, isReply) {
         <div class="avatar">${initial}</div>
         <div class="comment-meta">
           <div class="comment-author">${escapeHtml(c.pseudo)}</div>
-          <div class="comment-date">${getRelativeTime(c.created_at)}${c.edited_at ? ' · (modifié)' : ''}</div>
+          <div class="comment-date">${formatCommentDate(c.created_at)}${c.edited_at ? ' · (modifié)' : ''}</div>
         </div>
       </div>
       <div class="comment-text">${escapeHtml(c.text)}</div>
@@ -1365,27 +1408,38 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-function findCommentById(list, id) {
-  for (const c of list) {
-    if (c.id == id) return c;
-    if (c.replies) {
-      const found = findCommentById(c.replies, id);
-      if (found) return found;
-    }
-  }
-  return null;
-}
-
 function updateCountdown() {
   const now = new Date();
   const tomorrow = new Date(now);
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
+  
   const diff = tomorrow - now;
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
   const s = Math.floor((diff % 60000) / 1000);
-  document.getElementById('countdown').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  
+  document.getElementById('countdown').textContent = 
+    `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function formatCommentDate(dateString) {
+  const now = new Date();
+  const commentDate = new Date(dateString);
+  const diff = now - commentDate;
+  const seconds = Math.floor(diff / 1000);
+  
+  if (seconds < 60) {
+    return `${seconds}s`;
+  } else if (seconds < 3600) {
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes}m`;
+  } else if (seconds < 86400) {
+    const hours = Math.floor(seconds / 3600);
+    return `${hours}h`;
+  } else {
+    return commentDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  }
 }
 
 async function loadShabbat() {
@@ -1394,10 +1448,12 @@ async function loadShabbat() {
     const data = await res.json();
     const candle = data.items?.find(i => i.category === 'candles');
     const havdalah = data.items?.find(i => i.category === 'havdalah');
+    
     let html = '';
     if (data.location?.title) html += `<div class="shabbat-label">${data.location.title}</div>`;
     if (candle) html += `<div class="shabbat-info"><div class="shabbat-label">Allumage</div><div class="shabbat-value">${candle.title.split(': ').slice(1).join(': ')}</div></div>`;
     if (havdalah) html += `<div class="shabbat-info"><div class="shabbat-label">Havdalah</div><div class="shabbat-value">${havdalah.title.split(': ').slice(1).join(': ')}</div></div>`;
+    
     if (!candle && !havdalah) html = '<div class="shabbat-label">Aucun horaire cette semaine.</div>';
     
     const widgets = document.querySelectorAll('.widget');
