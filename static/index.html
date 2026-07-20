@@ -1913,11 +1913,16 @@
     }
     html += `<div class="reactions-row">${reactionsHtml(c)}</div>`;
     
-    // === MODIFICATION 1 : Ajout du bouton Supprimer ===
+    // === MODIFICATION CRUCIALE : Supprimer TOUJOURS (même les anciens commentaires) ===
+    // Le bouton "Modifier" reste limité aux 5 minutes
     if (canStillEdit(c)) {
-      html += `<button class="edit-toggle" data-id="${c.id}">✏️ Modifier</button>`;
-      html += `<button class="delete-toggle" data-id="${c.id}">🗑️ Supprimer</button>`;
+      html += `<button class="edit-toggle" data-id="${c.id}">\u270f\ufe0f Modifier</button>`;
     }
+    // Le bouton "Supprimer" s'affiche TOUJOURS si l'utilisateur a le token
+    if (editTokens()[c.id]) {
+      html += `<button class="delete-toggle" data-id="${c.id}">\ud83d\uddd1\ufe0f Supprimer</button>`;
+    }
+    // ========================================================================
     
     html += `</div>`;
     html += `<form class="edit-form comment-form" id="edit-form-${c.id}" data-id="${c.id}">
@@ -2012,10 +2017,12 @@
       });
     });
 
-    // === MODIFICATION 2 : Gestionnaire d'événement pour le bouton Supprimer ===
+    // === MODIFICATION CRUCIALE : Gestion de la suppression TOUJOURS ===
     commentsList.querySelectorAll('.delete-toggle').forEach((btn) => {
       btn.addEventListener('click', async () => {
-        if (!confirm("Supprimer ce commentaire définitivement ?")) return;
+        if (!confirm("Es-tu sûr de vouloir supprimer ce commentaire ? Cette action est irréversible.")) {
+          return;
+        }
         
         const id = btn.dataset.id;
         const token = editTokens()[id] || "";  // Token vide pour les anciens
@@ -2039,11 +2046,12 @@
           
           loadComments();
         } catch (err) {
-          alert("Erreur réseau.");
+          alert("Erreur réseau lors de la suppression.");
         }
       });
     });
-
+    // ========================================================================
+    
     commentsList.querySelectorAll('.edit-form').forEach((form) => {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();

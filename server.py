@@ -29,8 +29,7 @@ MAX_IMAGE_BYTES = 5 * 1024 * 1024  # 5 Mo
 MAX_VIDEO_BYTES = 30 * 1024 * 1024  # 30 Mo
 ALLOWED_IMAGE_TYPES = {"jpeg": "jpg", "jpg": "jpg", "png": "png", "gif": "gif", "webp": "webp"}
 ALLOWED_VIDEO_TYPES = {"mp4": "mp4", "webm": "webm", "ogg": "ogv", "quicktime": "mov"}
-
-
+ALLOWED_LINK_TYPES = {"youtube.com": "youtube", "youtu.be": "youtube", "instagram.com": "instagram", "facebook.com": "facebook", "twitter.com": "twitter", "tiktok.com": "tiktok", "linkedin.com": "linkedin", "x.com": "x", "y.be": "youtube", "vk.com": "vk", "vk.ru": "vk"}
 
 
 
