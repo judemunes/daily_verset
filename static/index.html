@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Verset du jour</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1368,9 +1369,14 @@
     to { background: transparent; }
   }
   /* --- CORRECTIONS SPÉCIFIQUES MOBILE --- */
-  /* --- CORRECTIONS SPÉCIFIQUES MOBILE --- */
+  /* === CORRECTIONS MOBILE === */
 @media (max-width: 600px) {
-  /* 1. Réduire les marges pour gagner de l'espace sur petit écran */
+  /* Empêche le zoom automatique sur iPhone */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  
+  /* Réduit les marges sur mobile */
   body {
     padding: 12px;
   }
@@ -1378,32 +1384,19 @@
   .card {
     padding: 24px 16px;
   }
-
-  /* 2. RÈGLE CRUCIALE POUR iPHONE : Empêche le zoom intempestif */
-  input, textarea, select {
-    font-size: 16px !important;
-  }
-
-  /* 3. Ajuster le panneau de notifications pour qu'il ne dépasse pas */
+  
+  /* Ajuste le panneau de notifications */
   .notif-panel {
     width: 100%;
     left: 0;
     right: 0;
     max-width: 100vw;
-    border-radius: 0 0 12px 12px;
   }
-
-  /* 4. S'assurer que les images/vidéos des commentaires s'adaptent */
+  
+  /* Les images s'adaptent à l'écran */
   .comment-image {
     max-width: 100%;
     height: auto;
-  }
-
-  /* 5. Le bouton "Publier" prend toute la largeur pour être facile à toucher */
-  .comment-form button[type="submit"] {
-    width: 100%;
-    margin-top: 8px;
-    padding: 12px;
   }
 }
 </style>
@@ -1562,6 +1555,28 @@
 
 <script>
   const dateEl = document.getElementById('today-date');
+  // Debug : vérifier si le pseudo est bien stocké
+console.log('Pseudo dans localStorage:', localStorage.getItem('versetPseudo'));
+
+// Forcer la récupération du pseudo au chargement
+const savedPseudo = localStorage.getItem('versetPseudo');
+if (savedPseudo) {
+  console.log('Pseudo trouvé:', savedPseudo);
+  // Mettre à jour l'affichage immédiatement
+  setTimeout(() => {
+    const pseudoInput = document.getElementById('comment-pseudo');
+    const composerAvatar = document.getElementById('composer-avatar');
+    const composerIdentity = document.getElementById('composer-identity');
+    
+    if (pseudoInput) {
+      pseudoInput.value = savedPseudo;
+      composerAvatar.textContent = savedPseudo.charAt(0).toUpperCase();
+      composerIdentity.textContent = `Publier en tant que ${savedPseudo} · changer`;
+      pseudoInput.classList.remove('show');
+      pseudoInput.readOnly = true;
+    }
+  }, 100);
+}
   dateEl.textContent = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
   const textEl = document.getElementById('verse-text');
