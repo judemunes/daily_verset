@@ -154,6 +154,7 @@ async def api_edit_comment(comment_id: int, request: Request) -> JSONResponse:
         return JSONResponse({"error": str(exc)}, status_code=400)
     return JSONResponse(result)
 
+# Après la route PUT (api_edit_comment), ajoute :
 @app.delete("/api/comments/{comment_id}")
 async def api_delete_comment(comment_id: int, request: Request) -> JSONResponse:
     body = await request.json()

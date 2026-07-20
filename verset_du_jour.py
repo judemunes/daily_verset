@@ -343,17 +343,27 @@ def remove_reaction(comment_id: int, emoji: str, db_path: str = DB_FILE) -> dict
         return {row[0]: row[1] for row in rows}
     finally:
         conn.close()
-
+#fonction pour supprimer un commentaire et ses reponses et ses reactions  
 def delete_comment(comment_id: int, edit_token: str, db_path: str = DB_FILE) -> bool:
-    """Supprime un commentaire et ses réactions/réponses si l'edit_token correspond."""
+    """Supprime un commentaire et ses réactions/réponses.
+    - Si le commentaire a un edit_token : vérification stricte (sécurité)
+    - Si le commentaire n'a PAS d'edit_token (ancien) : on accepte la suppression
+      car il n'y a pas de moyen de vérifier l'auteur (compatibilité)"""
     conn = get_connection(db_path)
     try:
         cur = conn.cursor()
         cur.execute("SELECT edit_token FROM comments WHERE id = %s", (comment_id,))
         row = cur.fetchone()
-        if row is None or row[0] != edit_token:
-            return False
+        if row is None:
+            return False  # Commentaire introuvable
 
+        stored_token = row[0]
+        
+        # Si le commentaire a un token, on vérifie qu'il correspond
+        if stored_token is not None and stored_token != edit_token:
+            return False  # Token invalide
+
+        # Suppression en cascade
         cur.execute("DELETE FROM reactions WHERE comment_id = %s", (comment_id,))
         cur.execute("DELETE FROM comments WHERE parent_id = %s", (comment_id,))
         cur.execute("DELETE FROM comments WHERE id = %s", (comment_id,))
@@ -362,7 +372,7 @@ def delete_comment(comment_id: int, edit_token: str, db_path: str = DB_FILE) -> 
         return True
     finally:
         conn.close()
-
+#fonction pour lister les commentaires avec leurs reponses et leurs reactions 
 def list_comments(db_path: str = DB_FILE) -> list[dict]:
     conn = get_connection(db_path)
     try:
@@ -400,7 +410,7 @@ def list_comments(db_path: str = DB_FILE) -> list[dict]:
         return top_level
     finally:
         conn.close()
-
+#fonction pour exporter le verset en journal pour tous les utilisateurs
 def export_verse_journal(verse: dict[str, str], db_path: str = DB_FILE) -> None:
     conn = get_connection(db_path)
     try:
@@ -417,7 +427,7 @@ def export_verse_journal(verse: dict[str, str], db_path: str = DB_FILE) -> None:
         print(Fore.YELLOW + f"Impossible d'écrire dans le journal ({exc})." + Style.RESET_ALL)
     finally:
         conn.close()
-
+#fonction pour trouver la voix française  tts
 def find_french_voice_id(engine) -> str | None:
     for voice in engine.getProperty("voices"):
         languages = getattr(voice, "languages", None) or []
@@ -431,7 +441,7 @@ def find_french_voice_id(engine) -> str | None:
         if "fr" in decoded_languages or "french" in haystack or "fr-fr" in haystack or "fr_fr" in haystack:
             return voice.id
     return None
-
+#fonction pour parler le verset en pyttsx3
 def speak_verse_pyttsx3(verse: dict[str, str], rate: int, volume: float, voice_id: str | None) -> None:
     if not TTS_AVAILABLE:
         print(Fore.RED + "pyttsx3 n'est pas installé. Installe-le avec : pip install pyttsx3" + Style.RESET_ALL)
@@ -448,7 +458,7 @@ def speak_verse_pyttsx3(verse: dict[str, str], rate: int, volume: float, voice_i
     engine.say(speech_text)
     engine.runAndWait()
     engine.stop()
-
+#fonction pour parler le verset en edge-tts
 async def _speak_verse_edge_async(speech_text: str, voice: str, rate: int) -> None:
     percent_offset = round(((rate - 175) / 175) * 100)
     rate_str = f"{'+' if percent_offset >= 0 else ''}{percent_offset}%"
@@ -456,7 +466,7 @@ async def _speak_verse_edge_async(speech_text: str, voice: str, rate: int) -> No
     output_path = "verse_audio.mp3"
     await communicator.save(output_path)
     return output_path
-
+#fonction pour parler le verset en edge-tts  
 def speak_verse_edge(verse: dict[str, str], rate: int, edge_voice: str) -> None:
     if not EDGE_TTS_AVAILABLE:
         print(Fore.RED + "edge-tts n'est pas installé. Installe-le avec : pip install edge-tts" + Style.RESET_ALL)
@@ -468,13 +478,13 @@ def speak_verse_edge(verse: dict[str, str], rate: int, edge_voice: str) -> None:
         playsound(output_path)
     except ImportError:
         print(Fore.YELLOW + f"Audio généré dans {output_path}, mais 'playsound' n'est pas installé." + Style.RESET_ALL)
-
+#fonction pour parler le verset en edge-tts ou pyttsx3  
 def speak_verse(verse: dict[str, str], rate: int = 165, volume: float = 1.0, voice_id: str | None = None, engine_name: str = "pyttsx3", edge_voice: str = DEFAULT_EDGE_VOICE) -> None:
     if engine_name == "edge":
         speak_verse_edge(verse, rate=rate, edge_voice=edge_voice)
     else:
         speak_verse_pyttsx3(verse, rate=rate, volume=volume, voice_id=voice_id)
-
+#fonction pour lister les voix disponibles
 def list_voices() -> None:
     if not TTS_AVAILABLE:
         print(Fore.RED + "pyttsx3 n'est pas installé. Installe-le avec : pip install pyttsx3" + Style.RESET_ALL)
@@ -483,7 +493,7 @@ def list_voices() -> None:
     for voice in engine.getProperty("voices"):
         print(f"{voice.id}  —  {voice.name}")
     engine.stop()
-
+#fonction pour exécuter le verset du jour en mode console 
 def run_once(args: argparse.Namespace) -> None:
     init(autoreset=True)
     init_db(args.db_path)
@@ -493,7 +503,7 @@ def run_once(args: argparse.Namespace) -> None:
         speak_verse(verse, rate=args.rate, volume=args.volume, voice_id=args.voice_id, engine_name=args.engine, edge_voice=args.edge_voice)
     if args.export_json:
         export_verse_journal(verse, args.db_path)
-
+#fonction pour exécuter le verset du jour en mode planification
 def run_daemon(args: argparse.Namespace) -> None:
     target_hour, target_minute = (int(part) for part in args.at.split(":"))
     print(Fore.GREEN + f"Mode planification actif : un verset sera lu chaque jour à {args.at}." + Style.RESET_ALL)
@@ -504,7 +514,7 @@ def run_daemon(args: argparse.Namespace) -> None:
             run_once(args)
             last_run_date = now.date()
         time.sleep(20)
-
+#fonction pour construire le parser
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Affiche et lit un verset biblique du jour.")
     parser.add_argument("--no-voice", action="store_true", help="Désactive la lecture vocale.")
@@ -519,7 +529,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--db-path", type=str, default=DB_FILE, help=f"Chaîne de connexion PostgreSQL.")
     parser.add_argument("--export-json", action="store_true", help="Ajoute le verset du jour à la table 'journal'.")
     return parser
-
+#fonction main   
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
