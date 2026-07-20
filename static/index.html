@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verset du jour</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: #0f1419;
+  color: #e7e9ea;
+  min-height: 100vh;
+}
+
+/* Header principal */
+.main-header {
+  position: sticky;
+  top: 0;
+  background: #0f1419;
+  border-bottom: 1px solid #2f3336;
+  z-index: 100;
+  padding: 12px 0;
+}
+
+.header-content {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #f7d658;
+  letter-spacing: 1px;
+}
+
+.header-date {
+  font-size: 13px;
+  color: #71767b;
+}
+
+/* Onglets */
+.tabs {
+  display: flex;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  border-bottom: 1px solid #2f3336;
+}
+
+.tab {
+  flex: 1;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  position: relative;
+  border: none;
+  background: none;
+  color: #8b92a8;
+  font-size: 15px;
+}
+
+.tab:hover {
+  background: rgba(247, 214, 88, 0.1);
+  color: #f7d658;
+}
+
+.tab.active {
+  color: #f7d658;
+  font-weight: bold;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 4px;
+  background: #f7d658;
+  border-radius: 9999px;
+}
+
+/* Layout principal */
+.container { 
+  display: flex; 
+  max-width: 1265px; 
+  margin: 0 auto; 
+  min-height: calc(100vh - 120px);
+}
+
+/* Sidebar gauche */
+.sidebar-left { 
+  width: 275px; 
+  padding: 20px; 
+  position: fixed; 
+  height: calc(100vh - 120px);
+  overflow-y: auto; 
+  z-index: 50; 
+  display: none;
+}
+
+.logo { 
+  font-size: 20px; 
+  font-weight: bold; 
+  color: #f7d658; 
+  margin-bottom: 24px; 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+}
+
+.nav-item { 
+  display: flex; 
+  align-items: center; 
+  gap: 16px; 
+  padding: 12px 16px; 
+  border-radius: 9999px; 
+  cursor: pointer; 
+  transition: background 0.2s; 
+  margin-bottom: 4px; 
+  font-size: 15px; 
+}
+
+.nav-item:hover { 
+  background: rgba(247, 214, 88, 0.1); 
+}
+
+.nav-item.active { 
+  font-weight: bold; 
+}
+
+.nav-icon { 
+  font-size: 18px; 
+}
+
+.btn-publish-sidebar { 
+  background: #f7d658; 
+  color: #0f1419; 
+  border: none; 
+  padding: 14px; 
+  border-radius: 9999px; 
+  font-weight: bold; 
+  font-size: 15px; 
+  width: 100%; 
+  margin-top: 16px; 
+  cursor: pointer; 
+  transition: opacity 0.2s; 
+}
+
+.btn-publish-sidebar:hover { 
+  opacity: 0.9; 
+}
+
+/* Contenu principal */
+.main-content { 
+  flex: 1; 
+  margin-left: 0;
+  border-left: 1px solid #2f3336; 
+  border-right: 1px solid #2f3336; 
+  min-height: calc(100vh - 120px);
+  transition: all 0.3s ease; 
+}
+
+/* Panneaux */
+.panel { 
+  display: none; 
+  padding: 20px; 
+  width: 100%; 
+}
+
+.panel.active { 
+  display: block; 
+}
+
+/* Layout Communauté */
+.community-layout { 
+  display: grid; 
+  grid-template-columns: 1fr 350px; 
+  gap: 20px; 
+}
+
+.comments-section { 
+  max-width: 600px; 
+}
+
+.section-title { 
+  font-size: 16px; 
+  font-weight: bold; 
+  margin-bottom: 16px; 
+  padding-bottom: 12px; 
+  border-bottom: 1px solid #2f3336; 
+}
+
+/* Composer */
+.composer { 
+  background: #15202b; 
+  border: 1px solid #2f3336; 
+  border-radius: 16px; 
+  padding: 16px; 
+  margin-bottom: 20px; 
+}
+
+.composer-input { 
+  width: 100%; 
+  background: transparent; 
+  border: none; 
+  color: #e7e9ea; 
+  font-size: 15px; 
+  resize: none; 
+  outline: none; 
+  min-height: 80px; 
+  font-family: inherit; 
+}
+
+.composer-input::placeholder { 
+  color: #71767b; 
+}
+
+.composer-tools { 
+  display: flex; 
+  gap: 12px; 
+  margin-bottom: 12px; 
+}
+
+.tool-btn { 
+  background: #2f3336; 
+  border: none; 
+  width: 36px; 
+  height: 36px; 
+  border-radius: 50%; 
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 18px; 
+  transition: transform 0.2s; 
+  color: #f7d658; 
+}
+
+.tool-btn:hover { 
+  transform: scale(1.1); 
+  background: rgba(247, 214, 88, 0.2); 
+}
+
+.composer-actions { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding-top: 12px; 
+  border-top: 1px solid #2f3336; 
+}
+
+.composer-identity { 
+  background: none; 
+  border: none; 
+  color: #f7d658; 
+  cursor: pointer; 
+  font-size: 13px; 
+}
+
+.btn-submit { 
+  background: #f7d658; 
+  color: #0f1419; 
+  border: none; 
+  padding: 10px 24px; 
+  border-radius: 9999px; 
+  font-weight: bold; 
+  cursor: pointer; 
+  transition: opacity 0.2s; 
+}
+
+.btn-submit:hover { 
+  opacity: 0.9; 
+}
+
+/* Style Twitter pour les commentaires */
+.comment { 
+  background: #15202b; 
+  border: 1px solid #2f3336; 
+  border-radius: 16px; 
+  padding: 16px; 
+  margin-bottom: 12px; 
+  transition: border-color 0.2s; 
+}
+
+.comment:hover { 
+  border-color: #f7d658; 
+}
+
+.comment.reply { 
+  margin-left: 40px; 
+  border-left: 2px solid #2f3336; 
+  border-radius: 0 16px 16px 16px; 
+  background: #0f1419; 
+}
+
+.comment-header { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  margin-bottom: 8px; 
+}
+
+.avatar { 
+  width: 40px; 
+  height: 40px; 
+  border-radius: 50%; 
+  background: #f7d658; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-weight: bold; 
+  color: #0f1419; 
+  font-size: 16px; 
+  flex-shrink: 0; 
+}
+
+.comment-meta { 
+  flex: 1; 
+}
+
+.comment-author { 
+  font-weight: bold; 
+  color: #e7e9ea; 
+  font-size: 14px; 
+}
+
+.comment-date { 
+  color: #71767b; 
+  font-size: 12px; 
+}
+
+.comment-text { 
+  color: #e7e9ea; 
+  line-height: 1.5; 
+  margin-bottom: 12px; 
+  font-size: 14px; 
+  white-space: pre-wrap; 
+  word-break: break-word; 
+}
+
+.comment-actions { 
+  display: flex; 
+  gap: 8px; 
+  flex-wrap: wrap; 
+  align-items: center; 
+}
+
+.reaction-btn { 
+  background: #2f3336; 
+  border: none; 
+  padding: 4px 12px; 
+  border-radius: 9999px; 
+  font-size: 13px; 
+  cursor: pointer; 
+  transition: background 0.2s; 
+  color: #e7e9ea; 
+  display: flex; 
+  align-items: center; 
+  gap: 4px; 
+}
+
+.reaction-btn:hover { 
+  background: rgba(247, 214, 88, 0.2); 
+}
+
+.reaction-btn.active { 
+  background: #f7d658; 
+  color: #0f1419; 
+}
+
+.action-btn { 
+  background: transparent; 
+  border: none; 
+  color: #71767b; 
+  cursor: pointer; 
+  font-size: 12px; 
+  padding: 4px 8px; 
+  border-radius: 6px; 
+  transition: all 0.2s; 
+}
+
+.action-btn:hover { 
+  color: #f7d658; 
+  background: rgba(247, 214, 88, 0.1); 
+}
+
+.action-btn.delete:hover { 
+  color: #f4212e; 
+  background: rgba(244, 33, 46, 0.1); 
+}
+
+/* Formulaires inline (réponse, édition) */
+.inline-form { 
+  margin-top: 12px; 
+  padding-top: 12px; 
+  border-top: 1px solid #2f3336; 
+  display: none; 
+}
+
+.inline-form.active { 
+  display: block; 
+}
+
+.inline-form textarea { 
+  width: 100%; 
+  background: #0f1419; 
+  border: 1px solid #2f3336; 
+  border-radius: 8px; 
+  color: #e7e9ea; 
+  padding: 12px; 
+  font-size: 14px; 
+  resize: vertical; 
+  min-height: 60px; 
+  outline: none; 
+  font-family: inherit; 
+}
+
+.inline-form textarea:focus { 
+  border-color: #f7d658; 
+}
+
+.inline-form-actions { 
+  display: flex; 
+  justify-content: flex-end; 
+  gap: 8px; 
+  margin-top: 8px; 
+}
+
+.btn-small { 
+  padding: 6px 16px; 
+  border-radius: 9999px; 
+  font-size: 13px; 
+  font-weight: 600; 
+  cursor: pointer; 
+  border: none; 
+}
+
+.btn-small.primary { 
+  background: #f7d658; 
+  color: #0f1419; 
+}
+
+.btn-small.secondary { 
+  background: transparent; 
+  color: #e7e9ea; 
+  border: 1px solid #2f3336; 
+}
+
+/* Sidebar droite */
+.sidebar-right { 
+  width: 350px; 
+  padding: 20px; 
+  transition: all 0.3s ease; 
+}
+
+.widget { 
+  background: #15202b; 
+  border: 1px solid #2f3336; 
+  border-radius: 16px; 
+  padding: 16px; 
+  margin-bottom: 16px; 
+}
+
+.widget-title { 
+  font-weight: bold; 
+  margin-bottom: 12px; 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  font-size: 15px; 
+}
+
+.widget-content { 
+  color: #71767b; 
+  font-size: 14px; 
+  line-height: 1.6; 
+}
+
+.search-box { 
+  background: #15202b; 
+  border: 1px solid #2f3336; 
+  border-radius: 9999px; 
+  padding: 12px 20px; 
+  margin-bottom: 20px; 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+}
+
+.search-box input { 
+  background: transparent; 
+  border: none; 
+  color: #e7e9ea; 
+  outline: none; 
+  width: 100%; 
+  font-size: 14px; 
+}
+
+.countdown { 
+  font-size: 20px; 
+  font-weight: bold; 
+  color: #f7d658; 
+  margin: 8px 0; 
+}
+
+.shabbat-info { 
+  margin: 12px 0; 
+  padding: 8px 0; 
+  border-bottom: 1px solid #2f3336; 
+}
+
+.shabbat-info:last-child { 
+  border-bottom: none; 
+}
+
+.shabbat-label { 
+  color: #71767b; 
+  font-size: 13px; 
+}
+
+.shabbat-value { 
+  color: #e7e9ea; 
+  font-weight: 600; 
+  font-size: 14px; 
+  margin-top: 4px; 
+}
+
+/* Carte de verset (Mode épuré) */
+.verse-card { 
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
+  border: 1px solid #2f3336; 
+  border-radius: 16px; 
+  padding: 60px 40px; 
+  text-align: center; 
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.verse-text { 
+  font-size: 24px; 
+  font-style: italic; 
+  line-height: 1.6; 
+  margin-bottom: 20px; 
+  color: #ede6d6; 
+  font-family: Georgia, serif; 
+}
+
+.verse-reference { 
+  color: #f7d658; 
+  font-weight: 600; 
+  font-size: 18px; 
+  margin-bottom: 20px; 
+}
+
+.verse-note { 
+  color: #71767b; 
+  font-size: 14px; 
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .sidebar-right { 
+    display: none !important; 
+  }
+  .community-layout { 
+    grid-template-columns: 1fr; 
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-left { 
+    display: none !important; 
+  }
+  .main-content { 
+    margin-left: 0 !important; 
+    border: none !important; 
+  }
+  .comment.reply { 
+    margin-left: 20px; 
+  }
+  .verse-card { 
+    padding: 40px 20px; 
+  }
+  .verse-text { 
+    font-size: 20px; 
+  }
+}
+</style>
+</head>
+<body>
+  <!-- Header principal -->
+  <header class="main-header">
+    <div class="header-content">
+      <div class="header-title">✦ VERSET DU JOUR</div>
+      <div class="header-date" id="current-date"></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" id="tab-verse" onclick="switchTab('verse')">Verset</button>
+      <button class="tab" id="tab-community" onclick="switchTab('community')">Communauté</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Sidebar gauche (visible uniquement en mode communauté) -->
+    <div class="sidebar-left">
+      <div class="logo"><span>✦</span><span>Verset</span></div>
+      <div class="nav-item active" onclick="switchTab('verse')"><span class="nav-icon">🏠</span><span>Accueil</span></div>
+      <div class="nav-item" onclick="switchTab('community')"><span class="nav-icon">💬</span><span>Communauté</span></div>
+      <div class="nav-item"><span class="nav-icon">🔍</span><span>Explorer</span></div>
+      <div class="nav-item"><span class="nav-icon">🔔</span><span>Notifications</span></div>
+      <div class="nav-item"><span class="nav-icon">👤</span><span>Profil</span></div>
+      <button class="btn-publish-sidebar" onclick="switchTab('community'); focusComposer()">Publier</button>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="main-content">
+      <!-- Panel Verset -->
+      <div id="panel-verse" class="panel active">
+        <div class="verse-card">
+          <div class="verse-text" id="verse-text">Chargement du verset...</div>
+          <div class="verse-reference" id="verse-reference"></div>
+          <div class="verse-note">Un même verset accompagne toute la journée. Reviens demain pour le suivant.</div>
+        </div>
+      </div>
+
+      <!-- Panel Communauté -->
+      <div id="panel-community" class="panel">
+        <div class="community-layout">
+          <div class="comments-section">
+            <div class="section-title">Commentaires</div>
+
+            <!-- Composer -->
+            <div class="composer">
+              <textarea class="composer-input" placeholder="Quoi de neuf ?" id="comment-text"></textarea>
+              <div class="composer-actions">
+                <button class="composer-identity" id="composer-identity" onclick="changePseudo()">Choisir un pseudo</button>
+                <button class="btn-submit" onclick="postComment()">Publier</button>
+              </div>
+            </div>
+
+            <!-- Liste des commentaires -->
+            <div id="comments-list"></div>
+          </div>
+
+          <!-- Sidebar droite -->
+          <div class="sidebar-right">
+            <div class="search-box">
+              <span>🔍</span>
+              <input type="text" placeholder="Rechercher un verset...">
+            </div>
+            <div class="widget">
+              <div class="widget-title"><span>⏳</span><span>Prochain verset</span></div>
+              <div class="countdown" id="countdown">--:--:--</div>
+            </div>
+            <div class="widget">
+              <div class="widget-title"><span>️</span><span>Horaires de Shabbat</span></div>
+              <div class="shabbat-info"><div class="shabbat-label">Chargement...</div></div>
+            </div>
+            <div class="widget">
+              <div class="widget-content">Cet espace est réservé aux échanges autour du verset du jour. Sois bienveillant·e envers les autres membres.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// --- État local ---
+let currentPseudo = localStorage.getItem('versetPseudo') || '';
+let editTokens = JSON.parse(localStorage.getItem('versetEditTokens') || '{}');
+
+// --- Initialisation ---
+document.addEventListener('DOMContentLoaded', () => {
+  // Afficher la date
+  const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('current-date').textContent = new Date().toLocaleDateString('fr-FR', dateOptions);
+  
+  updateComposerIdentity();
+  loadVerse();
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+  loadShabbat();
+  
+  // Forcer l'affichage initial en mode "Verset" épuré
+  switchTab('verse');
+});
+
+// --- Navigation et Gestion des Vues ---
+function switchTab(tab) {
+  const sidebarLeft = document.querySelector('.sidebar-left');
+  const sidebarRight = document.querySelector('.sidebar-right');
+  const mainContent = document.querySelector('.main-content');
+  
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.getElementById(`panel-${tab}`).classList.add('active');
+  
+  if (tab === 'verse') {
+    // MODE ÉPURÉ : Uniquement le verset du jour, sans sidebars
+    sidebarLeft.style.display = 'none';
+    sidebarRight.style.display = 'none';
+    mainContent.style.marginLeft = '0';
+    mainContent.style.borderLeft = 'none';
+    mainContent.style.borderRight = 'none';
+    mainContent.style.display = 'flex';
+    mainContent.style.alignItems = 'center';
+    mainContent.style.justifyContent = 'center';
+    mainContent.style.padding = '20px';
+  } 
+  else if (tab === 'community') {
+    // DEMANDE DE PSEUDO OBLIGATOIRE POUR ACCÉDER
+    if (!currentPseudo) {
+      let pseudo = prompt("Bienvenue dans la Communauté !\nVeuillez choisir un pseudo pour participer aux échanges :");
+      if (pseudo && pseudo.trim().length > 0) {
+        currentPseudo = pseudo.trim().substring(0, 30);
+        localStorage.setItem('versetPseudo', currentPseudo);
+        updateComposerIdentity();
+      } else {
+        alert("Un pseudo est requis pour accéder à la communauté.");
+        switchTab('verse'); // Retour forcé si annulation
+        return;
+      }
+    }
+    
+    // RÉTABLIR L'INTERFACE COMPLÈTE
+    sidebarLeft.style.display = 'block';
+    sidebarRight.style.display = 'block';
+    mainContent.style.marginLeft = '275px';
+    mainContent.style.borderLeft = '1px solid #2f3336';
+    mainContent.style.borderRight = '1px solid #2f3336';
+    mainContent.style.display = 'block';
+    mainContent.style.padding = '0';
+    
+    loadComments();
+  }
+}
+
+function focusComposer() {
+  document.getElementById('comment-text').focus();
+}
+
+// --- Gestion du Pseudo ---
+function updateComposerIdentity() {
+  const btn = document.getElementById('composer-identity');
+  if (currentPseudo) {
+    btn.textContent = `Publier en tant que ${currentPseudo} · changer`;
+  } else {
+    btn.textContent = 'Choisir un pseudo pour publier';
+  }
+}
+
+function changePseudo() {
+  const newPseudo = prompt("Entre ton pseudo (max 30 caractères) :", currentPseudo);
+  if (newPseudo !== null) {
+    const trimmed = newPseudo.trim().substring(0, 30);
+    if (trimmed.length > 0) {
+      currentPseudo = trimmed;
+      localStorage.setItem('versetPseudo', currentPseudo);
+      updateComposerIdentity();
+    } else {
+      localStorage.removeItem('versetPseudo');
+      currentPseudo = '';
+      updateComposerIdentity();
+    }
+  }
+}
+
+function requirePseudo() {
+  if (!currentPseudo) {
+    changePseudo();
+    return !!currentPseudo;
+  }
+  return true;
+}
+
+// --- Appels API ---
+async function loadVerse() {
+  try {
+    const res = await fetch('/api/verset');
+    const data = await res.json();
+    document.getElementById('verse-text').textContent = `"${data.text}"`;
+    document.getElementById('verse-reference').textContent = data.reference;
+  } catch (e) {
+    document.getElementById('verse-text').textContent = "Erreur de chargement.";
+  }
+}
+
+async function loadComments() {
+  try {
+    const res = await fetch('/api/comments');
+    const comments = await res.json();
+    const container = document.getElementById('comments-list');
+    
+    if (comments.length === 0) {
+      container.innerHTML = '<div style="text-align: center; padding: 40px; color: #71767b;">Aucun commentaire pour l\'instant. Sois le premier à écrire !</div>';
+      return;
+    }
+    
+    container.innerHTML = comments.map(c => renderComment(c, false)).join('');
+  } catch (e) {
+    console.error('Erreur chargement commentaires:', e);
+  }
+}
+
+async function postComment(parentId = null) {
+  if (!requirePseudo()) return;
+  
+  const inputId = parentId ? `reply-text-${parentId}` : 'comment-text';
+  const text = document.getElementById(inputId).value.trim();
+  if (!text) return;
+
+  try {
+    const res = await fetch('/api/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pseudo: currentPseudo, text, parent_id: parentId })
+    });
+    
+    if (res.ok) {
+      const data = await res.json();
+      editTokens[data.id] = data.edit_token;
+      localStorage.setItem('versetEditTokens', JSON.stringify(editTokens));
+      
+      document.getElementById(inputId).value = '';
+      if (parentId) {
+        document.getElementById(`reply-form-${parentId}`).classList.remove('active');
+      }
+      loadComments();
+    } else {
+      const err = await res.json();
+      alert(err.error || 'Erreur lors de la publication');
+    }
+  } catch (e) {
+    alert('Erreur réseau');
+  }
+}
+
+async function react(commentId, emoji) {
+  if (!requirePseudo()) return;
+  try {
+    await fetch(`/api/comments/${commentId}/react`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ emoji })
+    });
+    loadComments();
+  } catch (e) { console.error(e); }
+}
+
+async function unreact(commentId, emoji) {
+  try {
+    await fetch(`/api/comments/${commentId}/unreact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ emoji })
+    });
+    loadComments();
+  } catch (e) { console.error(e); }
+}
+
+async function deleteComment(commentId) {
+  if (!confirm("Supprimer ce commentaire définitivement ?")) return;
+  const token = editTokens[commentId] || "";
+  
+  try {
+    const res = await fetch(`/api/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ edit_token: token })
+    });
+    
+    if (res.ok) {
+      delete editTokens[commentId];
+      localStorage.setItem('versetEditTokens', JSON.stringify(editTokens));
+      loadComments();
+    } else {
+      const err = await res.json();
+      alert(err.error || "Impossible de supprimer ce commentaire.");
+    }
+  } catch (e) {
+    alert("Erreur réseau");
+  }
+}
+
+async function submitEdit(commentId) {
+  const text = document.getElementById(`edit-text-${commentId}`).value.trim();
+  const token = editTokens[commentId];
+  
+  try {
+    const res = await fetch(`/api/comments/${commentId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ edit_token: token, text })
+    });
+    
+    if (res.ok) {
+      loadComments();
+    } else {
+      const err = await res.json();
+      alert(err.error || "Impossible de modifier ce commentaire.");
+    }
+  } catch (e) {
+    alert("Erreur réseau");
+  }
+}
+
+// --- Rendu Twitter-style ---
+function renderComment(c, isReply) {
+  const initial = c.pseudo.charAt(0).toUpperCase();
+  const dateStr = new Date(c.created_at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const canEdit = !!editTokens[c.id];
+  
+  let reactionsHtml = '';
+  const allowedEmojis = ['❤️', '🙏', '👏', '🙌'];
+  allowedEmojis.forEach(emoji => {
+    const count = c.reactions?.[emoji] || 0;
+    reactionsHtml += `<button class="reaction-btn" onclick="react(${c.id}, '${emoji}')">${emoji} ${count > 0 ? count : ''}</button>`;
+  });
+
+  const editForm = canEdit ? `
+    <div class="inline-form" id="edit-form-${c.id}">
+      <textarea id="edit-text-${c.id}">${c.text}</textarea>
+      <div class="inline-form-actions">
+        <button class="btn-small secondary" onclick="toggleForm('edit-form-${c.id}')">Annuler</button>
+        <button class="btn-small primary" onclick="submitEdit(${c.id})">Enregistrer</button>
+      </div>
+    </div>
+  ` : '';
+
+  const replyForm = `
+    <div class="inline-form" id="reply-form-${c.id}">
+      <textarea id="reply-text-${c.id}" placeholder="Ta réponse..."></textarea>
+      <div class="inline-form-actions">
+        <button class="btn-small secondary" onclick="toggleForm('reply-form-${c.id}')">Annuler</button>
+        <button class="btn-small primary" onclick="postComment(${c.id})">Répondre</button>
+      </div>
+    </div>
+  `;
+
+  let actionsHtml = `<button class="action-btn" onclick="toggleForm('reply-form-${c.id}')">💬 Répondre</button>`;
+  
+  if (canEdit) {
+    actionsHtml += `
+      <button class="action-btn" onclick="toggleForm('edit-form-${c.id}')">✏️ Modifier</button>
+      <button class="action-btn delete" onclick="deleteComment(${c.id})">🗑️ Supprimer</button>
+    `;
+  }
+
+  const repliesHtml = c.replies && c.replies.length > 0 
+    ? c.replies.map(r => renderComment(r, true)).join('') 
+    : '';
+
+  return `
+    <div class="comment ${isReply ? 'reply' : ''}" data-id="${c.id}">
+      <div class="comment-header">
+        <div class="avatar">${initial}</div>
+        <div class="comment-meta">
+          <div class="comment-author">${escapeHtml(c.pseudo)}</div>
+          <div class="comment-date">${dateStr}${c.edited_at ? ' · (modifié)' : ''}</div>
+        </div>
+      </div>
+      <div class="comment-text">${escapeHtml(c.text)}</div>
+      <div class="comment-actions">
+        ${reactionsHtml}
+        ${actionsHtml}
+      </div>
+      ${editForm}
+      ${replyForm}
+      ${repliesHtml}
+    </div>
+  `;
+}
+
+// --- Utilitaires ---
+function toggleForm(id) {
+  const form = document.getElementById(id);
+  form.classList.toggle('active');
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function updateCountdown() {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+  
+  const diff = tomorrow - now;
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  
+  document.getElementById('countdown').textContent = 
+    `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+async function loadShabbat() {
+  try {
+    const res = await fetch('https://www.hebcal.com/shabbat?cfg=json&geonameid=3448439&M=on');
+    const data = await res.json();
+    const candle = data.items?.find(i => i.category === 'candles');
+    const havdalah = data.items?.find(i => i.category === 'havdalah');
+    
+    let html = '';
+    if (data.location?.title) html += `<div class="shabbat-label">${data.location.title}</div>`;
+    if (candle) html += `<div class="shabbat-info"><div class="shabbat-label">Allumage</div><div class="shabbat-value">${candle.title.split(': ').slice(1).join(': ')}</div></div>`;
+    if (havdalah) html += `<div class="shabbat-info"><div class="shabbat-label">Havdalah</div><div class="shabbat-value">${havdalah.title.split(': ').slice(1).join(': ')}</div></div>`;
+    
+    if (!candle && !havdalah) html = '<div class="shabbat-label">Aucun horaire cette semaine.</div>';
+    
+    const widgets = document.querySelectorAll('.widget');
+    for (const w of widgets) {
+      if (w.querySelector('.widget-title span')?.textContent === '🕯️') {
+        const title = w.querySelector('.widget-title').outerHTML;
+        w.innerHTML = title + html;
+        break;
+      }
+    }
+  } catch (e) {
+    console.error('Erreur Shabbat', e);
+  }
+}
+</script>
+</body>
+</html>
