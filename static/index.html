@@ -1,636 +1,590 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verset du jour</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verset du jour</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0f1419;
+    color: #e7e9ea;
+    min-height: 100vh;
+  }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0f1419;
-            color: #e7e9ea;
-            min-height: 100vh;
-        }
+  .container {
+    display: flex;
+    max-width: 1265px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
 
-        .container {
-            display: flex;
-            max-width: 1265px;
-            margin: 0 auto;
-            min-height: 100vh;
-        }
+  /* Sidebar gauche */
+  .sidebar-left {
+    width: 275px;
+    padding: 20px;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+  }
 
-        /* Sidebar gauche */
-        .sidebar-left {
-            width: 275px;
-            padding: 20px;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
+  .logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: #f7d658;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-        .logo {
-            font-size: 22px;
-            font-weight: bold;
-            color: #f7d658;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 20px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 8px;
+    font-size: 20px;
+  }
 
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 12px 20px;
-            border-radius: 9999px;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-bottom: 8px;
-            font-size: 20px;
-        }
+  .nav-item:hover {
+    background: rgba(247, 214, 88, 0.1);
+  }
 
-        .nav-item:hover {
-            background: rgba(247, 214, 88, 0.1);
-        }
+  .nav-item.active {
+    font-weight: bold;
+  }
 
-        .nav-item.active {
-            font-weight: bold;
-        }
+  .nav-icon {
+    font-size: 22px;
+  }
 
-        .nav-icon {
-            font-size: 22px;
-        }
+  .btn-publish-sidebar {
+    background: #f7d658;
+    color: #0f1419;
+    border: none;
+    padding: 16px;
+    border-radius: 9999px;
+    font-weight: bold;
+    font-size: 17px;
+    width: 100%;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
 
-        .btn-publish-sidebar {
-            background: #f7d658;
-            color: #0f1419;
-            border: none;
-            padding: 16px;
-            border-radius: 9999px;
-            font-weight: bold;
-            font-size: 17px;
-            width: 100%;
-            margin-top: 20px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
+  .btn-publish-sidebar:hover {
+    opacity: 0.9;
+  }
 
-        .btn-publish-sidebar:hover {
-            opacity: 0.9;
-        }
+  /* Contenu principal */
+  .main-content {
+    flex: 1;
+    margin-left: 275px;
+    border-left: 1px solid #2f3336;
+    border-right: 1px solid #2f3336;
+    min-height: 100vh;
+  }
 
-        /* Contenu principal */
-        .main-content {
-            flex: 1;
-            margin-left: 275px;
-            border-left: 1px solid #2f3336;
-            border-right: 1px solid #2f3336;
-            min-height: 100vh;
-        }
+  /* Onglets */
+  .tabs {
+    display: flex;
+    position: sticky;
+    top: 0;
+    background: #0f1419;
+    border-bottom: 1px solid #2f3336;
+    z-index: 100;
+  }
 
-        /* Onglets */
-        .tabs {
-            display: flex;
-            position: sticky;
-            top: 0;
-            background: #0f1419;
-            border-bottom: 1px solid #2f3336;
-            z-index: 100;
-        }
+  .tab {
+    flex: 1;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+    position: relative;
+  }
 
-        .tab {
-            flex: 1;
-            padding: 16px;
-            text-align: center;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background 0.2s;
-            position: relative;
-        }
+  .tab:hover {
+    background: rgba(247, 214, 88, 0.1);
+  }
 
-        .tab:hover {
-            background: rgba(247, 214, 88, 0.1);
-        }
+  .tab.active {
+    font-weight: bold;
+  }
 
-        .tab.active {
-            font-weight: bold;
-        }
+  .tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 56px;
+    height: 4px;
+    background: #f7d658;
+    border-radius: 9999px;
+  }
 
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 56px;
-            height: 4px;
-            background: #f7d658;
-            border-radius: 9999px;
-        }
+  /* Panneaux */
+  .panel {
+    display: none;
+    padding: 20px;
+  }
 
-        /* Panneaux */
-        .panel {
-            display: none;
-            padding: 20px;
-        }
+  .panel.active {
+    display: block;
+  }
 
-        .panel.active {
-            display: block;
-        }
+  /* Section Verset */
+  .verse-card {
+    background: #15202b;
+    border: 1px solid #2f3336;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
 
-        /* Section Verset */
-        .verse-card {
-            background: #15202b;
-            border: 1px solid #2f3336;
-            border-radius: 16px;
-            padding: 30px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
+  .verse-date {
+    color: #71767b;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
 
-        .verse-text {
-            font-size: 24px;
-            font-style: italic;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
+  .verse-text {
+    font-size: 24px;
+    font-style: italic;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
 
-        .verse-reference {
-            color: #f7d658;
-            font-weight: bold;
-            font-size: 18px;
-        }
+  .verse-reference {
+    color: #f7d658;
+    font-weight: bold;
+    font-size: 18px;
+  }
 
-        .verse-note {
-            color: #71767b;
-            margin-top: 15px;
-            font-size: 14px;
-        }
+  .verse-note {
+    color: #71767b;
+    margin-top: 15px;
+    font-size: 14px;
+  }
 
-        .btn-notify {
-            background: #5364ff;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 9999px;
-            font-weight: bold;
-            margin-top: 20px;
-            cursor: pointer;
-            font-size: 15px;
-        }
+  /* Section Communauté */
+  .composer {
+    background: #15202b;
+    border: 1px solid #2f3336;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
 
-        /* Section Communauté */
-        .composer {
-            background: #15202b;
-            border: 1px solid #2f3336;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
+  .composer-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #e7e9ea;
+    font-size: 20px;
+    resize: none;
+    outline: none;
+    min-height: 80px;
+  }
 
-        .composer-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: #e7e9ea;
-            font-size: 20px;
-            resize: none;
-            outline: none;
-            min-height: 80px;
-        }
+  .composer-input::placeholder {
+    color: #71767b;
+  }
 
-        .composer-input::placeholder {
-            color: #71767b;
-        }
+  .composer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #2f3336;
+  }
 
-        .composer-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid #2f3336;
-        }
+  .composer-tools {
+    display: flex;
+    gap: 12px;
+  }
 
-        .composer-tools {
-            display: flex;
-            gap: 12px;
-        }
+  .tool-btn {
+    background: #f7d658;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
 
-        .tool-btn {
-            background: #f7d658;
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
+  .btn-submit {
+    background: #f7d658;
+    color: #0f1419;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 9999px;
+    font-weight: bold;
+    cursor: pointer;
+  }
 
-        .btn-submit {
-            background: #f7d658;
-            color: #0f1419;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 9999px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+  /* Commentaires */
+  .comment {
+    background: #15202b;
+    border: 1px solid #2f3336;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
 
-        /* Commentaires */
-        .comment {
-            background: #15202b;
-            border: 1px solid #2f3336;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
+  .comment-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
 
-        .comment-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f7d658;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #0f1419;
+  }
 
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #f7d658;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #0f1419;
-        }
+  .comment-meta {
+    flex: 1;
+  }
 
-        .comment-meta {
-            flex: 1;
-        }
+  .comment-author {
+    font-weight: bold;
+    color: #e7e9ea;
+  }
 
-        .comment-author {
-            font-weight: bold;
-            color: #e7e9ea;
-        }
+  .comment-date {
+    color: #71767b;
+    font-size: 14px;
+  }
 
-        .comment-date {
-            color: #71767b;
-            font-size: 14px;
-        }
+  .comment-text {
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
 
-        .comment-text {
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
+  .comment-reactions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
 
-        .comment-reactions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+  .reaction {
+    background: #2f3336;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 14px;
+    cursor: pointer;
+  }
 
-        .reaction {
-            background: #2f3336;
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-size: 14px;
-            cursor: pointer;
-        }
+  .reaction.active {
+    background: #f7d658;
+    color: #0f1419;
+  }
 
-        .reaction.active {
-            background: #f7d658;
-            color: #0f1419;
-        }
+  .btn-edit {
+    background: transparent;
+    border: none;
+    color: #f7d658;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 12px;
+  }
 
-        .btn-edit {
-            background: transparent;
-            border: none;
-            color: #f7d658;
-            cursor: pointer;
-            font-size: 14px;
-            margin-left: 12px;
-        }
+  /* Sidebar droite */
+  .sidebar-right {
+    width: 350px;
+    padding: 20px;
+    position: fixed;
+    right: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
 
-        /* Sidebar droite */
-        .sidebar-right {
-            width: 350px;
-            padding: 20px;
-            position: fixed;
-            right: 0;
-            height: 100vh;
-            overflow-y: auto;
-        }
+  .widget {
+    background: #15202b;
+    border: 1px solid #2f3336;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
 
-        .search-box {
-            background: #202327;
-            border: 1px solid #2f3336;
-            border-radius: 9999px;
-            padding: 12px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+  .widget-title {
+    font-weight: bold;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-        .search-box input {
-            background: transparent;
-            border: none;
-            color: #e7e9ea;
-            outline: none;
-            width: 100%;
-            font-size: 15px;
-        }
+  .widget-content {
+    color: #71767b;
+    font-size: 14px;
+    line-height: 1.6;
+  }
 
-        .widget {
-            background: #15202b;
-            border: 1px solid #2f3336;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
+  .shabbat-time {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    padding: 8px 0;
+    border-bottom: 1px solid #2f3336;
+  }
 
-        .widget-title {
-            font-weight: bold;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+  .shabbat-time:last-child {
+    border-bottom: none;
+  }
 
-        .widget-content {
-            color: #71767b;
-            font-size: 14px;
-            line-height: 1.6;
-        }
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .sidebar-right { display: none; }
+    .main-content { margin-left: 0; }
+  }
 
-        .shabbat-time {
-            display: flex;
-            justify-content: space-between;
-            margin: 8px 0;
-            padding: 8px 0;
-            border-bottom: 1px solid #2f3336;
-        }
-
-        .shabbat-time:last-child {
-            border-bottom: none;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .sidebar-right {
-                display: none;
-            }
-            .main-content {
-                margin-left: 0;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar-left {
-                display: none;
-            }
-            .main-content {
-                margin-left: 0;
-            }
-        }
-    </style>
+  @media (max-width: 768px) {
+    .sidebar-left { display: none; }
+    .main-content { margin-left: 0; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Sidebar gauche -->
-        <div class="sidebar-left">
-            <div class="logo">
-                <span>✦</span>
-                <span>Verset</span>
-            </div>
-            <div class="nav-item active">
-                <span class="nav-icon"></span>
-                <span>Accueil</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">🔍</span>
-                <span>Explorer</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">🔔</span>
-                <span>Notifications</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">👤</span>
-                <span>Profil</span>
-            </div>
-            <button class="btn-publish-sidebar">Publier</button>
-        </div>
-
-        <!-- Contenu principal -->
-        <div class="main-content">
-            <!-- Onglets -->
-            <div class="tabs">
-                <div class="tab active" onclick="switchTab('verse')">Verset</div>
-                <div class="tab" onclick="switchTab('community')">Communauté</div>
-            </div>
-
-            <!-- Panel Verset -->
-            <div id="panel-verse" class="panel active">
-                <div class="verse-card">
-                    <div class="verse-text" id="verse-text">Chargement du verset...</div>
-                    <div class="verse-reference" id="verse-reference"></div>
-                    <div class="verse-note">Un même verset accompagne toute la journée. Reviens demain pour le suivant.</div>
-                    <button class="btn-notify" id="notify-btn">Activer les notifications</button>
-                </div>
-            </div>
-
-            <!-- Panel Communauté -->
-            <div id="panel-community" class="panel">
-                <!-- Composer -->
-                <div class="composer">
-                    <textarea class="composer-input" placeholder="Quoi de neuf ?" id="comment-text"></textarea>
-                    <div class="composer-actions">
-                        <div class="composer-tools">
-                            <button class="tool-btn">😊</button>
-                            <button class="tool-btn"></button>
-                        </div>
-                        <button class="btn-submit" onclick="postComment()">Publier</button>
-                    </div>
-                </div>
-
-                <!-- Liste des commentaires -->
-                <div id="comments-list">
-                    <!-- Les commentaires seront chargés ici -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Sidebar droite -->
-        <div class="sidebar-right">
-            <div class="search-box">
-                <span></span>
-                <input type="text" placeholder="Rechercher">
-            </div>
-
-            <div class="widget">
-                <div class="widget-title">
-                    <span>⏳</span>
-                    <span>Prochain verset</span>
-                </div>
-                <div class="widget-content" id="countdown">--:--:--</div>
-            </div>
-
-            <div class="widget">
-                <div class="widget-title">
-                    <span>🕯️</span>
-                    <span>Horaires de Shabbat</span>
-                </div>
-                <div class="widget-content">
-                    <div class="shabbat-time">
-                        <span>Allumage</span>
-                        <span id="shabbat-start">--:--</span>
-                    </div>
-                    <div class="shabbat-time">
-                        <span>Havdalah</span>
-                        <span id="shabbat-end">--:--</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="widget">
-                <div class="widget-content">
-                    Cet espace est réservé aux échanges autour du verset du jour. Sois bienveillant·e envers les autres membres.
-                </div>
-            </div>
-
-            <div class="widget">
-                <div class="widget-title">
-                    <span>💡</span>
-                    <span>Rappel</span>
-                </div>
-                <div class="widget-content">
-                    Tu peux modifier ton commentaire pendant 5 minutes après l'avoir publié.
-                </div>
-            </div>
-        </div>
+  <div class="container">
+    <!-- Sidebar gauche -->
+    <div class="sidebar-left">
+      <div class="logo">
+        <span>✦</span>
+        <span>Verset</span>
+      </div>
+      <div class="nav-item active">
+        <span class="nav-icon">🏠</span>
+        <span>Accueil</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">🔍</span>
+        <span>Explorer</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">🔔</span>
+        <span>Notifications</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">👤</span>
+        <span>Profil</span>
+      </div>
+      <button class="btn-publish-sidebar">Publier</button>
     </div>
 
-    <script>
-        // Changement d'onglet
-        function switchTab(tab) {
-            // Mettre à jour les onglets
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+    <!-- Contenu principal -->
+    <div class="main-content">
+      <!-- Onglets -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('verse')">Verset</div>
+        <div class="tab" onclick="switchTab('community')">Communauté</div>
+      </div>
 
-            // Mettre à jour les panels
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            document.getElementById(`panel-${tab}`).classList.add('active');
+      <!-- Panel Verset -->
+      <div id="panel-verse" class="panel active">
+        <div class="verse-card">
+          <div class="verse-date" id="verse-date"></div>
+          <div class="verse-text" id="verse-text">Chargement du verset...</div>
+          <div class="verse-reference" id="verse-reference"></div>
+          <div class="verse-note">Un même verset accompagne toute la journée. Reviens demain pour le suivant.</div>
+        </div>
+      </div>
 
-            // Charger les commentaires si on va sur l'onglet Communauté
-            if (tab === 'community') {
-                loadComments();
-            }
-        }
+      <!-- Panel Communauté -->
+      <div id="panel-community" class="panel">
+        <!-- Composer -->
+        <div class="composer">
+          <textarea class="composer-input" placeholder="Quoi de neuf ?" id="comment-text"></textarea>
+          <div class="composer-actions">
+            <div class="composer-tools">
+              <button class="tool-btn">😊</button>
+              <button class="tool-btn">📎</button>
+            </div>
+            <button class="btn-submit" onclick="postComment()">Publier</button>
+          </div>
+        </div>
 
-        // Charger le verset
-        async function loadVerse() {
-            try {
-                const response = await fetch('/api/verset');
-                const data = await response.json();
-                document.getElementById('verse-text').textContent = `"${data.text}"`;
-                document.getElementById('verse-reference').textContent = data.reference;
-            } catch (error) {
-                console.error('Erreur chargement verset:', error);
-            }
-        }
+        <!-- Liste des commentaires -->
+        <div id="comments-list">
+          <!-- Les commentaires seront chargés ici -->
+        </div>
+      </div>
+    </div>
 
-        // Charger les commentaires
-        async function loadComments() {
-            try {
-                const response = await fetch('/api/comments');
-                const comments = await response.json();
-                const container = document.getElementById('comments-list');
-                container.innerHTML = comments.map(comment => `
-                    <div class="comment">
-                        <div class="comment-header">
-                            <div class="avatar">${comment.pseudo.charAt(0).toUpperCase()}</div>
-                            <div class="comment-meta">
-                                <div class="comment-author">${comment.pseudo}</div>
-                                <div class="comment-date">${new Date(comment.created_at).toLocaleString('fr-FR')}</div>
-                            </div>
-                        </div>
-                        <div class="comment-text">${comment.text}</div>
-                        <div class="comment-reactions">
-                            ${Object.entries(comment.reactions || {}).map(([emoji, count]) => `
-                                <span class="reaction">${emoji} ${count}</span>
-                            `).join('')}
-                            <button class="btn-edit">✏️ Modifier</button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Erreur chargement commentaires:', error);
-            }
-        }
+    <!-- Sidebar droite -->
+    <div class="sidebar-right">
+      <div class="widget">
+        <div class="widget-title">
+          <span>⏳</span>
+          <span>Prochain verset</span>
+        </div>
+        <div class="widget-content" id="countdown">--:--:--</div>
+      </div>
 
-        // Poster un commentaire
-        async function postComment() {
-            const text = document.getElementById('comment-text').value;
-            if (!text.trim()) return;
+      <div class="widget">
+        <div class="widget-title">
+          <span>🕯️</span>
+          <span>Horaires de Shabbat</span>
+        </div>
+        <div class="widget-content">
+          <div class="shabbat-time">
+            <span>Allumage</span>
+            <span id="shabbat-start">18:30</span>
+          </div>
+          <div class="shabbat-time">
+            <span>Havdalah</span>
+            <span id="shabbat-end">19:45</span>
+          </div>
+        </div>
+      </div>
 
-            try {
-                await fetch('/api/comments', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        pseudo: 'Utilisateur', // À remplacer par le pseudo réel
-                        text: text
-                    })
-                });
-                document.getElementById('comment-text').value = '';
-                loadComments();
-            } catch (error) {
-                console.error('Erreur publication:', error);
-            }
-        }
+      <div class="widget">
+        <div class="widget-content">
+          Cet espace est réservé aux échanges autour du verset du jour. Sois bienveillant·e envers les autres membres.
+        </div>
+      </div>
 
-        // Compte à rebours
-        function updateCountdown() {
-            const now = new Date();
-            const tomorrow = new Date(now);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(0, 0, 0, 0);
-            
-            const diff = tomorrow - now;
-            const hours = Math.floor(diff / 3600000);
-            const minutes = Math.floor((diff % 3600000) / 60000);
-            const seconds = Math.floor((diff % 60000) / 1000);
-            
-            document.getElementById('countdown').textContent = 
-                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
+      <div class="widget">
+        <div class="widget-title">
+          <span>💡</span>
+          <span>Rappel</span>
+        </div>
+        <div class="widget-content">
+          Tu peux modifier ton commentaire pendant 5 minutes après l'avoir publié.
+        </div>
+      </div>
+    </div>
+  </div>
 
-        // Charger les horaires de Shabbat (exemple statique)
-        function loadShabbatTimes() {
-            // Ces horaires devraient venir d'une API
-            document.getElementById('shabbat-start').textContent = '18:30';
-            document.getElementById('shabbat-end').textContent = '19:45';
-        }
+  <script>
+    // Changement d'onglet
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
 
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', () => {
-            loadVerse();
-            loadShabbatTimes();
-            setInterval(updateCountdown, 1000);
-            updateCountdown();
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById(`panel-${tab}`).classList.add('active');
+
+      if (tab === 'community') {
+        loadComments();
+      }
+    }
+
+    // Afficher la date du jour
+    function displayTodayDate() {
+      const today = new Date();
+      const options = { day: 'numeric', month: 'long', year: 'numeric' };
+      document.getElementById('verse-date').textContent = today.toLocaleDateString('fr-FR', options);
+    }
+
+    // Charger le verset
+    async function loadVerse() {
+      try {
+        const response = await fetch('/api/verset');
+        const data = await response.json();
+        document.getElementById('verse-text').textContent = `"${data.text}"`;
+        document.getElementById('verse-reference').textContent = data.reference;
+      } catch (error) {
+        console.error('Erreur chargement verset:', error);
+      }
+    }
+
+    // Charger les commentaires
+    async function loadComments() {
+      try {
+        const response = await fetch('/api/comments');
+        const comments = await response.json();
+        const container = document.getElementById('comments-list');
+        container.innerHTML = comments.map(comment => `
+          <div class="comment">
+            <div class="comment-header">
+              <div class="avatar">${comment.pseudo.charAt(0).toUpperCase()}</div>
+              <div class="comment-meta">
+                <div class="comment-author">${comment.pseudo}</div>
+                <div class="comment-date">${new Date(comment.created_at).toLocaleString('fr-FR')}</div>
+              </div>
+            </div>
+            <div class="comment-text">${comment.text}</div>
+            <div class="comment-reactions">
+              ${Object.entries(comment.reactions || {}).map(([emoji, count]) => `
+                <span class="reaction">${emoji} ${count}</span>
+              `).join('')}
+              <button class="btn-edit">✏️ Modifier</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Erreur chargement commentaires:', error);
+      }
+    }
+
+    // Poster un commentaire
+    async function postComment() {
+      const text = document.getElementById('comment-text').value;
+      if (!text.trim()) return;
+
+      try {
+        await fetch('/api/comments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pseudo: 'Utilisateur',
+            text: text
+          })
         });
-    </script>
+        document.getElementById('comment-text').value = '';
+        loadComments();
+      } catch (error) {
+        console.error('Erreur publication:', error);
+      }
+    }
+
+    // Compte à rebours
+    function updateCountdown() {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      
+      const diff = tomorrow - now;
+      const hours = Math.floor(diff / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      
+      document.getElementById('countdown').textContent = 
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', () => {
+      displayTodayDate();
+      loadVerse();
+      setInterval(updateCountdown, 1000);
+      updateCountdown();
+    });
+  </script>
 </body>
 </html>
