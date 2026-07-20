@@ -2,7 +2,6 @@ import json
 import os
 import secrets
 from datetime import datetime
-
 import psycopg2
 
 # Chaîne de connexion PostgreSQL, surchargeable via la variable
@@ -12,6 +11,7 @@ DB_FILE = os.environ.get(
     os.environ.get("DB_FILE", "postgresql://postgres:postgres@localhost:5432/verset_du_jour"),
 )
 
+# Liste des versets bibliques
 VERSES = [
     {"reference": "Jean 3:16", "text": "Car Dieu a tant aimé le monde qu'il a donné son Fils unique, afin que quiconque croit en lui ne périsse point, mais qu'il ait la vie éternelle."},
     {"reference": "Philippiens 4:13", "text": "Je puis tout par celui qui me fortifie."},
@@ -41,11 +41,12 @@ VERSES = [
 
 
 def get_connection(db_path: str) -> "psycopg2.extensions.connection":
+    """Établit une connexion à la base de données PostgreSQL."""
     return psycopg2.connect(db_path)
 
 
 def _column_exists(cur, table: str, column: str) -> bool:
-    """Vérifie si une colonne existe déjà."""
+    """Vérifie si une colonne existe déjà dans une table."""
     cur.execute(
         """
         SELECT 1 FROM information_schema.columns
@@ -61,6 +62,8 @@ def init_db(db_path: str) -> None:
     conn = get_connection(db_path)
     try:
         cur = conn.cursor()
+        
+        # Table des versets
         cur.execute("""
             CREATE TABLE IF NOT EXISTS verses (
                 id SERIAL PRIMARY KEY,
@@ -68,6 +71,8 @@ def init_db(db_path: str) -> None:
                 text TEXT NOT NULL
             )
         """)
+        
+        # Table d'historique
         cur.execute("""
             CREATE TABLE IF NOT EXISTS history (
                 id SERIAL PRIMARY KEY,
@@ -75,6 +80,8 @@ def init_db(db_path: str) -> None:
                 shown_at TEXT NOT NULL
             )
         """)
+        
+        # Table de journal
         cur.execute("""
             CREATE TABLE IF NOT EXISTS journal (
                 id SERIAL PRIMARY KEY,
@@ -82,6 +89,8 @@ def init_db(db_path: str) -> None:
                 logged_at TEXT NOT NULL
             )
         """)
+        
+        # Table des abonnements aux notifications
         cur.execute("""
             CREATE TABLE IF NOT EXISTS subscriptions (
                 id SERIAL PRIMARY KEY,
@@ -90,6 +99,8 @@ def init_db(db_path: str) -> None:
                 created_at TEXT NOT NULL
             )
         """)
+        
+        # Table des commentaires
         cur.execute("""
             CREATE TABLE IF NOT EXISTS comments (
                 id SERIAL PRIMARY KEY,
@@ -101,6 +112,8 @@ def init_db(db_path: str) -> None:
                 edited_at TEXT
             )
         """)
+        
+        # Ajout des colonnes si elles n'existent pas
         if not _column_exists(cur, "comments", "edit_token"):
             cur.execute("ALTER TABLE comments ADD COLUMN edit_token TEXT")
         if not _column_exists(cur, "comments", "edited_at"):
@@ -109,6 +122,8 @@ def init_db(db_path: str) -> None:
             cur.execute("ALTER TABLE comments ADD COLUMN image_url TEXT")
         if not _column_exists(cur, "comments", "media_type"):
             cur.execute("ALTER TABLE comments ADD COLUMN media_type TEXT")
+        
+        # Table des réactions
         cur.execute("""
             CREATE TABLE IF NOT EXISTS reactions (
                 id SERIAL PRIMARY KEY,
@@ -118,6 +133,8 @@ def init_db(db_path: str) -> None:
                 UNIQUE(comment_id, emoji)
             )
         """)
+        
+        # Import des versets si la table est vide
         cur.execute("SELECT COUNT(*) FROM verses")
         already_seeded = cur.fetchone()[0]
         if already_seeded == 0:
@@ -125,6 +142,7 @@ def init_db(db_path: str) -> None:
                 "INSERT INTO verses (reference, text) VALUES (%s, %s)",
                 [(v["reference"], v["text"]) for v in VERSES],
             )
+        
         conn.commit()
     finally:
         conn.close()
@@ -154,6 +172,7 @@ def save_subscription(subscription: dict, db_path: str = DB_FILE) -> None:
 
 
 def list_subscriptions(db_path: str = DB_FILE) -> list[dict]:
+    """Renvoie tous les abonnements aux notifications."""
     conn = get_connection(db_path)
     try:
         cur = conn.cursor()
@@ -165,6 +184,7 @@ def list_subscriptions(db_path: str = DB_FILE) -> list[dict]:
 
 
 def remove_subscriptions(endpoints: list[str], db_path: str = DB_FILE) -> None:
+    """Supprime les abonnements aux notifications pour les endpoints donnés."""
     if not endpoints:
         return
     conn = get_connection(db_path)
@@ -176,6 +196,7 @@ def remove_subscriptions(endpoints: list[str], db_path: str = DB_FILE) -> None:
         conn.close()
 
 
+# Constantes pour les commentaires
 ALLOWED_REACTIONS = ["❤️", "🙏", "", "🙌"]
 MAX_PSEUDO_LENGTH = 30
 MAX_COMMENT_LENGTH = 500
@@ -193,6 +214,7 @@ def add_comment(
     """Ajoute un commentaire (ou une réponse si parent_id est fourni)."""
     pseudo = pseudo.strip()
     text = text.strip()
+    
     if not pseudo:
         raise ValueError("Le pseudo est requis.")
     if not text:
@@ -201,23 +223,30 @@ def add_comment(
         raise ValueError(f"Le pseudo est limité à {MAX_PSEUDO_LENGTH} caractères.")
     if len(text) > MAX_COMMENT_LENGTH:
         raise ValueError(f"Le commentaire est limité à {MAX_COMMENT_LENGTH} caractères.")
+    
     conn = get_connection(db_path)
     try:
         cur = conn.cursor()
+        
+        # Vérifie que le commentaire parent existe si c'est une réponse
         if parent_id is not None:
             cur.execute("SELECT id FROM comments WHERE id = %s", (parent_id,))
             if cur.fetchone() is None:
                 raise ValueError("Le commentaire auquel tu réponds n'existe plus.")
+        
         created_at = datetime.now().isoformat(timespec="seconds")
         edit_token = secrets.token_hex(16)
+        
         cur.execute("""
             INSERT INTO comments
-                (pseudo, text, parent_id, created_at, edit_token, image_url, media_type)
+            (pseudo, text, parent_id, created_at, edit_token, image_url, media_type)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             RETURNING id
         """, (pseudo, text, parent_id, created_at, edit_token, image_url, media_type))
+        
         new_id = cur.fetchone()[0]
         conn.commit()
+        
         return {
             "id": new_id,
             "pseudo": pseudo,
@@ -238,26 +267,34 @@ def add_comment(
 def edit_comment(comment_id: int, edit_token: str, text: str, db_path: str = DB_FILE) -> dict:
     """Modifie le texte d'un commentaire si le edit_token correspond."""
     text = text.strip()
+    
     if not text:
         raise ValueError("Le commentaire ne peut pas être vide.")
     if len(text) > MAX_COMMENT_LENGTH:
         raise ValueError(f"Le commentaire est limité à {MAX_COMMENT_LENGTH} caractères.")
+    
     conn = get_connection(db_path)
     try:
         cur = conn.cursor()
         cur.execute("SELECT edit_token, created_at FROM comments WHERE id = %s", (comment_id,))
         row = cur.fetchone()
+        
         if row is None:
             raise ValueError("Ce commentaire n'existe plus.")
+        
         stored_token, created_at = row
+        
         if not stored_token or not edit_token or stored_token != edit_token:
             raise ValueError("Tu ne peux modifier que tes propres commentaires.")
+        
         elapsed = (datetime.now() - datetime.fromisoformat(created_at)).total_seconds()
         if elapsed > EDIT_WINDOW_SECONDS:
             raise ValueError("Le délai de modification (5 minutes) est dépassé.")
+        
         edited_at = datetime.now().isoformat(timespec="seconds")
         cur.execute("UPDATE comments SET text = %s, edited_at = %s WHERE id = %s", (text, edited_at, comment_id))
         conn.commit()
+        
         return {"id": comment_id, "text": text, "edited_at": edited_at}
     finally:
         conn.close()
@@ -267,17 +304,22 @@ def add_reaction(comment_id: int, emoji: str, db_path: str = DB_FILE) -> dict[st
     """Incrémente le compteur d'une réaction (emoji) sur un commentaire."""
     if emoji not in ALLOWED_REACTIONS:
         raise ValueError("Cette réaction n'est pas autorisée.")
+    
     conn = get_connection(db_path)
     try:
         cur = conn.cursor()
+        
         cur.execute("SELECT id FROM comments WHERE id = %s", (comment_id,))
         if cur.fetchone() is None:
             raise ValueError("Ce commentaire n'existe plus.")
+        
         cur.execute("""
             INSERT INTO reactions (comment_id, emoji, count) VALUES (%s, %s, 1)
             ON CONFLICT (comment_id, emoji) DO UPDATE SET count = reactions.count + 1
         """, (comment_id, emoji))
+        
         conn.commit()
+        
         cur.execute("SELECT emoji, count FROM reactions WHERE comment_id = %s", (comment_id,))
         rows = cur.fetchall()
         return {row[0]: row[1] for row in rows}
@@ -289,15 +331,20 @@ def remove_reaction(comment_id: int, emoji: str, db_path: str = DB_FILE) -> dict
     """Décrémente le compteur d'une réaction (emoji) sur un commentaire."""
     if emoji not in ALLOWED_REACTIONS:
         raise ValueError("Cette réaction n'est pas autorisée.")
+    
     conn = get_connection(db_path)
     try:
         cur = conn.cursor()
+        
         cur.execute("SELECT id FROM comments WHERE id = %s", (comment_id,))
         if cur.fetchone() is None:
             raise ValueError("Ce commentaire n'existe plus.")
+        
         cur.execute("UPDATE reactions SET count = GREATEST(count - 1, 0) WHERE comment_id = %s AND emoji = %s", (comment_id, emoji))
         cur.execute("DELETE FROM reactions WHERE comment_id = %s AND emoji = %s AND count <= 0", (comment_id, emoji))
+        
         conn.commit()
+        
         cur.execute("SELECT emoji, count FROM reactions WHERE comment_id = %s", (comment_id,))
         rows = cur.fetchall()
         return {row[0]: row[1] for row in rows}
@@ -315,10 +362,12 @@ def delete_comment(comment_id: int, edit_token: str, db_path: str = DB_FILE) -> 
         cur = conn.cursor()
         cur.execute("SELECT edit_token FROM comments WHERE id = %s", (comment_id,))
         row = cur.fetchone()
+        
         if row is None:
             return False  # Commentaire introuvable
         
         stored_token = row[0]
+        
         # Si le commentaire a un token, on vérifie qu'il correspond
         if stored_token is not None and stored_token != edit_token:
             return False  # Token invalide
@@ -339,13 +388,21 @@ def list_comments(db_path: str = DB_FILE) -> list[dict]:
     conn = get_connection(db_path)
     try:
         cur = conn.cursor()
+        
+        # Récupère tous les commentaires
         cur.execute("SELECT id, pseudo, text, parent_id, created_at, edited_at, image_url, media_type FROM comments")
         comment_rows = cur.fetchall()
+        
+        # Récupère toutes les réactions
         cur.execute("SELECT comment_id, emoji, count FROM reactions")
         reaction_rows = cur.fetchall()
+        
+        # Organise les réactions par commentaire
         reactions_by_comment: dict[int, dict[str, int]] = {}
         for comment_id, emoji, count in reaction_rows:
             reactions_by_comment.setdefault(comment_id, {})[emoji] = count
+        
+        # Construit le dictionnaire des commentaires
         by_id: dict[int, dict] = {}
         for comment_id, pseudo, text, parent_id, created_at, edited_at, image_url, media_type in comment_rows:
             by_id[comment_id] = {
@@ -360,15 +417,22 @@ def list_comments(db_path: str = DB_FILE) -> list[dict]:
                 "reactions": reactions_by_comment.get(comment_id, {}),
                 "replies": [],
             }
+        
+        # Sépare les commentaires principaux des réponses
         top_level: list[dict] = []
         for comment in by_id.values():
             if comment["parent_id"] is not None and comment["parent_id"] in by_id:
                 by_id[comment["parent_id"]]["replies"].append(comment)
             else:
                 top_level.append(comment)
+        
+        # Trie les commentaires principaux par date (plus récents en premier)
         top_level.sort(key=lambda c: c["created_at"], reverse=True)
+        
+        # Trie les réponses par date (plus anciennes en premier)
         for comment in by_id.values():
             comment["replies"].sort(key=lambda c: c["created_at"])
+        
         return top_level
     finally:
         conn.close()
