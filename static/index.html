@@ -6,79 +6,381 @@
     <title>Verset du jour</title>
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-light: #eef2ff;
-            --primary-hover: #e0e7ff;
-            --bg: #f9fafb;
-            --text: #1f2937;
-            --text-muted: #6b7280;
-            --border: #e5e7eb;
-            --danger: #ef4444;
-            --success: #10b981;
+            --primary: #5b5ee1;
+            --primary-dark: #4a4ec9;
+            --bg: #f8f9fc;
+            --text: #2d3748;
+            --text-muted: #718096;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --success: #48bb78;
+            --danger: #f56565;
         }
-        * { box-sizing: border-box; }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            margin: 0;
-            padding: 0;
-            line-height: 1.5;
+            line-height: 1.6;
         }
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-
-        /* ===== HEADER ===== */
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 20px;
+            padding: 20px 0;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 12px;
+            margin-bottom: 30px;
         }
-        header h1 { margin: 0; font-size: 1.5em; }
-        nav { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        
+        nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
         nav a, nav button {
             background: none;
             border: none;
-            color: var(--text);
-            cursor: pointer;
-            font-size: 1em;
-            padding: 6px 10px;
-            border-radius: 6px;
+            color: var(--text-muted);
             text-decoration: none;
-            transition: background-color 0.2s;
+            font-size: 0.95rem;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
         }
-        nav a:hover, nav button:hover { background-color: var(--primary-light); }
-        .notif-badge {
-            background: var(--danger);
-            color: white;
-            font-size: 0.7em;
-            padding: 2px 6px;
-            border-radius: 10px;
-            margin-left: 4px;
+        
+        nav a:hover, nav button:hover {
+            background-color: var(--bg);
+            color: var(--primary);
         }
-
-        /* ===== VERSE CARD ===== */
+        
+        /* Verse Card */
         .verse-card {
-            background: white;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 24px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            margin-bottom: 30px;
             text-align: center;
         }
+        
         .verse-text {
-            font-size: 1.25em;
+            font-size: 1.3rem;
             font-style: italic;
-            margin-bottom: 12px;
-            color: #374151;
+            color: var(--text);
+            margin-bottom: 16px;
+            line-height: 1.6;
         }
-        .verse-ref { font-weight: 600; color: var(--primary); }
-
-        /* ===== PROFILE MODAL ===== */
+        
+        .verse-ref {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .verse-info {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        /* Section titles */
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-info {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        
+        /* Comment form */
+        .comment-form {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 24px;
+        }
+        
+        .reply-indicator {
+            background: var(--bg);
+            padding: 10px 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+        
+        .reply-indicator.active {
+            display: flex;
+        }
+        
+        .reply-indicator button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0 4px;
+        }
+        
+        .reply-indicator button:hover {
+            color: var(--danger);
+        }
+        
+        .comment-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.2s;
+        }
+        
+        .comment-form textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+        }
+        
+        .form-hint {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        /* Search */
+        .search-box {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            transition: border-color 0.2s;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        /* Comments */
+        .comment-item {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 16px;
+            transition: opacity 0.2s ease;
+        }
+        
+        .comment-item.hidden {
+            display: none !important;
+        }
+        
+        .comment-item.reply {
+            margin-left: 48px;
+            border-left: 3px solid var(--border);
+            padding-left: 16px;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .comment-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .comment-body {
+            color: var(--text);
+            line-height: 1.6;
+            margin-bottom: 12px;
+            word-wrap: break-word;
+        }
+        
+        /* Mentions */
+        .mention {
+            color: var(--primary);
+            font-weight: 600;
+            background-color: rgba(91, 94, 225, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mention:hover {
+            background-color: rgba(91, 94, 225, 0.2);
+        }
+        
+        /* Media */
+        .media-container {
+            margin: 12px 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .auto-play-media {
+            width: 100%;
+            max-width: 400px;
+            height: 225px;
+            border: none;
+            border-radius: 8px;
+            display: block;
+        }
+        
+        .comment-image {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background-color: var(--bg);
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .social-link:hover {
+            background-color: var(--border);
+        }
+        
+        /* Reactions */
+        .reactions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        
+        .reaction-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .reaction-btn:hover {
+            border-color: var(--primary);
+        }
+        
+        .reaction-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Comment actions */
+        .comment-actions {
+            display: flex;
+            gap: 12px;
+            font-size: 0.85rem;
+        }
+        
+        .comment-actions button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .comment-actions button:hover {
+            background-color: var(--bg);
+            color: var(--primary);
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+        
+        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -88,209 +390,52 @@
             align-items: center;
             justify-content: center;
         }
-        .modal-overlay.active { display: flex; }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
         .modal {
-            background: white;
-            padding: 24px;
-            border-radius: 12px;
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
             max-width: 400px;
             width: 90%;
         }
-        .modal h3 { margin-top: 0; }
+        
+        .modal h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
         .modal input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            margin-bottom: 12px;
-            font-size: 1em;
-        }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-
-        /* ===== COMMENT FORM ===== */
-        .comment-form {
-            background: white;
-            padding: 16px;
+            padding: 12px;
+            border: 2px solid var(--border);
             border-radius: 8px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
         }
-        .comment-form input,
-        .comment-form textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-family: inherit;
-            font-size: 1em;
+        
+        .modal input:focus {
+            outline: none;
+            border-color: var(--primary);
         }
-        .reply-indicator {
-            background: var(--primary-light);
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-size: 0.9em;
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .reply-indicator.active { display: flex; }
-        .reply-indicator button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--danger);
-            font-size: 1.2em;
-        }
-
-        /* ===== SEARCH ===== */
-        .search-box {
-            width: 100%;
-            padding: 10px 16px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 1em;
-            margin-bottom: 16px;
-        }
-
-        /* ===== COMMENTS ===== */
-        .comment-item {
-            background: white;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-        /* ⭐ IMPORTANT : Masquage CSS pour ne PAS détruire l'iframe vidéo */
-        .comment-item.hidden { display: none !important; }
-        .comment-item.reply {
-            margin-left: 30px;
-            border-left: 3px solid var(--primary-light);
-        }
-        .comment-header {
+        
+        .modal-actions {
             display: flex;
-            justify-content: space-between;
-            font-size: 0.9em;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-            gap: 8px;
+            gap: 12px;
+            justify-content: flex-end;
         }
-        .comment-header strong { color: var(--text); }
-        .comment-body { word-wrap: break-word; margin-bottom: 10px; }
-        .comment-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-            font-size: 0.85em;
-        }
-        .comment-actions button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 4px;
-            color: var(--text-muted);
-            transition: background-color 0.2s;
-        }
-        .comment-actions button:hover { background-color: var(--primary-light); color: var(--primary); }
-
-        /* ===== REACTIONS ===== */
-        .reactions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-        .reaction-btn {
-            background: var(--primary-light);
-            border: 1px solid transparent;
-            padding: 4px 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
-        }
-        .reaction-btn:hover { border-color: var(--primary); }
-        .reaction-btn.active { background: var(--primary); color: white; }
-
-        /* ===== MENTIONS @pseudo ===== */
-        .mention {
-            color: var(--primary);
-            font-weight: 600;
-            background-color: var(--primary-light);
-            padding: 2px 6px;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            display: inline-block;
-        }
-        .mention:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
-
-        /* ===== MEDIA & SOCIAL LINKS ===== */
-        .media-container {
-            margin: 12px 0;
-            border-radius: 8px;
-            overflow: hidden;
-            max-width: 100%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .auto-play-media {
-            width: 100%;
-            max-width: 400px;
-            height: 225px;
-            border: none;
-            border-radius: 8px;
-            display: block;
-            background: #000;
-        }
-        .comment-image {
-            max-width: 100%;
-            border-radius: 8px;
-            margin: 8px 0;
-        }
-        .comment-video {
-            max-width: 100%;
-            border-radius: 8px;
-            margin: 8px 0;
-        }
-        .social-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 8px;
-            padding: 8px 12px;
-            background-color: #f3f4f6;
-            border-radius: 6px;
-            text-decoration: none;
-            color: var(--text);
-            font-size: 0.9em;
-            font-weight: 500;
-            transition: background-color 0.2s;
-        }
-        .social-link:hover { background-color: #e5e7eb; }
-
-        /* ===== BUTTONS ===== */
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 1em;
-            transition: opacity 0.2s;
-        }
-        .btn:hover { opacity: 0.9; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
         .btn-secondary {
-            background-color: var(--border);
+            background-color: var(--bg);
             color: var(--text);
         }
-        .btn-danger { background-color: var(--danger); }
-
-        .empty-state { text-align: center; color: var(--text-muted); padding: 20px; }
-        .info-text { font-size: 0.8em; color: var(--text-muted); margin-top: 8px; }
+        
+        .btn-secondary:hover {
+            background-color: var(--border);
+        }
     </style>
 </head>
 <body>
@@ -299,26 +444,21 @@
             <h1>✦ Verset du jour</h1>
             <nav>
                 <a href="/">🏠 Accueil</a>
-                <button id="notif-btn">🔔 Notifications <span class="notif-badge" id="notif-count" style="display:none;">0</span></button>
+                <button id="notif-btn"> Notifications</button>
                 <button id="profile-btn">👤 Profil</button>
             </nav>
         </header>
 
-        <!-- VERSE -->
         <section class="verse-card">
             <div id="verse-text" class="verse-text">Le verset se prépare…</div>
             <div id="verse-ref" class="verse-ref"></div>
-            <p style="font-size: 0.9em; color: var(--text-muted); margin-top: 16px;">
-                Un même verset accompagne toute la journée. Reviens demain pour le suivant.
-            </p>
-            <button class="btn" id="subscribe-btn" style="margin-top: 12px;">Activer les notifications</button>
+            <p class="verse-info">Un même verset accompagne toute la journée. Reviens demain pour le suivant.</p>
+            <button class="btn" id="subscribe-btn">Activer les notifications</button>
         </section>
 
-        <!-- PROFILE MODAL -->
         <div class="modal-overlay" id="profile-modal">
             <div class="modal">
                 <h3>👤 Ton profil</h3>
-                <label>Pseudo</label>
                 <input type="text" id="profile-pseudo" maxlength="30" placeholder="Ton pseudo">
                 <div class="modal-actions">
                     <button class="btn btn-secondary" id="profile-cancel">Annuler</button>
@@ -327,26 +467,23 @@
             </div>
         </div>
 
-        <!-- COMMENTS SECTION -->
         <section>
             <h2>💬 Communauté</h2>
-            <p class="info-text">
-                Cet espace est réservé aux échanges autour du verset du jour. Sois bienveillant·e envers les autres membres.
-            </p>
+            <p class="section-info">Cet espace est réservé aux échanges autour du verset du jour. Sois bienveillant·e envers les autres membres.</p>
 
             <div class="comment-form">
                 <div class="reply-indicator" id="reply-indicator">
                     <span>↩️ Réponse à <strong id="reply-to-name"></strong></span>
                     <button id="cancel-reply" title="Annuler">×</button>
                 </div>
-                <textarea id="comment-input" rows="3" placeholder="Partage ta réflexion, un lien YouTube, ou mentionne quelqu'un avec @pseudo..." maxlength="500"></textarea>
-                <button class="btn" id="publish-btn">Publier</button>
-                <p class="info-text">
-                    💡 Astuce : utilise <strong>@pseudo</strong> pour mentionner quelqu'un. Tu peux modifier ton commentaire pendant 5 minutes.
-                </p>
+                <textarea id="comment-input" placeholder="Partage ta réflexion, un lien YouTube, ou mentionne quelqu'un avec @pseudo..."></textarea>
+                <div class="form-actions">
+                    <button class="btn" id="publish-btn">Publier</button>
+                    <span class="form-hint">💡 Astuce : utilise @pseudo pour mentionner quelqu'un. Tu peux modifier ton commentaire pendant 5 minutes.</span>
+                </div>
             </div>
 
-            <input type="text" id="search-input" class="search-box" placeholder="🔍 Rechercher dans les commentaires...">
+            <input type="text" id="search-input" class="search-box" placeholder=" Rechercher dans les commentaires...">
 
             <div id="comments-container">
                 <div class="empty-state">Chargement des commentaires...</div>
@@ -356,7 +493,7 @@
 
     <script>
         // ==========================================
-        // 1. CONFIG & SÉCURITÉ
+        // 1. CONFIGURATION & SÉCURITÉ
         // ==========================================
         const ALLOWED_LINK_TYPES = {
             "youtube.com": "youtube", "youtu.be": "youtube", "y.be": "youtube",
@@ -372,7 +509,7 @@
         }
 
         // ==========================================
-        // 2. STOCKAGE LOCAL (profil + tokens)
+        // 2. STOCKAGE LOCAL
         // ==========================================
         const storage = {
             getProfile() {
@@ -409,7 +546,7 @@
         };
 
         // ==========================================
-        // 3. CONVERSION URL → EMBED / LIEN SOCIAL
+        // 3. CONVERSION URL → EMBED
         // ==========================================
         function parseUrlToEmbed(url) {
             const cleanUrl = url.replace(/[.,)]+$/, '');
@@ -417,7 +554,7 @@
                 const parsedUrl = new URL(cleanUrl);
                 const hostname = parsedUrl.hostname.replace('www.', '');
 
-                // YouTube & Shorts (auto-play + mute obligatoire)
+                // YouTube & Shorts
                 if (hostname.includes('youtube.com') || hostname === 'youtu.be' || hostname === 'y.be') {
                     let videoId = '';
                     if (hostname === 'youtu.be' || hostname === 'y.be') {
@@ -427,6 +564,7 @@
                     } else {
                         videoId = parsedUrl.searchParams.get('v') || '';
                     }
+                    
                     if (videoId && videoId.length === 11) {
                         return `<div class="media-container">
                             <iframe class="auto-play-media"
@@ -437,7 +575,7 @@
                     }
                 }
 
-                // Autres plateformes sociales
+                // Autres plateformes
                 const platform = Object.entries(ALLOWED_LINK_TYPES).find(([d]) => hostname.includes(d))?.[1] || 'site';
                 return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" class="social-link">🔗 Voir sur ${platform}</a>`;
             } catch (e) {
@@ -457,7 +595,7 @@
         }
 
         // ==========================================
-        // 5. FORMATAGE GLOBAL DU TEXTE
+        // 5. FORMATAGE DU TEXTE
         // ==========================================
         function formatCommentText(text) {
             let safeText = escapeHtml(text);
@@ -490,9 +628,9 @@
 
                 const myToken = storage.getToken(comment.id);
                 const canEdit = myToken && !comment.edited_at;
-                const editedBadge = comment.edited_at ? ' <span style="font-size:0.8em; color:#9ca3af;">(modifié)</span>' : '';
+                const editedBadge = comment.edited_at ? ' <span style="font-size:0.8em; color:var(--text-muted);">(modifié)</span>' : '';
 
-                // Média joint
+                // Média
                 let mediaHtml = '';
                 if (comment.image_url && comment.media_type === 'image') {
                     mediaHtml = `<img src="${comment.image_url}" class="comment-image" alt="Image jointe">`;
@@ -504,10 +642,10 @@
                 const reactionsHtml = ALLOWED_REACTIONS.map(emoji => {
                     const count = comment.reactions?.[emoji] || 0;
                     const active = storage.hasReacted(comment.id, emoji) ? 'active' : '';
-                    return `<button class="reaction-btn ${active}" data-comment-id="${comment.id}" data-emoji="${emoji}">${emoji} ${count > 0 ? count : ''}</button>`;
+                    return `<button class="reaction-btn ${active}" data-comment-id="${comment.id}" data-emoji="${emoji}">${emoji}${count > 0 ? ' ' + count : ''}</button>`;
                 }).join('');
 
-                // Actions (modifier/supprimer/répondre)
+                // Actions
                 let actionsHtml = `<button class="reply-to-btn" data-id="${comment.id}" data-pseudo="${escapeHtml(comment.pseudo)}">↩️ Répondre</button>`;
                 if (canEdit) {
                     actionsHtml += `<button class="edit-btn" data-id="${comment.id}">✏️ Modifier</button>`;
@@ -516,8 +654,8 @@
 
                 div.innerHTML = `
                     <div class="comment-header">
-                        <strong>${escapeHtml(comment.pseudo)}</strong>
-                        <span>${new Date(comment.created_at).toLocaleString()}${editedBadge}</span>
+                        <span class="comment-author">${escapeHtml(comment.pseudo)}${editedBadge}</span>
+                        <span class="comment-date">${new Date(comment.created_at).toLocaleString()}</span>
                     </div>
                     <div class="comment-body">${formatCommentText(comment.text)}</div>
                     ${mediaHtml}
@@ -526,7 +664,6 @@
                 `;
                 container.appendChild(div);
 
-                // Rendu récursif des réponses
                 if (comment.replies && comment.replies.length > 0) {
                     renderComments(comment.replies, true);
                 }
@@ -534,7 +671,7 @@
         }
 
         // ==========================================
-        // 7. RECHERCHE NON-BLOQUANTE (préserve l'iframe)
+        // 7. RECHERCHE NON-BLOQUANTE
         // ==========================================
         let searchTimeout;
         function handleSearch(searchTerm) {
@@ -548,18 +685,18 @@
                         if (term === '' || text.includes(term)) {
                             comment.classList.remove('hidden');
                         } else {
-                            comment.classList.add('hidden'); // ⭐ L'iframe reste dans le DOM, la vidéo continue !
+                            comment.classList.add('hidden');
                         }
                     });
                 });
-            }, 150); // Debounce 150ms
+            }, 150);
         }
 
         // ==========================================
-        // 8. ÉVÉNEMENTS DÉLÉGUÉS (clics sur commentaires)
+        // 8. ÉVÉNEMENTS
         // ==========================================
         document.addEventListener('click', async (e) => {
-            // Mention @pseudo
+            // Mention
             const mention = e.target.closest('.mention');
             if (mention) {
                 e.preventDefault();
@@ -570,8 +707,6 @@
                     input.value = current ? `@${pseudo} ${current}` : `@${pseudo} `;
                 }
                 input.focus();
-                input.style.backgroundColor = '#f0fdf4';
-                setTimeout(() => input.style.backgroundColor = '', 300);
                 return;
             }
 
@@ -591,8 +726,7 @@
                     if (res.ok) {
                         const { reactions } = await res.json();
                         storage.toggleReaction(commentId, emoji);
-                        // Mise à jour visuelle sans re-rendu complet
-                        const comment = allComments.flat().find(c => c.id == commentId) || findCommentById(allComments, commentId);
+                        const comment = findCommentById(allComments, commentId);
                         if (comment) {
                             comment.reactions = reactions;
                             renderComments(allComments);
@@ -664,7 +798,7 @@
         }
 
         // ==========================================
-        // 9. RÉPONSE (reply-to)
+        // 9. RÉPONSE
         // ==========================================
         let currentReplyTo = null;
         function setReplyTo(id, pseudo) {
@@ -684,7 +818,7 @@
         // ==========================================
         async function publishComment() {
             const profile = storage.getProfile();
-            const pseudo = profile.pseudo || document.getElementById('comment-input').dataset.tempPseudo;
+            const pseudo = profile.pseudo;
             const text = document.getElementById('comment-input').value.trim();
 
             if (!pseudo) {
@@ -744,7 +878,7 @@
         });
 
         // ==========================================
-        // 12. NOTIFICATIONS PUSH
+        // 12. NOTIFICATIONS
         // ==========================================
         document.getElementById('subscribe-btn').addEventListener('click', async () => {
             if (!('Notification' in window)) { alert('Notifications non supportées.'); return; }
