@@ -1912,10 +1912,13 @@
       html += `<button class="reply-toggle" data-id="${c.id}">\u{1F4AC}${replyCount ? ` <span class="reaction-count">${replyCount}</span>` : ''}</button>`;
     }
     html += `<div class="reactions-row">${reactionsHtml(c)}</div>`;
+    
+    // === MODIFICATION 1 : Ajout du bouton Supprimer ===
     if (canStillEdit(c)) {
-      html += `<button class="edit-toggle" data-id="${c.id}">\u270f\ufe0f Modifier</button>`;
-      html += `<button class="delete-toggle" data-id="${c.id}">\ud83d\uddd1\ufe0f Supprimer</button>`;
+      html += `<button class="edit-toggle" data-id="${c.id}">✏️ Modifier</button>`;
+      html += `<button class="delete-toggle" data-id="${c.id}">🗑️ Supprimer</button>`;
     }
+    
     html += `</div>`;
     html += `<form class="edit-form comment-form" id="edit-form-${c.id}" data-id="${c.id}">
         <textarea class="edit-message" maxlength="500" required>${escapeHtml(c.text)}</textarea>
@@ -2009,14 +2012,13 @@
       });
     });
 
+    // === MODIFICATION 2 : Gestionnaire d'événement pour le bouton Supprimer ===
     commentsList.querySelectorAll('.delete-toggle').forEach((btn) => {
       btn.addEventListener('click', async () => {
-        if (!confirm("Es-tu sûr de vouloir supprimer ce commentaire ? Cette action est irréversible.")) {
-          return;
-        }
+        if (!confirm("Supprimer ce commentaire définitivement ?")) return;
         
         const id = btn.dataset.id;
-        const token = editTokens()[id];
+        const token = editTokens()[id] || "";  // Token vide pour les anciens
         
         try {
           const res = await fetch(`/api/comments/${id}`, {
@@ -2037,7 +2039,7 @@
           
           loadComments();
         } catch (err) {
-          alert("Erreur réseau lors de la suppression.");
+          alert("Erreur réseau.");
         }
       });
     });
