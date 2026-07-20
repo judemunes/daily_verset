@@ -1,32 +1,12 @@
-import argparse
-import asyncio
 import json
 import os
-import random
 import secrets
-import shutil
-import textwrap
-import time
 from datetime import datetime
 
 import psycopg2
-import psycopg2.errors
-from colorama import Fore, Style, init
 
-try:
-    import pyttsx3  # type: ignore
-    TTS_AVAILABLE = True
-except ImportError:
-    TTS_AVAILABLE = False
-
-try:
-    import edge_tts  # type: ignore
-    EDGE_TTS_AVAILABLE = True
-except ImportError:
-    EDGE_TTS_AVAILABLE = False
-
-DEFAULT_EDGE_VOICE = "fr-FR-HenriNeural"
-
+# Chaîne de connexion PostgreSQL, surchargeable via la variable
+# d'environnement DATABASE_URL (standard Railway/Render/Heroku).
 DB_FILE = os.environ.get(
     "DATABASE_URL",
     os.environ.get("DB_FILE", "postgresql://postgres:postgres@localhost:5432/verset_du_jour"),
@@ -59,31 +39,13 @@ VERSES = [
     {"reference": "Proverbes 22:24", "text": "Ne deviens pas l'ami d'un homme coléreux. Ne va pas avec quelqu'un qui se met en colère facilement."}
 ]
 
-def display_verse(verse: dict[str, str]) -> None:
-    card_width = min(max(shutil.get_terminal_size().columns - 4, 40), 76)
-    inside_width = card_width - 4
-    wrapped_lines = textwrap.wrap(f'«\u00a0{verse["text"]}\u00a0»', width=inside_width)
-    border_color = Fore.CYAN
-    text_color = Fore.WHITE
-    reference_color = Fore.YELLOW + Style.BRIGHT
-    print()
-    print(border_color + "╔" + "═" * (card_width - 2) + "╗")
-    print("║" + Style.BRIGHT + " VERSET DU JOUR ".center(card_width - 2) + Style.NORMAL + "║")
-    timestamp = datetime.now().strftime("%d/%m/%Y — %H:%M:%S")
-    print("║" + Fore.LIGHTBLACK_EX + timestamp.center(card_width - 2) + border_color + "║")
-    print("╠" + "═" * (card_width - 2) + "╣")
-    for line in wrapped_lines:
-        print(border_color + "║  " + text_color + line.ljust(inside_width) + border_color + "  ║")
-    print("║" + " " * (card_width - 2) + "║")
-    reference = f"— {verse['reference']}"
-    print(border_color + "║  " + reference_color + reference.rjust(inside_width) + border_color + "  ║")
-    print("╚" + "═" * (card_width - 2) + "╝" + Style.RESET_ALL)
-    print()
 
 def get_connection(db_path: str) -> "psycopg2.extensions.connection":
     return psycopg2.connect(db_path)
 
+
 def _column_exists(cur, table: str, column: str) -> bool:
+    """Vérifie si une colonne existe déjà."""
     cur.execute(
         """
         SELECT 1 FROM information_schema.columns
@@ -93,7 +55,9 @@ def _column_exists(cur, table: str, column: str) -> bool:
     )
     return cur.fetchone() is not None
 
+
 def init_db(db_path: str) -> None:
+    """Crée les tables si besoin et importe VERSES dans la table 'verses'."""
     conn = get_connection(db_path)
     try:
         cur = conn.cursor()
@@ -165,32 +129,17 @@ def init_db(db_path: str) -> None:
     finally:
         conn.close()
 
-def choose_verse(db_path: str = DB_FILE) -> dict[str, str]:
-    conn = get_connection(db_path)
-    try:
-        cur = conn.cursor()
-        cur.execute("SELECT id, reference, text FROM verses")
-        all_verses = cur.fetchall()
-        if not all_verses:
-            raise RuntimeError("La table 'verses' est vide.")
-        max_history = max(len(all_verses) - 1, 1)
-        cur.execute("SELECT verse_id FROM history ORDER BY id DESC LIMIT %s", (max_history,))
-        recent_ids = {row[0] for row in cur.fetchall()}
-        remaining = [v for v in all_verses if v[0] not in recent_ids] or all_verses
-        verse_id, reference, text = random.choice(remaining)
-        cur.execute("INSERT INTO history (verse_id, shown_at) VALUES (%s, %s)", (verse_id, datetime.now().isoformat(timespec="seconds")))
-        conn.commit()
-        return {"reference": reference, "text": text}
-    finally:
-        conn.close()
 
 def get_daily_verse(db_path: str = DB_FILE) -> dict[str, str]:
+    """Renvoie le même verset toute la journée, calculé de façon déterministe."""
     today = datetime.now().date()
     index = today.toordinal() % len(VERSES)
     verse = VERSES[index]
     return {"reference": verse["reference"], "text": verse["text"]}
 
+
 def save_subscription(subscription: dict, db_path: str = DB_FILE) -> None:
+    """Enregistre (ou met à jour) un abonnement aux notifications navigateur."""
     conn = get_connection(db_path)
     try:
         cur = conn.cursor()
@@ -203,6 +152,7 @@ def save_subscription(subscription: dict, db_path: str = DB_FILE) -> None:
     finally:
         conn.close()
 
+
 def list_subscriptions(db_path: str = DB_FILE) -> list[dict]:
     conn = get_connection(db_path)
     try:
@@ -212,6 +162,7 @@ def list_subscriptions(db_path: str = DB_FILE) -> list[dict]:
         return [json.loads(row[0]) for row in rows]
     finally:
         conn.close()
+
 
 def remove_subscriptions(endpoints: list[str], db_path: str = DB_FILE) -> None:
     if not endpoints:
@@ -224,10 +175,12 @@ def remove_subscriptions(endpoints: list[str], db_path: str = DB_FILE) -> None:
     finally:
         conn.close()
 
-ALLOWED_REACTIONS = ["❤️", "🙏", "👏", "🙌"]
+
+ALLOWED_REACTIONS = ["❤️", "🙏", "", "🙌"]
 MAX_PSEUDO_LENGTH = 30
 MAX_COMMENT_LENGTH = 500
 EDIT_WINDOW_SECONDS = 5 * 60
+
 
 def add_comment(
     pseudo: str,
@@ -237,6 +190,7 @@ def add_comment(
     media_type: str | None = None,
     db_path: str = DB_FILE,
 ) -> dict:
+    """Ajoute un commentaire (ou une réponse si parent_id est fourni)."""
     pseudo = pseudo.strip()
     text = text.strip()
     if not pseudo:
@@ -280,7 +234,9 @@ def add_comment(
     finally:
         conn.close()
 
+
 def edit_comment(comment_id: int, edit_token: str, text: str, db_path: str = DB_FILE) -> dict:
+    """Modifie le texte d'un commentaire si le edit_token correspond."""
     text = text.strip()
     if not text:
         raise ValueError("Le commentaire ne peut pas être vide.")
@@ -306,7 +262,9 @@ def edit_comment(comment_id: int, edit_token: str, text: str, db_path: str = DB_
     finally:
         conn.close()
 
+
 def add_reaction(comment_id: int, emoji: str, db_path: str = DB_FILE) -> dict[str, int]:
+    """Incrémente le compteur d'une réaction (emoji) sur un commentaire."""
     if emoji not in ALLOWED_REACTIONS:
         raise ValueError("Cette réaction n'est pas autorisée.")
     conn = get_connection(db_path)
@@ -326,7 +284,9 @@ def add_reaction(comment_id: int, emoji: str, db_path: str = DB_FILE) -> dict[st
     finally:
         conn.close()
 
+
 def remove_reaction(comment_id: int, emoji: str, db_path: str = DB_FILE) -> dict[str, int]:
+    """Décrémente le compteur d'une réaction (emoji) sur un commentaire."""
     if emoji not in ALLOWED_REACTIONS:
         raise ValueError("Cette réaction n'est pas autorisée.")
     conn = get_connection(db_path)
@@ -343,12 +303,13 @@ def remove_reaction(comment_id: int, emoji: str, db_path: str = DB_FILE) -> dict
         return {row[0]: row[1] for row in rows}
     finally:
         conn.close()
-#fonction pour supprimer un commentaire et ses reponses et ses reactions  
+
+
 def delete_comment(comment_id: int, edit_token: str, db_path: str = DB_FILE) -> bool:
     """Supprime un commentaire et ses réactions/réponses.
     - Si le commentaire a un edit_token : vérification stricte (sécurité)
     - Si le commentaire n'a PAS d'edit_token (ancien) : on accepte la suppression
-      car il n'y a pas de moyen de vérifier l'auteur (compatibilité)"""
+    car il n'y a pas de moyen de vérifier l'auteur (compatibilité)"""
     conn = get_connection(db_path)
     try:
         cur = conn.cursor()
@@ -356,13 +317,12 @@ def delete_comment(comment_id: int, edit_token: str, db_path: str = DB_FILE) -> 
         row = cur.fetchone()
         if row is None:
             return False  # Commentaire introuvable
-
-        stored_token = row[0]
         
+        stored_token = row[0]
         # Si le commentaire a un token, on vérifie qu'il correspond
         if stored_token is not None and stored_token != edit_token:
             return False  # Token invalide
-
+        
         # Suppression en cascade
         cur.execute("DELETE FROM reactions WHERE comment_id = %s", (comment_id,))
         cur.execute("DELETE FROM comments WHERE parent_id = %s", (comment_id,))
@@ -372,8 +332,10 @@ def delete_comment(comment_id: int, edit_token: str, db_path: str = DB_FILE) -> 
         return True
     finally:
         conn.close()
-#fonction pour lister les commentaires avec leurs reponses et leurs reactions 
+
+
 def list_comments(db_path: str = DB_FILE) -> list[dict]:
+    """Renvoie tous les commentaires principaux avec leurs réactions et réponses."""
     conn = get_connection(db_path)
     try:
         cur = conn.cursor()
@@ -410,136 +372,3 @@ def list_comments(db_path: str = DB_FILE) -> list[dict]:
         return top_level
     finally:
         conn.close()
-#fonction pour exporter le verset en journal pour tous les utilisateurs
-def export_verse_journal(verse: dict[str, str], db_path: str = DB_FILE) -> None:
-    conn = get_connection(db_path)
-    try:
-        cur = conn.cursor()
-        cur.execute("SELECT id FROM verses WHERE reference = %s AND text = %s", (verse["reference"], verse["text"]))
-        row = cur.fetchone()
-        if row is None:
-            print(Fore.YELLOW + "Verset introuvable en base, journal non mis à jour." + Style.RESET_ALL)
-            return
-        cur.execute("INSERT INTO journal (verse_id, logged_at) VALUES (%s, %s)", (row[0], datetime.now().isoformat(timespec="seconds")))
-        conn.commit()
-        print(Fore.GREEN + f"Verset ajouté au journal (base : {db_path})" + Style.RESET_ALL)
-    except psycopg2.Error as exc:
-        print(Fore.YELLOW + f"Impossible d'écrire dans le journal ({exc})." + Style.RESET_ALL)
-    finally:
-        conn.close()
-#fonction pour trouver la voix française  tts
-def find_french_voice_id(engine) -> str | None:
-    for voice in engine.getProperty("voices"):
-        languages = getattr(voice, "languages", None) or []
-        decoded_languages = []
-        for lang in languages:
-            if isinstance(lang, bytes):
-                decoded_languages.append(lang.decode(errors="ignore").lower())
-            else:
-                decoded_languages.append(str(lang).lower())
-        haystack = " ".join([voice.id.lower(), voice.name.lower(), *decoded_languages])
-        if "fr" in decoded_languages or "french" in haystack or "fr-fr" in haystack or "fr_fr" in haystack:
-            return voice.id
-    return None
-#fonction pour parler le verset en pyttsx3
-def speak_verse_pyttsx3(verse: dict[str, str], rate: int, volume: float, voice_id: str | None) -> None:
-    if not TTS_AVAILABLE:
-        print(Fore.RED + "pyttsx3 n'est pas installé. Installe-le avec : pip install pyttsx3" + Style.RESET_ALL)
-        return
-    engine = pyttsx3.init()
-    engine.setProperty("rate", rate)
-    engine.setProperty("volume", volume)
-    chosen_voice_id = voice_id or find_french_voice_id(engine)
-    if chosen_voice_id:
-        engine.setProperty("voice", chosen_voice_id)
-    else:
-        print(Fore.YELLOW + "Aucune voix française trouvée sur ce système : la voix par défaut sera utilisée." + Style.RESET_ALL)
-    speech_text = f"{verse['reference']}. {verse['text']}"
-    engine.say(speech_text)
-    engine.runAndWait()
-    engine.stop()
-#fonction pour parler le verset en edge-tts
-async def _speak_verse_edge_async(speech_text: str, voice: str, rate: int) -> None:
-    percent_offset = round(((rate - 175) / 175) * 100)
-    rate_str = f"{'+' if percent_offset >= 0 else ''}{percent_offset}%"
-    communicator = edge_tts.Communicate(speech_text, voice=voice, rate=rate_str)
-    output_path = "verse_audio.mp3"
-    await communicator.save(output_path)
-    return output_path
-#fonction pour parler le verset en edge-tts  
-def speak_verse_edge(verse: dict[str, str], rate: int, edge_voice: str) -> None:
-    if not EDGE_TTS_AVAILABLE:
-        print(Fore.RED + "edge-tts n'est pas installé. Installe-le avec : pip install edge-tts" + Style.RESET_ALL)
-        return
-    speech_text = f"{verse['reference']}. {verse['text']}"
-    output_path = asyncio.run(_speak_verse_edge_async(speech_text, edge_voice, rate))
-    try:
-        from playsound import playsound  # type: ignore
-        playsound(output_path)
-    except ImportError:
-        print(Fore.YELLOW + f"Audio généré dans {output_path}, mais 'playsound' n'est pas installé." + Style.RESET_ALL)
-#fonction pour parler le verset en edge-tts ou pyttsx3  
-def speak_verse(verse: dict[str, str], rate: int = 165, volume: float = 1.0, voice_id: str | None = None, engine_name: str = "pyttsx3", edge_voice: str = DEFAULT_EDGE_VOICE) -> None:
-    if engine_name == "edge":
-        speak_verse_edge(verse, rate=rate, edge_voice=edge_voice)
-    else:
-        speak_verse_pyttsx3(verse, rate=rate, volume=volume, voice_id=voice_id)
-#fonction pour lister les voix disponibles
-def list_voices() -> None:
-    if not TTS_AVAILABLE:
-        print(Fore.RED + "pyttsx3 n'est pas installé. Installe-le avec : pip install pyttsx3" + Style.RESET_ALL)
-        return
-    engine = pyttsx3.init()
-    for voice in engine.getProperty("voices"):
-        print(f"{voice.id}  —  {voice.name}")
-    engine.stop()
-#fonction pour exécuter le verset du jour en mode console 
-def run_once(args: argparse.Namespace) -> None:
-    init(autoreset=True)
-    init_db(args.db_path)
-    verse = choose_verse(args.db_path)
-    display_verse(verse)
-    if not args.no_voice:
-        speak_verse(verse, rate=args.rate, volume=args.volume, voice_id=args.voice_id, engine_name=args.engine, edge_voice=args.edge_voice)
-    if args.export_json:
-        export_verse_journal(verse, args.db_path)
-#fonction pour exécuter le verset du jour en mode planification
-def run_daemon(args: argparse.Namespace) -> None:
-    target_hour, target_minute = (int(part) for part in args.at.split(":"))
-    print(Fore.GREEN + f"Mode planification actif : un verset sera lu chaque jour à {args.at}." + Style.RESET_ALL)
-    last_run_date = None
-    while True:
-        now = datetime.now()
-        if now.hour == target_hour and now.minute == target_minute and last_run_date != now.date():
-            run_once(args)
-            last_run_date = now.date()
-        time.sleep(20)
-#fonction pour construire le parser
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Affiche et lit un verset biblique du jour.")
-    parser.add_argument("--no-voice", action="store_true", help="Désactive la lecture vocale.")
-    parser.add_argument("--rate", type=int, default=165, help="Vitesse de la voix (mots/minute).")
-    parser.add_argument("--volume", type=float, default=1.0, help="Volume de la voix (0.0 à 1.0).")
-    parser.add_argument("--voice-id", type=str, default=None, help="ID de la voix système à utiliser (pyttsx3).")
-    parser.add_argument("--list-voices", action="store_true", help="Liste les voix disponibles (pyttsx3) et quitte.")
-    parser.add_argument("--engine", choices=["pyttsx3", "edge"], default="pyttsx3", help="Moteur de synthèse vocale.")
-    parser.add_argument("--edge-voice", type=str, default=DEFAULT_EDGE_VOICE, help=f"Voix edge-tts à utiliser. Défaut : {DEFAULT_EDGE_VOICE}.")
-    parser.add_argument("--daemon", action="store_true", help="Reste en cours d'exécution et lit un verset chaque jour à l'heure donnée par --at.")
-    parser.add_argument("--at", type=str, default="08:00", help="Heure quotidienne (HH:MM, 24h) utilisée avec --daemon.")
-    parser.add_argument("--db-path", type=str, default=DB_FILE, help=f"Chaîne de connexion PostgreSQL.")
-    parser.add_argument("--export-json", action="store_true", help="Ajoute le verset du jour à la table 'journal'.")
-    return parser
-#fonction main   
-def main() -> None:
-    parser = build_parser()
-    args = parser.parse_args()
-    if args.list_voices:
-        list_voices()
-        return
-    if args.daemon:
-        run_daemon(args)
-    else:
-        run_once(args)
-
-if __name__ == "__main__":
-    main()
