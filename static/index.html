@@ -520,7 +520,7 @@ body {
   display: block;
 }
 
-.media-preview img {
+.media-preview img, .media-preview video {
   max-width: 100%;
   max-height: 200px;
   border-radius: 8px;
@@ -773,10 +773,6 @@ body {
   margin: 12px 0; 
   padding: 8px 0; 
   border-bottom: 1px solid #2f3336; 
-}
-
-.shabbat-info:last-child { 
-  border-bottom: none; 
 }
 
 .shabbat-label { 
@@ -1037,6 +1033,29 @@ body {
   background: #3a3f4b;
 }
 
+/* Médias dans les commentaires - Taille réduite */
+.comment-media {
+  max-width: 100%;
+  border-radius: 12px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.comment-media img {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+.comment-media video {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 12px;
+  display: block;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .sidebar-right { 
@@ -1073,6 +1092,10 @@ body {
   }
   .time-row {
     grid-template-columns: 1fr;
+  }
+  .comment-media img,
+  .comment-media video {
+    max-height: 250px;
   }
 }
 </style>
@@ -1125,13 +1148,14 @@ body {
               
               <!-- Media Preview -->
               <div class="media-preview" id="media-preview">
-                <img src="" alt="Aperçu" id="media-preview-img">
+                <img src="" alt="Aperçu" id="media-preview-img" style="display: none;">
+                <video src="" alt="Aperçu" id="media-preview-video" style="display: none;" controls></video>
                 <button class="media-preview-remove" onclick="removeMedia()">Supprimer</button>
               </div>
               
               <div class="composer-toolbar">
                 <div class="composer-icons">
-                  <input type="file" id="media-input" accept="image/*" style="display: none;" onchange="handleMediaSelect(event)">
+                  <input type="file" id="media-input" accept="image/*,video/*" style="display: none;" onchange="handleMediaSelect(event)">
                   <button class="icon-btn" onclick="document.getElementById('media-input').click()" title="Média">
                     <i class="fi fi-br-picture"></i>
                   </button>
@@ -1170,7 +1194,7 @@ body {
               <div class="countdown" id="countdown">--:--:--</div>
             </div>
             <div class="widget">
-              <div class="widget-title"><span>🕯️</span><span>Horaires de Shabbat</span></div>
+              <div class="widget-title"><span>️</span><span>Horaires de Shabbat</span></div>
               <div class="shabbat-info"><div class="shabbat-label">Chargement...</div></div>
             </div>
             <div class="widget">
@@ -1319,10 +1343,11 @@ let userReactions = JSON.parse(localStorage.getItem('versetUserReactions') || '{
 let userProfile = JSON.parse(localStorage.getItem('versetUserProfile') || '{}');
 let allComments = [];
 let selectedMedia = null;
+let selectedMediaType = null;
 let scheduledPost = null;
 
 // Emojis disponibles
-const emojis = ['😀', '😂', '', '🥰', '😎', '🤔', '👍', '', '❤️', '🔥', '🎉', '🙌', '😢', '💯', '✨', ''];
+const emojis = ['😀', '😂', '😍', '🥰', '😎', '', '👍', '', '❤️', '', '🎉', '🙌', '😢', '💯', '✨', '🙏'];
 
 // --- Initialisation ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -1459,7 +1484,23 @@ function handleMediaSelect(event) {
     const reader = new FileReader();
     reader.onload = function(e) {
       selectedMedia = e.target.result;
-      document.getElementById('media-preview-img').src = selectedMedia;
+      
+      // Déterminer le type de média
+      if (file.type.startsWith('video/')) {
+        selectedMediaType = 'video';
+        document.getElementById('media-preview-img').style.display = 'none';
+        const videoEl = document.getElementById('media-preview-video');
+        videoEl.src = selectedMedia;
+        videoEl.style.display = 'block';
+        videoEl.play(); // Auto-play pour aperçu
+      } else {
+        selectedMediaType = 'image';
+        document.getElementById('media-preview-video').style.display = 'none';
+        const imgEl = document.getElementById('media-preview-img');
+        imgEl.src = selectedMedia;
+        imgEl.style.display = 'block';
+      }
+      
       document.getElementById('media-preview').classList.add('active');
     };
     reader.readAsDataURL(file);
@@ -1469,8 +1510,11 @@ function handleMediaSelect(event) {
 // Supprimer le média
 function removeMedia() {
   selectedMedia = null;
+  selectedMediaType = null;
   document.getElementById('media-input').value = '';
   document.getElementById('media-preview').classList.remove('active');
+  document.getElementById('media-preview-img').style.display = 'none';
+  document.getElementById('media-preview-video').style.display = 'none';
 }
 
 // Ouvrir la modal de programmation
@@ -1500,7 +1544,8 @@ function confirmSchedule() {
   scheduledPost = {
     date: date,
     text: document.getElementById('comment-text').value,
-    media: selectedMedia
+    media: selectedMedia,
+    mediaType: selectedMediaType
   };
   
   closeScheduleModal();
@@ -1644,7 +1689,7 @@ function showUserComments() {
 
 function renderProfileComment(c) {
   const initial = c.pseudo.charAt(0).toUpperCase();
-  const dateStr = new Date(c.created_at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const dateStr = getRelativeTime(c.created_at);
   
   // Style Twitter pour les commentaires du profil
   return `
@@ -1657,7 +1702,7 @@ function renderProfileComment(c) {
         </div>
       </div>
       <div class="comment-text">${escapeHtml(c.text)}</div>
-      ${c.image_url ? `<img src="${c.image_url}" alt="Média" style="max-width: 100%; border-radius: 12px; margin-top: 12px;">` : ''}
+      ${c.image_url ? renderMedia(c.image_url, c.media_type) : ''}
       <div class="comment-actions">
         <button class="action-btn" onclick="toggleForm('reply-form-${c.id}')">💬 Répondre</button>
         <button class="action-btn">🔄 Repartager</button>
@@ -1702,8 +1747,8 @@ function showUserMedia() {
   
   container.innerHTML = userComments.map(c => `
     <div style="margin-bottom: 16px;">
-      <img src="${c.image_url}" alt="Média" style="max-width: 100%; border-radius: 12px;">
-      <div style="margin-top: 8px; color: #71767b; font-size: 14px;">${new Date(c.created_at).toLocaleString('fr-FR')}</div>
+      ${renderMedia(c.image_url, c.media_type)}
+      <div style="margin-top: 8px; color: #71767b; font-size: 14px;">${getRelativeTime(c.created_at)}</div>
     </div>
   `).join('');
 }
@@ -2040,9 +2085,52 @@ async function submitEdit(commentId) {
   }
 }
 
+// Fonction pour afficher le temps relatif
+function getRelativeTime(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
+  
+  if (diffInSeconds < 60) {
+    return `il y a ${diffInSeconds} seconde${diffInSeconds > 1 ? 's' : ''}`;
+  }
+  
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return `il y a ${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''}`;
+  }
+  
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return `il y a ${diffInHours} heure${diffInHours > 1 ? 's' : ''}`;
+  }
+  
+  const diffInDays = Math.floor(diffInHours / 24);
+  return `il y a ${diffInDays} jour${diffInDays > 1 ? 's' : ''}`;
+}
+
+// Fonction pour rendre les médias
+function renderMedia(url, type) {
+  if (!url) return '';
+  
+  if (type === 'video' || url.includes('video')) {
+    return `
+      <div class="comment-media">
+        <video src="${url}" controls autoplay muted loop style="max-width: 100%; max-height: 300px; border-radius: 12px;"></video>
+      </div>
+    `;
+  } else {
+    return `
+      <div class="comment-media">
+        <img src="${url}" alt="Média" style="max-width: 100%; max-height: 300px; border-radius: 12px; object-fit: cover;">
+      </div>
+    `;
+  }
+}
+
 function renderComment(c, isReply) {
   const initial = c.pseudo.charAt(0).toUpperCase();
-  const dateStr = new Date(c.created_at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const dateStr = getRelativeTime(c.created_at);
   const canEdit = !!editTokens[c.id];
   
   const userReaction = userReactions[c.id];
@@ -2098,7 +2186,7 @@ function renderComment(c, isReply) {
         </div>
       </div>
       <div class="comment-text">${escapeHtml(c.text)}</div>
-      ${c.image_url ? `<img src="${c.image_url}" alt="Média" style="max-width: 100%; border-radius: 12px; margin-top: 12px;">` : ''}
+      ${c.image_url ? renderMedia(c.image_url, c.media_type) : ''}
       <div class="comment-actions">
         ${reactionsHtml}
         ${actionsHtml}
