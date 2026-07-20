@@ -614,8 +614,8 @@ body {
       </div>
       <div class="form-group">
         <label class="form-label">Pseudo</label>
-        <input type="text" class="form-input" id="edit-pseudo" maxlength="30" placeholder="Ton pseudo">
-        <div class="form-hint" id="pseudo-hint" style="color: #71767b; font-size: 13px; margin-top: 8px;">Le pseudo peut être modifié tous les 3 jours (72h)</div>
+        <input type="text" class="form-input" id="edit-pseudo" maxlength="30" placeholder="Ton pseudo" disabled>
+        <div class="form-hint" id="pseudo-hint" style="color: #71767b; font-size: 13px; margin-top: 8px;">Le pseudo est lié à ton compte et ne peut plus être changé ici.</div>
       </div>
       <div class="form-group">
         <label class="form-label">Bio</label>
@@ -628,19 +628,30 @@ body {
   <div class="edit-modal" id="community-login-modal">
     <div class="edit-modal-content" style="max-width: 400px;">
       <div class="edit-modal-header">
-        <div class="edit-modal-title">Rejoindre la Communauté</div>
+        <div class="edit-modal-title" id="auth-modal-title">Connexion</div>
         <button class="edit-modal-close" onclick="closeCommunityLoginModal()">✕</button>
       </div>
-      <div class="form-group">
-        <label class="form-label">Choisis un pseudo pour participer aux échanges</label>
-        <input type="text" class="form-input" id="community-login-pseudo" maxlength="30" placeholder="Ton pseudo" onkeydown="if(event.key==='Enter') confirmCommunityLogin()">
+      <div class="profile-tabs" style="margin-top: 0; margin-bottom: 20px;">
+        <button class="profile-tab active" id="auth-tab-login" onclick="switchAuthMode('login')">Connexion</button>
+        <button class="profile-tab" id="auth-tab-register" onclick="switchAuthMode('register')">Inscription</button>
       </div>
-      <button class="btn-primary" onclick="confirmCommunityLogin()">Rejoindre la communauté</button>
+      <div id="auth-error" style="display:none; color:#f4212e; font-size: 13px; margin-bottom: 16px;"></div>
+      <div class="form-group">
+        <label class="form-label">Pseudo</label>
+        <input type="text" class="form-input" id="auth-pseudo" maxlength="30" placeholder="Ton pseudo">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <input type="password" class="form-input" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter') submitAuth()">
+        <div class="form-hint" id="auth-password-hint" style="color: #71767b; font-size: 13px; margin-top: 8px; display:none;">6 caractères minimum</div>
+      </div>
+      <button class="btn-primary" id="auth-submit-btn" onclick="submitAuth()">Se connecter</button>
     </div>
   </div>
 
 <script>
 let currentPseudo = localStorage.getItem('versetPseudo') || '';
+let currentToken = localStorage.getItem('versetToken') || '';
 let editTokens = JSON.parse(localStorage.getItem('versetEditTokens') || '{}');
 let userReactions = JSON.parse(localStorage.getItem('versetUserReactions') || '{}');
 let userProfile = JSON.parse(localStorage.getItem('versetUserProfile') || '{}');
@@ -882,28 +893,82 @@ function activateCommunityTab() {
   loadComments();
 }
 
+let authMode = 'login';
+
 function openCommunityLoginModal() {
-  document.getElementById('community-login-pseudo').value = '';
+  switchAuthMode('login');
+  document.getElementById('auth-pseudo').value = '';
+  document.getElementById('auth-password').value = '';
   document.getElementById('community-login-modal').classList.add('active');
-  setTimeout(() => document.getElementById('community-login-pseudo').focus(), 50);
+  setTimeout(() => document.getElementById('auth-pseudo').focus(), 50);
 }
 
 function closeCommunityLoginModal() {
   document.getElementById('community-login-modal').classList.remove('active');
 }
 
-function confirmCommunityLogin() {
-  const pseudo = document.getElementById('community-login-pseudo').value.trim();
-  if (!pseudo) {
-    alert("Un pseudo est requis pour accéder à la communauté.");
+function switchAuthMode(mode) {
+  authMode = mode;
+  document.getElementById('auth-tab-login').classList.toggle('active', mode === 'login');
+  document.getElementById('auth-tab-register').classList.toggle('active', mode === 'register');
+  document.getElementById('auth-modal-title').textContent = mode === 'login' ? 'Connexion' : 'Inscription';
+  document.getElementById('auth-submit-btn').textContent = mode === 'login' ? 'Se connecter' : "S'inscrire";
+  document.getElementById('auth-password-hint').style.display = mode === 'register' ? 'block' : 'none';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+async function submitAuth() {
+  const pseudo = document.getElementById('auth-pseudo').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errorBox = document.getElementById('auth-error');
+  errorBox.style.display = 'none';
+
+  if (!pseudo || !password) {
+    errorBox.textContent = 'Merci de remplir le pseudo et le mot de passe.';
+    errorBox.style.display = 'block';
     return;
   }
-  currentPseudo = pseudo.substring(0, 30);
-  localStorage.setItem('versetPseudo', currentPseudo);
-  localStorage.setItem('versetPseudoLastEdit', Date.now().toString());
+
+  const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+  const submitBtn = document.getElementById('auth-submit-btn');
+  submitBtn.disabled = true;
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pseudo, password })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      errorBox.textContent = data.error || 'Une erreur est survenue.';
+      errorBox.style.display = 'block';
+      return;
+    }
+
+    currentToken = data.token;
+    currentPseudo = data.pseudo;
+    localStorage.setItem('versetToken', currentToken);
+    localStorage.setItem('versetPseudo', currentPseudo);
+    updateComposerIdentity();
+    closeCommunityLoginModal();
+    activateCommunityTab();
+  } catch (e) {
+    errorBox.textContent = 'Erreur réseau, réessaie.';
+    errorBox.style.display = 'block';
+  } finally {
+    submitBtn.disabled = false;
+  }
+}
+
+function logoutAndSwitchAccount() {
+  currentToken = '';
+  currentPseudo = '';
+  localStorage.removeItem('versetToken');
+  localStorage.removeItem('versetPseudo');
   updateComposerIdentity();
-  closeCommunityLoginModal();
-  activateCommunityTab();
+  openCommunityLoginModal();
 }
 
 function showProfile() {
@@ -1139,34 +1204,13 @@ function updateComposerIdentity() {
 }
 
 function changePseudo() {
-  const lastEdit = localStorage.getItem('versetPseudoLastEdit');
-  if (lastEdit) {
-    const hoursPassed = (Date.now() - parseInt(lastEdit)) / (1000 * 60 * 60);
-    if (hoursPassed < 72) {
-      alert("Votre profil ne peut pas être changé maintenant. Veuillez patienter 72h.");
-      return;
-    }
-  }
-  const newPseudo = prompt("Entre ton pseudo (max 30 caractères) :", currentPseudo);
-  if (newPseudo !== null) {
-    const trimmed = newPseudo.trim().substring(0, 30);
-    if (trimmed.length > 0) {
-      currentPseudo = trimmed;
-      localStorage.setItem('versetPseudo', currentPseudo);
-      localStorage.setItem('versetPseudoLastEdit', Date.now().toString());
-      updateComposerIdentity();
-    } else {
-      localStorage.removeItem('versetPseudo');
-      currentPseudo = '';
-      updateComposerIdentity();
-    }
-  }
+  logoutAndSwitchAccount();
 }
 
-function requirePseudo() {
-  if (!currentPseudo) {
-    changePseudo();
-    return !!currentPseudo;
+function requireAuth() {
+  if (!currentToken) {
+    openCommunityLoginModal();
+    return false;
   }
   return true;
 }
@@ -1208,7 +1252,7 @@ async function loadComments() {
 }
 
 async function postComment(parentId = null) {
-  if (!requirePseudo()) return;
+  if (!requireAuth()) return;
   const inputId = parentId ? `reply-text-${parentId}` : 'comment-text';
   const text = document.getElementById(inputId).value.trim();
   if (!text && !selectedMedia) {
@@ -1218,9 +1262,14 @@ async function postComment(parentId = null) {
   try {
     const res = await fetch('/api/comments', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pseudo: currentPseudo, text: text, parent_id: parentId, image: selectedMedia })
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+      body: JSON.stringify({ text: text, parent_id: parentId, image: selectedMedia })
     });
+    if (res.status === 401) {
+      alert('Ta session a expiré, merci de te reconnecter.');
+      logoutAndSwitchAccount();
+      return;
+    }
     if (res.ok) {
       const data = await res.json();
       editTokens[data.id] = data.edit_token;
@@ -1240,7 +1289,7 @@ async function postComment(parentId = null) {
 }
 
 async function react(commentId, emoji) {
-  if (!requirePseudo()) return;
+  if (!requireAuth()) return;
   const currentReaction = userReactions[commentId];
   try {
     if (currentReaction === emoji) {
@@ -1320,7 +1369,7 @@ async function submitEdit(commentId) {
 
 // Fonction de repost SANS pop-up
 async function repost(originalId, originalPseudo, originalText, originalImage, originalMediaType) {
-  if (!requirePseudo()) return;
+  if (!requireAuth()) return;
   const fullText = `🔄 Repost de @${originalPseudo} :\n${originalText}`;
   try {
     const res = await fetch('/api/comments', {

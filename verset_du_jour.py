@@ -2,6 +2,7 @@ import json
 import os
 import secrets
 from datetime import datetime
+import bcrypt
 import psycopg2
 
 # Chaîne de connexion PostgreSQL, surchargeable via la variable
@@ -122,6 +123,16 @@ def init_db(db_path: str) -> None:
             cur.execute("ALTER TABLE comments ADD COLUMN image_url TEXT")
         if not _column_exists(cur, "comments", "media_type"):
             cur.execute("ALTER TABLE comments ADD COLUMN media_type TEXT")
+        
+        # Table des utilisateurs (pseudo + mot de passe)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                pseudo TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )
+        """)
         
         # Table des réactions
         cur.execute("""
@@ -434,5 +445,69 @@ def list_comments(db_path: str = DB_FILE) -> list[dict]:
             comment["replies"].sort(key=lambda c: c["created_at"])
         
         return top_level
+    finally:
+        conn.close()
+
+
+# Constantes pour les comptes utilisateurs
+MIN_PSEUDO_LENGTH = 3
+MAX_USER_PSEUDO_LENGTH = 30
+MIN_PASSWORD_LENGTH = 6
+
+
+def create_user(pseudo: str, password: str, db_path: str = DB_FILE) -> dict:
+    """Crée un nouveau compte utilisateur (pseudo unique + mot de passe
+    hashé avec bcrypt). Lève ValueError si le pseudo est déjà pris ou si
+    les champs ne respectent pas les contraintes de base."""
+    pseudo = pseudo.strip()
+    
+    if len(pseudo) < MIN_PSEUDO_LENGTH or len(pseudo) > MAX_USER_PSEUDO_LENGTH:
+        raise ValueError(f"Le pseudo doit contenir entre {MIN_PSEUDO_LENGTH} et {MAX_USER_PSEUDO_LENGTH} caractères.")
+    if len(password) < MIN_PASSWORD_LENGTH:
+        raise ValueError(f"Le mot de passe doit contenir au moins {MIN_PASSWORD_LENGTH} caractères.")
+    
+    password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    created_at = datetime.now().isoformat(timespec="seconds")
+    
+    conn = get_connection(db_path)
+    try:
+        cur = conn.cursor()
+        
+        cur.execute("SELECT 1 FROM users WHERE LOWER(pseudo) = LOWER(%s)", (pseudo,))
+        if cur.fetchone() is not None:
+            raise ValueError("Ce pseudo est déjà utilisé.")
+        
+        cur.execute(
+            "INSERT INTO users (pseudo, password_hash, created_at) VALUES (%s, %s, %s) RETURNING id",
+            (pseudo, password_hash, created_at),
+        )
+        user_id = cur.fetchone()[0]
+        conn.commit()
+        
+        return {"id": user_id, "pseudo": pseudo}
+    finally:
+        conn.close()
+
+
+def authenticate_user(pseudo: str, password: str, db_path: str = DB_FILE) -> dict:
+    """Vérifie le pseudo/mot de passe. Lève ValueError si l'identifiant
+    n'existe pas ou si le mot de passe est incorrect."""
+    pseudo = pseudo.strip()
+    
+    conn = get_connection(db_path)
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT id, pseudo, password_hash FROM users WHERE LOWER(pseudo) = LOWER(%s)", (pseudo,))
+        row = cur.fetchone()
+        
+        if row is None:
+            raise ValueError("Pseudo ou mot de passe incorrect.")
+        
+        user_id, real_pseudo, password_hash = row
+        
+        if not bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8")):
+            raise ValueError("Pseudo ou mot de passe incorrect.")
+        
+        return {"id": user_id, "pseudo": real_pseudo}
     finally:
         conn.close()

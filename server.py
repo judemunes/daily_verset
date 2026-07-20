@@ -5,11 +5,14 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+import auth
 import push
 from verset_du_jour import (
     DB_FILE,
     add_comment,
     add_reaction,
+    authenticate_user,
+    create_user,
     delete_comment,
     edit_comment,
     get_daily_verse,
@@ -87,6 +90,49 @@ def on_shutdown() -> None:
     scheduler.shutdown(wait=False)
 
 
+def get_authenticated_pseudo(request: Request) -> str | None:
+    """Renvoie le pseudo associé au token JWT envoyé dans l'en-tête
+    Authorization, ou None si absent/invalide."""
+    token = auth.get_token_from_header(request.headers.get("authorization"))
+    if not token:
+        return None
+    payload = auth.decode_token(token)
+    return payload["pseudo"] if payload else None
+
+
+@app.post("/api/auth/register")
+async def api_register(request: Request) -> JSONResponse:
+    """Crée un compte (pseudo + mot de passe) et renvoie un token de session."""
+    body = await request.json()
+    try:
+        user = create_user(body.get("pseudo", ""), body.get("password", ""), db_path=DB_FILE)
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+    token = auth.create_token(user["id"], user["pseudo"])
+    return JSONResponse({"token": token, "pseudo": user["pseudo"]})
+
+
+@app.post("/api/auth/login")
+async def api_login(request: Request) -> JSONResponse:
+    """Vérifie le pseudo/mot de passe et renvoie un token de session."""
+    body = await request.json()
+    try:
+        user = authenticate_user(body.get("pseudo", ""), body.get("password", ""), db_path=DB_FILE)
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=401)
+    token = auth.create_token(user["id"], user["pseudo"])
+    return JSONResponse({"token": token, "pseudo": user["pseudo"]})
+
+
+@app.get("/api/auth/me")
+def api_me(request: Request) -> JSONResponse:
+    """Renvoie le pseudo associé au token envoyé, ou 401 si absent/invalide."""
+    pseudo = get_authenticated_pseudo(request)
+    if not pseudo:
+        return JSONResponse({"error": "Non authentifié."}, status_code=401)
+    return JSONResponse({"pseudo": pseudo})
+
+
 @app.get("/api/verset")
 def api_verset() -> dict[str, str]:
     """Renvoie le verset du jour."""
@@ -161,12 +207,17 @@ def save_comment_media(data_url: str | None) -> tuple[str | None, str | None]:
 
 @app.post("/api/comments")
 async def api_add_comment(request: Request) -> JSONResponse:
-    """Ajoute un nouveau commentaire (ou une réponse)."""
+    """Ajoute un nouveau commentaire (ou une réponse). Le pseudo est celui
+    du compte authentifié via le token, pas celui envoyé dans le corps de
+    la requête — ça évite qu'un client usurpe le pseudo d'un autre."""
     body = await request.json()
+    pseudo = get_authenticated_pseudo(request)
+    if not pseudo:
+        return JSONResponse({"error": "Tu dois être connecté pour commenter."}, status_code=401)
     try:
         image_url, media_type = save_comment_media(body.get("image"))
         comment = add_comment(
-            pseudo=body.get("pseudo", ""),
+            pseudo=pseudo,
             text=body.get("text", ""),
             parent_id=body.get("parent_id"),
             image_url=image_url,
