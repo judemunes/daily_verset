@@ -523,7 +523,7 @@ body {
               <div class="countdown" id="countdown">--:--:--</div>
             </div>
             <div class="widget">
-              <div class="widget-title"><span>🕯️</span><span>Horaires de Shabbat</span></div>
+              <div class="widget-title"><span>️</span><span>Horaires de Shabbat</span></div>
               <div class="shabbat-info"><div class="shabbat-label">Chargement...</div></div>
             </div>
             <div class="widget">
@@ -570,7 +570,7 @@ body {
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title">Programmer</div>
-        <button class="modal-close" onclick="closeScheduleModal()">✕</button>
+        <button class="modal-close" onclick="closeScheduleModal()"></button>
       </div>
       <div class="modal-body">
         <div class="schedule-info"><i class="fi fi-rr-calendar"></i><span id="schedule-preview">Sera envoyé le lun. 20 juil. 2026 à 7:01 PM</span></div>
@@ -635,7 +635,7 @@ let selectedMedia = null;
 let selectedMediaType = null;
 let scheduledPost = null;
 
-const emojis = ['😀', '😂', '😍', '🥰', '😎', '', '👍', '👏', '❤️', '🔥', '', '🙌', '😢', '💯', '✨', '🙏'];
+const emojis = ['😀', '😂', '😍', '', '😎', '', '', '👏', '❤️', '🔥', '', '🙌', '😢', '💯', '✨', '🙏'];
 
 document.addEventListener('DOMContentLoaded', () => {
   const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -1278,20 +1278,12 @@ async function submitEdit(commentId) {
   }
 }
 
-// Fonction de repost
+// Fonction de repost SANS pop-up
 async function repost(originalId, originalPseudo, originalText, originalImage, originalMediaType) {
   if (!requirePseudo()) return;
   
-  const repostText = prompt(
-    `Repartager le commentaire de @${originalPseudo}\n\nAjoute ton commentaire (optionnel) :`,
-    ''
-  );
-  
-  if (repostText === null) return; // Annulé
-  
-  const fullText = repostText.trim() 
-    ? `🔄 Repost de @${originalPseudo} :\n${repostText.trim()}\n\n---\n${originalText}`
-    : `🔄 Repost de @${originalPseudo} :\n${originalText}`;
+  // Création directe du repost sans demander de confirmation
+  const fullText = `🔄 Repost de @${originalPseudo} :\n${originalText}`;
   
   try {
     const res = await fetch('/api/comments', {
@@ -1311,7 +1303,6 @@ async function repost(originalId, originalPseudo, originalText, originalImage, o
       localStorage.setItem('versetEditTokens', JSON.stringify(editTokens));
       loadComments();
       loadCommentsData();
-      alert('Commentaire repartagé avec succès !');
     } else {
       const err = await res.json();
       alert(err.error || 'Erreur lors du repost');
@@ -1458,7 +1449,7 @@ async function loadShabbat() {
     
     const widgets = document.querySelectorAll('.widget');
     for (const w of widgets) {
-      if (w.querySelector('.widget-title span')?.textContent === '🕯️') {
+      if (w.querySelector('.widget-title span')?.textContent === '️') {
         const title = w.querySelector('.widget-title').outerHTML;
         w.innerHTML = title + html;
         break;
