@@ -1,0 +1,11 @@
+fastapi
+python-multipart
+uvicorn
+colorama
+pywebpush
+apscheduler
+requests
+httpx
+python-dotenv
+PyJWT
+psycopg2-binary

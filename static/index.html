@@ -1,0 +1,2519 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verset du jour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,380;0,9..144,560;1,9..144,420&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-classic/css/uicons-regular-classic.css">
+<style>
+  :root {
+    --bg-deep: #12141f;
+    --bg-panel: #1a1d2b;
+    --bg-panel-edge: #232740;
+    --text-primary: #ede6d6;
+    --text-muted: #8b8fa3;
+    --accent-gold: #c9a227;
+    --accent-ember: #b5651d;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Signature : lueur de lampe qui respire doucement derrière la carte,
+     écho discret de Psaume 119:105 — "ta parole est une lampe à mes pieds" */
+  .glow {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 640px;
+    height: 640px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(201, 162, 39, 0.16) 0%, rgba(201, 162, 39, 0.05) 40%, transparent 70%);
+    pointer-events: none;
+    animation: breathe 6s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glow { animation: none; }
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 620px;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    margin-bottom: 28px;
+  }
+
+  .eyebrow .flame {
+    color: var(--accent-gold);
+    font-size: 14px;
+  }
+
+  .eyebrow .date {
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: none;
+  }
+
+  .card {
+    background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-panel-edge) 100%);
+    border: 1px solid rgba(201, 162, 39, 0.18);
+    border-radius: 4px;
+    padding: 56px 48px;
+    text-align: center;
+    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+  }
+
+  .verse-text {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-optical-sizing: auto;
+    font-weight: 380;
+    font-size: clamp(22px, 4vw, 30px);
+    line-height: 1.55;
+    color: var(--text-primary);
+    margin: 0 0 32px 0;
+    min-height: 3.4em;
+    transition: opacity 0.4s ease;
+  }
+
+  .verse-text.loading {
+    opacity: 0.35;
+  }
+
+  .verse-ref {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 560;
+    font-size: 15px;
+    letter-spacing: 0.03em;
+    color: var(--accent-gold);
+  }
+
+  .verse-ref::before {
+    content: '— ';
+  }
+
+  .footer-note {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 0.01em;
+  }
+
+  .error-note {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 13px;
+    color: var(--accent-ember);
+  }
+
+  .notify-btn {
+    display: block;
+    margin: 24px auto 0;
+    background: transparent;
+    border: 1px solid rgba(201, 162, 39, 0.4);
+    color: var(--accent-gold);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .notify-btn:hover {
+    background: rgba(201, 162, 39, 0.1);
+    border-color: var(--accent-gold);
+  }
+
+  .notify-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .notify-status {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* --- Onglets façon Twitter/X --- */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.18);
+    margin-bottom: 24px;
+  }
+
+  .tab-btn {
+    flex: 1 1 0;
+    position: relative;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    padding: 16px 0;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .tab-btn:hover {
+    color: var(--text-primary);
+    background: rgba(201, 162, 39, 0.06);
+  }
+
+  .tab-btn::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -1px;
+    width: 56px;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: var(--accent-gold);
+    transform: translateX(-50%) scaleX(0);
+    transition: transform 0.2s ease;
+  }
+
+  .tab-btn.active {
+    color: var(--text-primary);
+  }
+
+  .tab-btn.active::after {
+    transform: translateX(-50%) scaleX(1);
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.25s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* --- Mise en page 3 colonnes façon X, uniquement pour l'onglet Communauté ---
+     Technique de "full bleed" : on sort du conteneur centré (main, 620px)
+     via des marges négatives basées sur le viewport, sans toucher au JS
+     ni à la largeur de main lui-même. */
+  #panel-community {
+    max-width: 1160px;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0 20px;
+  }
+
+  .community-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) 280px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .community-nav {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Fraunces', serif;
+    font-weight: 560;
+    font-size: 18px;
+    color: var(--text-primary);
+    padding: 8px 12px 20px;
+  }
+
+  .nav-brand .flame {
+    color: var(--accent-gold);
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 999px;
+    font-size: 15px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .nav-item:hover {
+    background: rgba(201, 162, 39, 0.08);
+  }
+
+  .nav-item.active {
+    font-weight: 700;
+  }
+
+  .nav-icon {
+    font-size: 18px;
+  }
+
+  .nav-compose {
+    margin-top: 16px;
+    background: var(--accent-gold);
+    border: none;
+    color: var(--bg-deep);
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 0;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .nav-compose:hover {
+    opacity: 0.85;
+  }
+
+  .community-side {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .side-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-panel);
+    border: 1px solid rgba(201, 162, 39, 0.18);
+    border-radius: 999px;
+    padding: 12px 18px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .side-search input {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 0;
+  }
+
+  .side-search input:focus {
+    outline: none;
+  }
+
+  .side-search input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .side-card {
+    background: var(--bg-panel);
+    border: 1px solid rgba(201, 162, 39, 0.18);
+    border-radius: 12px;
+    padding: 18px;
+  }
+
+  .side-card h3 {
+    margin: 0 0 8px 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .side-card p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+
+  .countdown-value {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 560;
+    font-size: 26px;
+    letter-spacing: 0.03em;
+    color: var(--accent-gold);
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shabbat-content {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .shabbat-location {
+    margin: 0 0 4px 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    opacity: 0.8;
+  }
+
+  .shabbat-parasha {
+    margin: 0 0 10px 0;
+    font-family: 'Fraunces', serif;
+    font-weight: 560;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+
+  .shabbat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 0 0 4px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .shabbat-row span:last-child {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  @media (max-width: 900px) {
+    #panel-community {
+      padding: 0 16px;
+    }
+    .community-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .community-nav,
+    .community-side {
+      display: none;
+    }
+  }
+
+  /* --- Communauté --- */
+  .community-card {
+    background: var(--bg-panel);
+    border: 1px solid rgba(201, 162, 39, 0.18);
+    border-radius: 4px;
+    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+  }
+
+  .community-card-head {
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.14);
+  }
+
+  .community-card-head h2 {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text-primary);
+  }
+
+  .community-subtitle {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* --- Profil façon X : bannière, avatar qui chevauche, bio, stats réelles --- */
+  .profile-banner {
+    height: 110px;
+    background: linear-gradient(120deg, rgba(201, 162, 39, 0.35), rgba(181, 101, 29, 0.25) 60%, rgba(201, 162, 39, 0.15));
+  }
+
+  .profile-header-body {
+    position: relative;
+    padding: 0 20px 16px;
+  }
+
+  .profile-avatar-lg {
+    width: 84px;
+    height: 84px;
+    font-size: 32px;
+    border: 4px solid var(--bg-panel);
+    margin-top: -42px;
+  }
+
+  .profile-edit-btn {
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    background: transparent;
+    border: 1px solid rgba(201, 162, 39, 0.4);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .profile-edit-btn:hover {
+    background: rgba(201, 162, 39, 0.1);
+  }
+
+  .profile-name {
+    margin: 10px 0 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 19px;
+    color: var(--text-primary);
+  }
+
+  .profile-handle {
+    margin: 2px 0 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .profile-bio {
+    margin: 0 0 10px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--text-primary);
+  }
+
+  .profile-bio:empty::before {
+    content: 'Aucune bio pour l\2019instant.';
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .profile-meta {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .profile-stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 4px;
+  }
+
+  .profile-stats b {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
+
+  .profile-stats span {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .profile-edit-form {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(201, 162, 39, 0.14);
+  }
+
+  .profile-edit-form.show {
+    display: flex;
+  }
+
+  .profile-edit-form input,
+  .profile-edit-form textarea {
+    background: var(--bg-deep);
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+  }
+
+  .profile-edit-form textarea {
+    min-height: 60px;
+    resize: vertical;
+  }
+
+  .profile-edit-form input:focus,
+  .profile-edit-form textarea:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+  }
+
+  .profile-edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .profile-edit-actions button {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  #profile-edit-cancel {
+    background: transparent;
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    color: var(--text-muted);
+  }
+
+  #profile-edit-form button[type="submit"] {
+    background: var(--accent-gold);
+    border: none;
+    color: var(--bg-deep);
+  }
+
+  .profile-tabs {
+    display: flex;
+    border-top: 1px solid rgba(201, 162, 39, 0.14);
+  }
+
+  .profile-tab {
+    flex: 1 1 0;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 14px 0;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .profile-tab:hover {
+    background: rgba(201, 162, 39, 0.06);
+    color: var(--text-primary);
+  }
+
+  .profile-tab.active {
+    color: var(--text-primary);
+  }
+
+  .profile-tab.active::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 48px;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: var(--accent-gold);
+    transform: translateX(-50%);
+  }
+
+  .comment-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.14);
+  }
+
+  .comment-form input {
+    flex: 1 1 140px;
+  }
+
+  .comment-form textarea {
+    flex: 1 1 100%;
+    min-height: 60px;
+  }
+
+  .comment-form input,
+  .comment-form textarea {
+    background: var(--bg-deep);
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 999px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 10px 16px;
+    resize: vertical;
+  }
+
+  .comment-form textarea {
+    border-radius: 16px;
+    padding-bottom: 40px;
+  }
+
+  .comment-form input:focus,
+  .comment-form textarea:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+  }
+
+  .comment-input-wrap {
+    position: relative;
+    flex: 1 1 100%;
+    display: flex;
+  }
+
+  .comment-input-wrap textarea {
+    width: 100%;
+  }
+
+  .composer-row {
+    display: flex;
+    gap: 12px;
+    flex: 1 1 100%;
+  }
+
+  .composer-row .comment-avatar {
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .composer-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .composer-pseudo-input {
+    display: none;
+    align-self: flex-start;
+    width: auto;
+    max-width: 100%;
+    background: var(--bg-deep);
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    border-radius: 999px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    padding: 7px 14px;
+  }
+
+  .composer-pseudo-input.show {
+    display: block;
+  }
+
+  .composer-pseudo-input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+  }
+
+  .composer-main textarea {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    font-size: 17px;
+    padding: 8px 0 40px 0;
+    min-height: 50px;
+  }
+
+  .composer-main textarea:focus {
+    outline: none;
+    border: none;
+  }
+
+  .composer-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(201, 162, 39, 0.1);
+    padding-top: 10px;
+  }
+
+  .composer-identity {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 0;
+  }
+
+  .composer-identity:hover {
+    color: var(--accent-gold);
+  }
+
+  .comment-toolbar {
+    position: absolute;
+    left: 10px;
+    bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.65);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    padding: 0;
+  }
+
+  .toolbar-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    stroke: none;
+  }
+
+  .toolbar-btn i {
+    font-size: 16px;
+    line-height: 1;
+    color: currentColor;
+  }
+
+  .toolbar-btn:hover,
+  .toolbar-btn.active {
+    background: transparent;
+  }
+
+  #comment-media-btn {
+    color: #4a90e2;
+  }
+
+  #comment-media-btn:hover,
+  #comment-media-btn.active {
+    color: #4a90e2;
+  }
+
+  #comment-emoji-btn {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  #comment-emoji-btn:hover,
+  #comment-emoji-btn.active {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .comment-media-preview {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 100%;
+    background: rgba(201, 162, 39, 0.08);
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 12px;
+    padding: 6px 10px;
+    margin-top: -2px;
+  }
+
+  .comment-media-preview.show {
+    display: flex;
+  }
+
+  .comment-media-preview img {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .comment-media-preview span {
+    flex: 1;
+    font-size: 12px;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .comment-media-remove {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  .comment-media-remove:hover {
+    color: var(--accent-ember);
+  }
+
+  .emoji-picker {
+    display: none;
+    position: absolute;
+    left: 10px;
+    bottom: 46px;
+    width: 244px;
+    max-height: 190px;
+    overflow-y: auto;
+    background: var(--bg-deep);
+    border: 1px solid rgba(201, 162, 39, 0.25);
+    border-radius: 12px;
+    padding: 10px;
+    gap: 6px;
+    grid-template-columns: repeat(6, 1fr);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 5;
+  }
+
+  .emoji-picker.show {
+    display: grid;
+  }
+
+  .emoji-picker button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 8px;
+    line-height: 1;
+  }
+
+  .emoji-picker button:hover {
+    background: rgba(201, 162, 39, 0.16);
+  }
+
+  .comment-form button {
+    background: #c9a227;
+    border: none;
+    color: #12141f;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 9px 20px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    margin-left: auto;
+  }
+
+  .comment-form button:hover {
+    opacity: 0.85;
+  }
+
+  .comment-form button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .comment-error {
+    flex: 1 1 100%;
+    color: var(--accent-ember);
+    font-size: 12px;
+    margin: 0;
+    min-height: 14px;
+  }
+
+  .comments-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .comment {
+    display: flex;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.1);
+    transition: background 0.15s ease;
+  }
+
+  .comment:hover {
+    background: rgba(201, 162, 39, 0.04);
+  }
+
+  .comment-avatar {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(201, 162, 39, 0.16);
+    color: var(--accent-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 560;
+    font-size: 16px;
+  }
+
+  .comment-body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .comment-head {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 2px;
+    flex-wrap: wrap;
+  }
+
+  .comment-pseudo {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 14px;
+  }
+
+  .comment-date {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .comment-date::before {
+    content: '· ';
+  }
+
+  .comment-message {
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .comment-image {
+    display: block;
+    max-width: 320px;
+    max-height: 320px;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin: 0 0 10px 0;
+    border: 1px solid rgba(201, 162, 39, 0.18);
+    object-fit: cover;
+    cursor: zoom-in;
+  }
+
+  .comment-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .reactions-row {
+    display: flex;
+    gap: 4px;
+  }
+
+  .reaction-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 5px 8px;
+    border-radius: 999px;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  .reaction-btn:hover {
+    background: rgba(224, 36, 94, 0.1);
+  }
+
+  .reaction-btn.active {
+    background: rgba(224, 36, 94, 0.14);
+  }
+
+  .reaction-count {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .reaction-btn.active .reaction-count {
+    color: #e0245e;
+    font-weight: 600;
+  }
+
+  .comment-actions .reply-toggle,
+  .comment-actions .edit-toggle {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 999px;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  .comment-actions .reply-toggle:hover {
+    color: #5b9dd9;
+    background: rgba(91, 157, 217, 0.1);
+  }
+
+  .comment-actions .edit-toggle:hover {
+    color: var(--accent-gold);
+    background: rgba(201, 162, 39, 0.1);
+  }
+
+  .comment-edited {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .edit-form {
+    margin-top: 8px;
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .edit-form.active { display: flex; }
+
+  .edit-form textarea {
+    flex: 1 1 100%;
+    min-height: 50px;
+    background: var(--bg-deep);
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 14px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+
+  .edit-form button {
+    background: transparent;
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    margin-left: auto;
+  }
+
+  .edit-form button:hover {
+    background: rgba(201, 162, 39, 0.1);
+  }
+
+  .replies {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .replies .comment {
+    padding: 10px 0 10px 0;
+    border-bottom: none;
+    border-top: 1px solid rgba(201, 162, 39, 0.08);
+  }
+
+  .replies .comment:hover {
+    background: transparent;
+  }
+
+  .replies .comment-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .reply-form {
+    margin-top: 10px;
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .reply-form.active { display: flex; }
+
+  .reply-form input,
+  .reply-form textarea {
+    background: var(--bg-deep);
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 999px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+
+  .reply-form input { flex: 1 1 120px; }
+  .reply-form textarea { flex: 1 1 100%; min-height: 44px; border-radius: 14px; }
+
+  .reply-form button {
+    background: transparent;
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    margin-left: auto;
+  }
+
+  .reply-form button:hover {
+    background: rgba(201, 162, 39, 0.1);
+  }
+
+  .empty-note {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 24px 20px;
+  }
+
+  /* --- Notifications (onglet Communauté) --- */
+  .notif-trigger {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .nav-badge {
+    margin-left: auto;
+    background: #d94b3f;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+  }
+
+  .notif-panel {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 6px;
+    width: 320px;
+    max-width: calc(100vw - 40px);
+    max-height: 420px;
+    overflow-y: auto;
+    background: var(--bg-panel);
+    border: 1px solid rgba(201, 162, 39, 0.25);
+    border-radius: 12px;
+    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.7);
+    z-index: 50;
+    cursor: default;
+  }
+
+  .notif-panel.open {
+    display: block;
+  }
+
+  .notif-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.14);
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+
+  .notif-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 15px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  .notif-close:hover {
+    color: var(--text-primary);
+  }
+
+  .notif-item {
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.08);
+    transition: background 0.15s ease;
+  }
+
+  .notif-item:last-child {
+    border-bottom: none;
+  }
+
+  .notif-item:hover {
+    background: rgba(201, 162, 39, 0.08);
+  }
+
+  .notif-item.unread {
+    background: rgba(201, 162, 39, 0.05);
+  }
+
+  .notif-dot {
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+    border-radius: 50%;
+    background: var(--accent-gold);
+    margin-top: 6px;
+    visibility: hidden;
+  }
+
+  .notif-item.unread .notif-dot {
+    visibility: visible;
+  }
+
+  .notif-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .notif-pseudo {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-primary);
+  }
+
+  .notif-snippet {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 2px 0 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .notif-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.8;
+  }
+
+  .comment.highlight {
+    animation: notifHighlight 2s ease;
+  }
+
+  @keyframes notifHighlight {
+    from { background: rgba(201, 162, 39, 0.3); }
+    to { background: transparent; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow" aria-hidden="true"></div>
+
+<main>
+  <div class="eyebrow">
+    <span class="flame">✦</span>
+    <span>Verset du jour</span>
+    <span class="date" id="today-date"></span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-verse" data-panel="panel-verse">Verset</button>
+    <button class="tab-btn" id="tab-community" data-panel="panel-community">Communauté</button>
+  </div>
+
+  <div class="panel active" id="panel-verse">
+    <div class="card">
+      <p class="verse-text loading" id="verse-text">Le verset se prépare&hellip;</p>
+      <p class="verse-ref" id="verse-ref" style="visibility:hidden;">Référence</p>
+    </div>
+
+    <p class="footer-note" id="footer-note">Un même verset accompagne toute la journée. Reviens demain pour le suivant.</p>
+
+    <button class="notify-btn" id="notify-btn">Activer les notifications</button>
+    <p class="notify-status" id="notify-status"></p>
+  </div>
+
+  <div class="panel" id="panel-community">
+    <div class="community-layout">
+      <aside class="community-nav">
+        <div class="nav-brand">
+          <span class="flame">✦</span> Verset
+        </div>
+        <div class="nav-item active" id="nav-home" data-view="home"><span class="nav-icon">🏠</span> Accueil</div>
+        <div class="nav-item" id="nav-explore" data-view="explore"><span class="nav-icon">🔍</span> Explorer</div>
+        <div class="nav-item notif-trigger" id="nav-notifications">
+          <span class="nav-icon">🔔</span> Notifications
+          <span class="nav-badge" id="notif-badge" style="display:none;">0</span>
+
+          <div class="notif-panel" id="notif-panel">
+            <div class="notif-panel-head">
+              <span>Notifications</span>
+              <button type="button" class="notif-close" id="notif-close" aria-label="Fermer">✕</button>
+            </div>
+            <div class="notif-list" id="notif-list"></div>
+            <p class="empty-note" id="notif-empty" style="display:none;">Aucune notification pour l'instant.</p>
+          </div>
+        </div>
+        <div class="nav-item" id="nav-profile" data-view="profile"><span class="nav-icon">👤</span> Profil</div>
+        <button class="nav-compose" type="button" onclick="focusComposer()">Publier</button>
+      </aside>
+
+      <div class="community-card">
+        <div class="community-card-head">
+          <h2 id="community-title">Commentaires</h2>
+          <p class="community-subtitle" id="community-subtitle" style="display:none;"></p>
+        </div>
+
+        <div class="profile-header" id="profile-header" style="display:none;">
+          <div class="profile-banner"></div>
+          <div class="profile-header-body">
+            <button type="button" class="profile-edit-btn" id="profile-edit-btn">Éditer le profil</button>
+            <div class="comment-avatar profile-avatar-lg" id="profile-avatar-lg">?</div>
+            <h3 class="profile-name" id="profile-name">Pseudo</h3>
+            <p class="profile-handle" id="profile-handle">@pseudo</p>
+            <p class="profile-bio" id="profile-bio"></p>
+            <p class="profile-meta" id="profile-meta">📅 Membre depuis…</p>
+            <div class="profile-stats" id="profile-stats"></div>
+
+            <form class="profile-edit-form" id="profile-edit-form">
+              <input type="text" id="profile-edit-pseudo" placeholder="Pseudo" maxlength="30">
+              <p class="comment-error" id="profile-pseudo-hint" style="color: var(--text-muted);"></p>
+              <textarea id="profile-edit-bio" placeholder="Une phrase à propos de toi…" maxlength="120"></textarea>
+              <p class="comment-error" id="profile-edit-error"></p>
+              <div class="profile-edit-actions">
+                <button type="button" id="profile-edit-cancel">Annuler</button>
+                <button type="submit">Enregistrer</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="profile-tabs" id="profile-tabs">
+            <button type="button" class="profile-tab active" data-subview="posts">Posts</button>
+            <button type="button" class="profile-tab" data-subview="replies">Réponses</button>
+            <button type="button" class="profile-tab" data-subview="likes">J'aime</button>
+          </div>
+        </div>
+
+        <form class="comment-form" id="comment-form">
+          <div class="composer-row">
+            <div class="comment-avatar" id="composer-avatar">?</div>
+            <div class="composer-main">
+              <input type="text" id="comment-pseudo" class="composer-pseudo-input" placeholder="Choisis un pseudo pour publier" maxlength="30" required>
+              <div class="comment-input-wrap">
+                <textarea id="comment-message" placeholder="Quoi de neuf ?" maxlength="500" required></textarea>
+                <div class="comment-toolbar">
+                  <button type="button" class="toolbar-btn" id="comment-media-btn" title="Ajouter une image" aria-label="Ajouter une image">
+                    <i class="fi fi-rc-video-duration"></i>
+                  </button>
+                  <button type="button" class="toolbar-btn" id="comment-emoji-btn" title="Ajouter un emoji" aria-label="Ajouter un emoji">
+                    <i class="fi fi-rr-smile"></i>
+                  </button>
+                  <input type="file" id="comment-media-input" accept="image/*,video/*" hidden>
+                </div>
+                <div class="emoji-picker" id="emoji-picker"></div>
+              </div>
+              <div class="comment-media-preview" id="comment-media-preview">
+                <img id="comment-media-preview-img" alt="Aperçu">
+                <span id="comment-media-preview-name"></span>
+                <button type="button" class="comment-media-remove" id="comment-media-remove" aria-label="Retirer l'image">✕</button>
+              </div>
+              <p class="comment-error" id="comment-error"></p>
+              <div class="composer-footer">
+                <button type="button" class="composer-identity" id="composer-identity"></button>
+                <button type="submit">Publier</button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+
+        <div class="comments-list" id="comments-list"></div>
+        <p class="empty-note" id="comments-empty" style="display:none;">Aucun commentaire pour l'instant. Sois le premier à écrire !</p>
+      </div>
+
+      <aside class="community-side">
+        <div class="side-search">
+          🔍
+          <input type="search" id="community-search" placeholder="Rechercher" autocomplete="off">
+        </div>
+        <div class="side-card">
+          <h3>⏳ Prochain verset</h3>
+          <p class="countdown-value" id="countdown-timer">--:--:--</p>
+        </div>
+        <div class="side-card">
+          <h3>🕯️ Horaires de Shabbat</h3>
+          <div id="shabbat-content" class="shabbat-content">Chargement…</div>
+        </div>
+        <div class="side-card">
+          <h3></h3>
+          <p>Cet espace est réservé aux échanges autour du verset du jour. Sois bienveillant·e envers les autres membres.</p>
+        </div>
+        <div class="side-card">
+          <h3>Rappel</h3>
+          <p>Tu peux modifier ton commentaire pendant 5 minutes après l'avoir publié.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<script>
+  const dateEl = document.getElementById('today-date');
+  dateEl.textContent = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  const textEl = document.getElementById('verse-text');
+  const refEl = document.getElementById('verse-ref');
+  const footerEl = document.getElementById('footer-note');
+
+  fetch('/api/verset')
+    .then((res) => {
+      if (!res.ok) throw new Error('Réponse invalide');
+      return res.json();
+    })
+    .then((data) => {
+      textEl.textContent = `\u00AB\u00A0${data.text}\u00A0\u00BB`;
+      textEl.classList.remove('loading');
+      refEl.textContent = data.reference;
+      refEl.style.visibility = 'visible';
+    })
+    .catch(() => {
+      textEl.textContent = 'Le verset n\u2019a pas pu être chargé.';
+      textEl.classList.remove('loading');
+      footerEl.textContent = 'Réessaie dans un instant.';
+      footerEl.classList.add('error-note');
+    });
+
+  // --- Notifications navigateur ---
+  const notifyBtn = document.getElementById('notify-btn');
+  const notifyStatus = document.getElementById('notify-status');
+
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = atob(base64);
+    return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0)));
+  }
+
+  async function setupNotifications() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      notifyBtn.disabled = true;
+      notifyStatus.textContent = 'Notifications non prises en charge par ce navigateur.';
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.register('/static/sw.js');
+    const existing = await registration.pushManager.getSubscription();
+
+    if (existing) {
+      notifyBtn.textContent = 'Notifications activées';
+      notifyBtn.disabled = true;
+      notifyStatus.textContent = 'Notifications actives ✓';
+      return;
+    }
+
+    notifyBtn.addEventListener('click', async () => {
+      notifyBtn.disabled = true;
+      notifyStatus.textContent = 'Activation…';
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          notifyStatus.textContent = 'Permission refusée.';
+          notifyBtn.disabled = false;
+          return;
+        }
+
+        const keyRes = await fetch('/api/vapid-public-key');
+        const { publicKey } = await keyRes.json();
+
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(publicKey),
+        });
+
+        await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(subscription),
+        });
+
+        notifyBtn.textContent = 'Notifications activées';
+        notifyStatus.textContent = 'Notifications actives ✓';
+      } catch (err) {
+        notifyStatus.textContent = 'Impossible d\u2019activer les notifications.';
+        notifyBtn.disabled = false;
+      }
+    });
+  }
+
+  setupNotifications();
+
+  // --- Onglets ---
+  document.querySelectorAll('.tab-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.panel).classList.add('active');
+      if (btn.id === 'tab-community') loadComments();
+    });
+  });
+
+  // --- Communauté ---
+  const REACTION_EMOJIS = ['❤️', '🙏', '👏', '🙌'];
+  const EDIT_WINDOW_MS = 5 * 60 * 1000;
+  const PSEUDO_CHANGE_COOLDOWN_MS = 72 * 60 * 60 * 1000;
+
+  const commentForm = document.getElementById('comment-form');
+  const pseudoInput = document.getElementById('comment-pseudo');
+  const messageInput = document.getElementById('comment-message');
+  const commentError = document.getElementById('comment-error');
+  const commentsList = document.getElementById('comments-list');
+  const commentsEmpty = document.getElementById('comments-empty');
+
+  const savedPseudo = localStorage.getItem('versetPseudo');
+  if (savedPseudo) pseudoInput.value = savedPseudo;
+
+  // --- Pseudo : première inscription libre, puis changement limité à
+  // une fois toutes les 72h (uniquement depuis l'onglet Profil). ---
+  function getPseudo() {
+    return (localStorage.getItem('versetPseudo') || '').trim();
+  }
+
+  function getPseudoChangedAt() {
+    return localStorage.getItem('versetPseudoChangedAt');
+  }
+
+  function setPseudo(newPseudo) {
+    localStorage.setItem('versetPseudo', newPseudo);
+    localStorage.setItem('versetPseudoChangedAt', new Date().toISOString());
+  }
+
+  function pseudoCooldownRemaining() {
+    const changedAt = getPseudoChangedAt();
+    if (!changedAt) return 0;
+    const elapsed = Date.now() - new Date(changedAt).getTime();
+    return Math.max(0, PSEUDO_CHANGE_COOLDOWN_MS - elapsed);
+  }
+
+  function formatRemaining(ms) {
+    const totalMin = Math.ceil(ms / 60000);
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    if (h > 0) return `${h} h${m ? ` ${m} min` : ''}`;
+    return `${m} min`;
+  }
+
+  // --- Identité du composer : avatar + pseudo, façon Twitter (on ne redemande
+  // le pseudo qu'une fois, ensuite on l'affiche comme "Publier en tant que…") ---
+  const composerAvatar = document.getElementById('composer-avatar');
+  const composerIdentity = document.getElementById('composer-identity');
+
+  function refreshComposerIdentity() {
+    const pseudo = getPseudo();
+    if (pseudo) {
+      composerAvatar.textContent = pseudo.charAt(0).toUpperCase();
+      composerIdentity.textContent = `Publier en tant que ${pseudo} · changer`;
+      pseudoInput.classList.remove('show');
+      pseudoInput.value = pseudo;
+      pseudoInput.readOnly = true;
+    } else {
+      composerAvatar.textContent = '?';
+      composerIdentity.textContent = 'Choisis ton pseudo';
+      pseudoInput.classList.add('show');
+      pseudoInput.readOnly = false;
+    }
+  }
+
+  refreshComposerIdentity();
+
+  function handleComposerIdentityClick() {
+    if (getPseudo()) {
+      goToProfileToChangePseudo();
+    } else {
+      pseudoInput.classList.toggle('show');
+      pseudoInput.focus();
+    }
+  }
+
+  composerAvatar.addEventListener('click', handleComposerIdentityClick);
+  composerIdentity.addEventListener('click', handleComposerIdentityClick);
+
+  // Exige un pseudo avant toute interaction (commenter, répondre, réagir) ;
+  // les commentaires restent visibles sans inscription.
+  function requirePseudo(message) {
+    if (getPseudo()) return true;
+    pseudoInput.classList.add('show');
+    pseudoInput.focus();
+    commentError.textContent = message || 'Choisis un pseudo pour interagir (commenter, réagir).';
+    document.querySelector('.comment-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return false;
+  }
+
+  // --- Boutons média + emoji du champ de commentaire ---
+  const mediaBtn = document.getElementById('comment-media-btn');
+  const mediaInput = document.getElementById('comment-media-input');
+  const mediaPreview = document.getElementById('comment-media-preview');
+  const mediaPreviewImg = document.getElementById('comment-media-preview-img');
+  const mediaPreviewName = document.getElementById('comment-media-preview-name');
+  const mediaRemoveBtn = document.getElementById('comment-media-remove');
+  const emojiBtn = document.getElementById('comment-emoji-btn');
+  const emojiPicker = document.getElementById('emoji-picker');
+  const PICKER_EMOJIS = ['😀', '😂', '😍', '🙏', '👏', '🔥', '❤️', '😢', '😮', '🙌', '✨', '💯'];
+
+  emojiPicker.innerHTML = PICKER_EMOJIS
+    .map((e) => `<button type="button" data-emoji="${e}">${e}</button>`)
+    .join('');
+
+  mediaBtn?.addEventListener('click', () => mediaInput.click());
+
+  let pendingImageDataUrl = null;
+
+  function readFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  mediaInput?.addEventListener('change', async () => {
+    const file = mediaInput.files?.[0];
+    if (!file) return;
+    const isVideo = file.type.startsWith('video/');
+    const maxBytes = isVideo ? 30 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      commentError.textContent = isVideo
+        ? "La vidéo dépasse la taille maximale autorisée (30 Mo)."
+        : "L'image dépasse la taille maximale autorisée (5 Mo).";
+      mediaInput.value = '';
+      return;
+    }
+    if (isVideo) {
+      mediaPreviewImg.src = '';
+      mediaPreviewImg.style.display = 'none';
+    } else {
+      mediaPreviewImg.src = URL.createObjectURL(file);
+      mediaPreviewImg.style.display = '';
+    }
+    mediaPreviewName.textContent = (isVideo ? '\u{1F3A5} ' : '') + file.name;
+    mediaPreview.classList.add('show');
+    try {
+      pendingImageDataUrl = await readFileAsDataUrl(file);
+    } catch (err) {
+      pendingImageDataUrl = null;
+    }
+  });
+
+  mediaRemoveBtn?.addEventListener('click', () => {
+    mediaInput.value = '';
+    pendingImageDataUrl = null;
+    mediaPreviewImg.style.display = '';
+    mediaPreview.classList.remove('show');
+  });
+
+  emojiBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    emojiPicker.classList.toggle('show');
+    emojiBtn.classList.toggle('active', emojiPicker.classList.contains('show'));
+  });
+
+  emojiPicker.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-emoji]');
+    if (!btn) return;
+    const start = messageInput.selectionStart ?? messageInput.value.length;
+    const end = messageInput.selectionEnd ?? messageInput.value.length;
+    const value = messageInput.value;
+    messageInput.value = value.slice(0, start) + btn.dataset.emoji + value.slice(end);
+    const cursor = start + btn.dataset.emoji.length;
+    messageInput.focus();
+    messageInput.setSelectionRange(cursor, cursor);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!emojiPicker.contains(e.target) && e.target !== emojiBtn) {
+      emojiPicker.classList.remove('show');
+      emojiBtn?.classList.remove('active');
+    }
+  });
+
+  // Jetons d'édition reçus à la création de chacun de nos commentaires,
+  // gardés en local pour pouvoir les modifier dans les 5 minutes.
+  function editTokens() {
+    return JSON.parse(localStorage.getItem('versetEditTokens') || '{}');
+  }
+
+  function saveEditToken(id, token) {
+    const tokens = editTokens();
+    tokens[id] = token;
+    localStorage.setItem('versetEditTokens', JSON.stringify(tokens));
+  }
+
+  // Réaction déjà posée par ce visiteur sur chaque commentaire (une seule à
+  // la fois, comme un like classique : cliquer sur une autre bascule vers
+  // elle, recliquer sur la même la retire).
+  function myReactions() {
+    return JSON.parse(localStorage.getItem('versetMyReactions') || '{}');
+  }
+
+  function setMyReaction(id, emoji) {
+    const mine = myReactions();
+    if (emoji) mine[id] = emoji; else delete mine[id];
+    localStorage.setItem('versetMyReactions', JSON.stringify(mine));
+  }
+
+  // Réponses déjà consultées via le panneau de notifications, pour ne plus
+  // les compter comme "non lues" (badge) une fois qu'on a cliqué dessus.
+  function seenNotifIds() {
+    return new Set(JSON.parse(localStorage.getItem('versetSeenReplies') || '[]'));
+  }
+
+  function markNotifSeen(id) {
+    const seen = seenNotifIds();
+    seen.add(String(id));
+    localStorage.setItem('versetSeenReplies', JSON.stringify([...seen]));
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) +
+      ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // Temps relatif façon réseau social : d'abord en minutes, puis en heures
+  // une fois que 60 minutes sont passées, puis en jours au-delà de 24h,
+  // et enfin la date complète au-delà d'une semaine.
+  function formatRelativeDate(iso) {
+    const diffMs = Date.now() - new Date(iso).getTime();
+    const diffMin = Math.max(0, Math.floor(diffMs / 60000));
+    if (diffMin < 1) return "à l'instant";
+    if (diffMin < 60) return `${diffMin} min`;
+    const diffH = Math.floor(diffMin / 60);
+    if (diffH < 24) return `${diffH} h`;
+    const diffJ = Math.floor(diffH / 24);
+    if (diffJ < 7) return `${diffJ} j`;
+    return formatDate(iso);
+  }
+
+  function canStillEdit(c) {
+    return editTokens()[c.id] && (Date.now() - new Date(c.created_at).getTime()) < EDIT_WINDOW_MS;
+  }
+
+  function reactionsHtml(c) {
+    const mine = myReactions()[c.id];
+    return REACTION_EMOJIS.map((emoji) => {
+      const count = c.reactions?.[emoji] || 0;
+      const active = mine === emoji;
+      return `<button class="reaction-btn${active ? ' active' : ''}" data-id="${c.id}" data-emoji="${emoji}">${emoji}${count ? ` <span class="reaction-count">${count}</span>` : ''}</button>`;
+    }).join('');
+  }
+
+  function commentHtml(c, isReply) {
+    const initial = escapeHtml(c.pseudo.trim().charAt(0).toUpperCase() || '?');
+    const editedTag = c.edited_at ? ' <span class="comment-edited">(modifié)</span>' : '';
+    const imageHtml = c.image_url
+      ? (c.media_type === 'video'
+          ? `<video class="comment-image" src="${escapeHtml(c.image_url)}" controls preload="metadata"></video>`
+          : `<img class="comment-image" src="${escapeHtml(c.image_url)}" alt="Image jointe" loading="lazy">`)
+      : '';
+    let html = `<div class="comment" data-id="${c.id}">
+      <div class="comment-avatar">${initial}</div>
+      <div class="comment-body">
+      <div class="comment-head">
+        <span class="comment-pseudo">${escapeHtml(c.pseudo)}</span>
+        <span class="comment-date" title="${escapeHtml(formatDate(c.created_at))}">${formatRelativeDate(c.created_at)}</span>${editedTag}
+      </div>
+      ${imageHtml}
+      <p class="comment-message" id="comment-text-${c.id}">${escapeHtml(c.text)}</p>
+      <div class="comment-actions">`;
+    if (!isReply) {
+      const replyCount = (c.replies || []).length;
+      html += `<button class="reply-toggle" data-id="${c.id}">\u{1F4AC}${replyCount ? ` <span class="reaction-count">${replyCount}</span>` : ''}</button>`;
+    }
+    html += `<div class="reactions-row">${reactionsHtml(c)}</div>`;
+    if (canStillEdit(c)) {
+      html += `<button class="edit-toggle" data-id="${c.id}">\u270f\ufe0f Modifier</button>`;
+    }
+    html += `</div>`;
+    html += `<form class="edit-form comment-form" id="edit-form-${c.id}" data-id="${c.id}">
+        <textarea class="edit-message" maxlength="500" required>${escapeHtml(c.text)}</textarea>
+        <p class="comment-error"></p>
+        <button type="submit">Enregistrer</button>
+      </form>`;
+    if (!isReply) {
+      const knownPseudo = getPseudo();
+      html += `<form class="reply-form comment-form" id="reply-form-${c.id}" data-parent="${c.id}">
+        <input type="text" class="reply-pseudo" placeholder="Ton pseudo" maxlength="30" value="${escapeHtml(knownPseudo)}" ${knownPseudo ? 'style="display:none;"' : ''} required>
+        <textarea class="reply-message" placeholder="Ta réponse…" maxlength="500" required></textarea>
+        <p class="comment-error"></p>
+        <button type="submit">Répondre</button>
+      </form>`;
+      if (c.replies && c.replies.length) {
+        html += `<div class="replies">${c.replies.map((r) => commentHtml(r, true)).join('')}</div>`;
+      }
+    }
+    html += `</div></div>`;
+    return html;
+  }
+
+  function renderComments(comments) {
+    commentsList.innerHTML = comments.map((c) => commentHtml(c, false)).join('');
+    commentsEmpty.style.display = comments.length ? 'none' : 'block';
+    attachCommentEvents();
+  }
+
+  function attachReactionEvents(container) {
+    container.querySelectorAll('.reaction-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        if (!requirePseudo('Choisis un pseudo pour réagir.')) return;
+        const id = btn.dataset.id;
+        const emoji = btn.dataset.emoji;
+        const current = myReactions()[id];
+        const row = btn.closest('.reactions-row');
+
+        try {
+          let reactions;
+          if (current === emoji) {
+            // On reclique sur la même réaction : on la retire.
+            const res = await fetch(`/api/comments/${id}/unreact`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ emoji }),
+            });
+            if (!res.ok) return;
+            reactions = (await res.json()).reactions;
+            setMyReaction(id, null);
+          } else {
+            // On bascule vers une autre réaction : on retire l'ancienne
+            // (si présente) puis on pose la nouvelle.
+            if (current) {
+              await fetch(`/api/comments/${id}/unreact`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ emoji: current }),
+              });
+            }
+            const res = await fetch(`/api/comments/${id}/react`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ emoji }),
+            });
+            if (!res.ok) return;
+            reactions = (await res.json()).reactions;
+            setMyReaction(id, emoji);
+          }
+
+          const mine = myReactions()[id];
+          row.innerHTML = REACTION_EMOJIS.map((e) => {
+            const count = reactions?.[e] || 0;
+            const active = mine === e;
+            return `<button class="reaction-btn${active ? ' active' : ''}" data-id="${id}" data-emoji="${e}">${e}${count ? ` <span class="reaction-count">${count}</span>` : ''}</button>`;
+          }).join('');
+          attachReactionEvents(row);
+        } catch (err) { /* silencieux */ }
+      });
+    });
+  }
+
+  function attachCommentEvents() {
+    attachReactionEvents(commentsList);
+
+    commentsList.querySelectorAll('.reply-toggle').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.getElementById(`reply-form-${btn.dataset.id}`).classList.toggle('active');
+      });
+    });
+
+    commentsList.querySelectorAll('.edit-toggle').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.getElementById(`edit-form-${btn.dataset.id}`).classList.toggle('active');
+      });
+    });
+
+    commentsList.querySelectorAll('.edit-form').forEach((form) => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = form.dataset.id;
+        const text = form.querySelector('.edit-message').value.trim();
+        const errorEl = form.querySelector('.comment-error');
+        errorEl.textContent = '';
+        if (!text) { errorEl.textContent = 'Le commentaire ne peut pas être vide.'; return; }
+        try {
+          const res = await fetch(`/api/comments/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ edit_token: editTokens()[id], text }),
+          });
+          if (!res.ok) {
+            const err = await res.json();
+            errorEl.textContent = err.error || 'Erreur lors de la modification.';
+            return;
+          }
+          loadComments();
+        } catch (err) {
+          errorEl.textContent = 'Erreur réseau.';
+        }
+      });
+    });
+
+    commentsList.querySelectorAll('.reply-form').forEach((form) => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!requirePseudo('Choisis un pseudo pour répondre.')) return;
+        const pseudo = form.querySelector('.reply-pseudo').value.trim();
+        const text = form.querySelector('.reply-message').value.trim();
+        const errorEl = form.querySelector('.comment-error');
+        errorEl.textContent = '';
+        if (!pseudo || !text) {
+          errorEl.textContent = 'Pseudo et message requis.';
+          return;
+        }
+        if (!getPseudo()) setPseudo(pseudo);
+        try {
+          const res = await fetch('/api/comments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pseudo, text, parent_id: Number(form.dataset.parent) }),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            errorEl.textContent = data.error || 'Erreur lors de l\u2019envoi.';
+            return;
+          }
+          saveEditToken(data.id, data.edit_token);
+          form.querySelector('.reply-message').value = '';
+          form.classList.remove('active');
+          loadComments();
+        } catch (err) {
+          errorEl.textContent = 'Erreur réseau.';
+        }
+      });
+    });
+  }
+
+  let latestComments = [];
+
+  async function loadComments() {
+    try {
+      const res = await fetch('/api/comments');
+      latestComments = await res.json();
+      updateNotifications(latestComments);
+      renderCurrentView();
+    } catch (err) {
+      commentsEmpty.textContent = 'Impossible de charger les commentaires.';
+      commentsEmpty.style.display = 'block';
+    }
+  }
+
+  // --- Onglets de la barre latérale Communauté (Accueil / Explorer / Profil) ---
+  const communityNavItems = document.querySelectorAll('.community-nav .nav-item[data-view]');
+  const communityTitle = document.getElementById('community-title');
+  const communitySubtitle = document.getElementById('community-subtitle');
+  let currentView = 'home';
+
+  function totalReactions(c) {
+    return Object.values(c.reactions || {}).reduce((sum, n) => sum + n, 0);
+  }
+
+  function myStats() {
+    const myIds = new Set(Object.keys(editTokens()));
+    let posted = 0;
+    let reactionsReceived = 0;
+    (function walk(list) {
+      list.forEach((c) => {
+        if (myIds.has(String(c.id))) {
+          posted += 1;
+          reactionsReceived += totalReactions(c);
+        }
+        if (c.replies) walk(c.replies);
+      });
+    })(latestComments);
+    return { posted, reactionsReceived };
+  }
+
+  function pluriel(n, mot) {
+    return `${n} ${mot}${n > 1 ? 's' : ''}`;
+  }
+
+  // --- Profil : bio et date d'inscription réelles, stockées localement
+  // (aucune fabrication : la date est celle du tout premier pseudo enregistré
+  // sur cet appareil, la bio est écrite par l'utilisateur lui-même). ---
+  function getBio() {
+    return localStorage.getItem('versetBio') || '';
+  }
+
+  function getJoinedAt() {
+    let joined = localStorage.getItem('versetJoinedAt');
+    if (!joined && localStorage.getItem('versetPseudo')) {
+      joined = new Date().toISOString();
+      localStorage.setItem('versetJoinedAt', joined);
+    }
+    return joined;
+  }
+
+  let profileSubview = 'posts';
+
+  function flattenComments(list) {
+    const flat = [];
+    (function walk(items) {
+      items.forEach((c) => {
+        flat.push(c);
+        if (c.replies) walk(c.replies);
+      });
+    })(list);
+    return flat;
+  }
+
+  function renderProfileHeader() {
+    const pseudo = getPseudo();
+    const { posted, reactionsReceived } = myStats();
+    const repliesCount = flattenComments(latestComments).filter(
+      (c) => c.parent_id !== null && Object.keys(editTokens()).includes(String(c.id))
+    ).length;
+    const likesCount = Object.keys(myReactions()).length;
+
+    document.getElementById('profile-avatar-lg').textContent = pseudo.charAt(0).toUpperCase() || '?';
+    document.getElementById('profile-name').textContent = pseudo || 'Pseudo non défini';
+    document.getElementById('profile-handle').textContent = pseudo
+      ? `@${pseudo.toLowerCase().replace(/\s+/g, '')}`
+      : '@anonyme';
+    document.getElementById('profile-bio').textContent = getBio();
+
+    const joined = getJoinedAt();
+    document.getElementById('profile-meta').textContent = joined
+      ? `\u{1F4C5} Membre depuis ${new Date(joined).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`
+      : '';
+
+    document.getElementById('profile-stats').innerHTML = `
+      <span><b>${posted - repliesCount >= 0 ? posted - repliesCount : posted}</b> posts</span>
+      <span><b>${repliesCount}</b> réponses</span>
+      <span><b>${reactionsReceived}</b> réactions reçues</span>
+      <span><b>${likesCount}</b> j'aime</span>
+    `;
+  }
+
+  const profileEditBtn = document.getElementById('profile-edit-btn');
+  const profileEditForm = document.getElementById('profile-edit-form');
+  const profileEditPseudo = document.getElementById('profile-edit-pseudo');
+  const profileEditBio = document.getElementById('profile-edit-bio');
+  const profilePseudoHint = document.getElementById('profile-pseudo-hint');
+  const profileEditError = document.getElementById('profile-edit-error');
+
+  function updatePseudoHint() {
+    const currentPseudo = getPseudo();
+    const remaining = pseudoCooldownRemaining();
+    if (currentPseudo && remaining > 0) {
+      profilePseudoHint.textContent = `Pseudo modifiable dans ${formatRemaining(remaining)}.`;
+    } else if (currentPseudo) {
+      profilePseudoHint.textContent = 'Tu peux changer de pseudo.';
+    } else {
+      profilePseudoHint.textContent = '';
+    }
+  }
+
+  function openProfileEditForm() {
+    profileEditPseudo.value = getPseudo();
+    profileEditBio.value = getBio();
+    profileEditError.textContent = '';
+    updatePseudoHint();
+    profileEditForm.classList.add('show');
+  }
+
+  function goToProfileToChangePseudo() {
+    communityNavItems.forEach((i) => i.classList.remove('active'));
+    document.getElementById('nav-profile').classList.add('active');
+    currentView = 'profile';
+    renderCurrentView();
+    openProfileEditForm();
+    profileEditPseudo.focus();
+  }
+
+  profileEditBtn.addEventListener('click', () => {
+    if (profileEditForm.classList.contains('show')) {
+      profileEditForm.classList.remove('show');
+    } else {
+      openProfileEditForm();
+    }
+  });
+
+  document.getElementById('profile-edit-cancel').addEventListener('click', () => {
+    profileEditForm.classList.remove('show');
+  });
+
+  profileEditForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const currentPseudo = getPseudo();
+    const newPseudo = profileEditPseudo.value.trim();
+    const bio = profileEditBio.value.trim();
+    profileEditError.textContent = '';
+
+    if (newPseudo && newPseudo !== currentPseudo) {
+      const remaining = pseudoCooldownRemaining();
+      if (currentPseudo && remaining > 0) {
+        profileEditError.textContent = `Tu pourras changer de pseudo dans ${formatRemaining(remaining)}.`;
+        return;
+      }
+      setPseudo(newPseudo);
+    }
+    localStorage.setItem('versetBio', bio);
+    profileEditForm.classList.remove('show');
+    refreshComposerIdentity();
+    renderProfileHeader();
+    renderCurrentView();
+  });
+
+  document.querySelectorAll('.profile-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.profile-tab').forEach((t) => t.classList.remove('active'));
+      tab.classList.add('active');
+      profileSubview = tab.dataset.subview;
+      renderCurrentView();
+    });
+  });
+
+  // --- Recherche (barre latérale) ---
+  // Filtre côté client sur le pseudo et le texte, en gardant un commentaire
+  // parent dès que lui-même ou l'une de ses réponses correspond.
+  let searchQuery = '';
+
+  function matchesSearch(c) {
+    const q = searchQuery.toLowerCase();
+    return c.pseudo.toLowerCase().includes(q) || c.text.toLowerCase().includes(q);
+  }
+
+  function filterBySearch(list) {
+    if (!searchQuery) return list;
+    return list
+      .map((c) => {
+        const matchingReplies = (c.replies || []).filter((r) => matchesSearch(r));
+        const selfMatches = matchesSearch(c);
+        if (!selfMatches && !matchingReplies.length) return null;
+        return { ...c, replies: selfMatches ? (c.replies || []) : matchingReplies };
+      })
+      .filter(Boolean);
+  }
+
+  const searchInput = document.getElementById('community-search');
+  searchInput.addEventListener('input', () => {
+    searchQuery = searchInput.value.trim();
+    renderCurrentView();
+  });
+
+  function updateCommunityHeader() {
+    const headEl = document.querySelector('.community-card-head');
+    document.getElementById('profile-header').style.display = currentView === 'profile' ? 'block' : 'none';
+    if (currentView === 'explore') {
+      headEl.style.display = 'block';
+      communityTitle.style.display = 'block';
+      communityTitle.textContent = 'Explorer';
+      communitySubtitle.textContent = 'Les commentaires les plus appréciés de la communauté.';
+      communitySubtitle.style.display = 'block';
+    } else if (currentView === 'profile') {
+      headEl.style.display = 'none';
+    } else {
+      headEl.style.display = 'block';
+      communityTitle.style.display = 'block';
+      communityTitle.textContent = 'Commentaires';
+      communitySubtitle.style.display = 'none';
+    }
+    commentForm.style.display = currentView === 'home' ? 'flex' : 'none';
+  }
+
+  function renderCurrentView() {
+    let list = latestComments;
+    if (currentView === 'explore') {
+      list = [...latestComments]
+        .filter((c) => totalReactions(c) > 0)
+        .sort((a, b) => totalReactions(b) - totalReactions(a));
+      commentsEmpty.textContent = 'Aucun commentaire n\u2019a encore reçu de réaction à explorer.';
+    } else if (currentView === 'profile') {
+      renderProfileHeader();
+      const myIds = new Set(Object.keys(editTokens()));
+      const flat = flattenComments(latestComments);
+      if (profileSubview === 'replies') {
+        list = flat.filter((c) => c.parent_id !== null && myIds.has(String(c.id)));
+        commentsEmpty.textContent = 'Tu n\u2019as encore répondu à aucun commentaire.';
+      } else if (profileSubview === 'likes') {
+        const likedIds = new Set(Object.keys(myReactions()));
+        list = flat.filter((c) => likedIds.has(String(c.id)));
+        commentsEmpty.textContent = 'Tu n\u2019as encore réagi à aucun commentaire.';
+      } else {
+        list = latestComments.filter((c) => myIds.has(String(c.id)));
+        commentsEmpty.textContent = 'Tu n\u2019as encore rien publié. Écris ton premier commentaire depuis l\u2019Accueil !';
+      }
+    } else {
+      commentsEmpty.textContent = 'Aucun commentaire pour l\u2019instant. Sois le premier à écrire !';
+    }
+    list = filterBySearch(list);
+    if (searchQuery && !list.length) {
+      commentsEmpty.textContent = 'Aucun résultat pour cette recherche.';
+    }
+    renderComments(list);
+    updateCommunityHeader();
+  }
+
+  communityNavItems.forEach((item) => {
+    item.addEventListener('click', () => {
+      // "Accueil" ramène vers l'onglet Verset du jour (comportement demandé),
+      // sans toucher au fonctionnement des autres vues (Explorer / Profil).
+      if (item.id === 'nav-home') {
+        document.getElementById('tab-verse').click();
+        return;
+      }
+      communityNavItems.forEach((i) => i.classList.remove('active'));
+      item.classList.add('active');
+      currentView = item.dataset.view;
+      renderCurrentView();
+    });
+  });
+
+  function focusComposer() {
+    if (currentView !== 'home') {
+      communityNavItems.forEach((i) => i.classList.remove('active'));
+      document.getElementById('nav-home').classList.add('active');
+      currentView = 'home';
+      renderCurrentView();
+    }
+    document.getElementById('comment-message').focus();
+  }
+
+  // --- Notifications (réponses reçues sur mes propres commentaires) ---
+  const navNotifications = document.getElementById('nav-notifications');
+  const notifPanel = document.getElementById('notif-panel');
+  const notifList = document.getElementById('notif-list');
+  const notifEmpty = document.getElementById('notif-empty');
+  const notifBadge = document.getElementById('notif-badge');
+  const notifClose = document.getElementById('notif-close');
+
+  // On ne connaît pas d'"utilisateur" côté serveur (pas de compte) : on
+  // considère qu'un commentaire est "à moi" si on possède son jeton
+  // d'édition local. Une notification = une réponse reçue par quelqu'un
+  // d'autre sur l'un de mes commentaires.
+  function computeNotifications(comments) {
+    const myIds = new Set(Object.keys(editTokens()));
+    const notifs = [];
+    comments.forEach((c) => {
+      (c.replies || []).forEach((r) => {
+        if (myIds.has(String(r.parent_id)) && !myIds.has(String(r.id))) {
+          notifs.push(r);
+        }
+      });
+    });
+    notifs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    return notifs;
+  }
+
+  function updateNotifications(comments) {
+    const notifs = computeNotifications(comments);
+    const seen = seenNotifIds();
+    const unreadCount = notifs.filter((n) => !seen.has(String(n.id))).length;
+
+    notifBadge.textContent = unreadCount > 9 ? '9+' : String(unreadCount);
+    notifBadge.style.display = unreadCount ? 'flex' : 'none';
+
+    notifEmpty.style.display = notifs.length ? 'none' : 'block';
+    notifList.innerHTML = notifs.map((n) => {
+      const isUnread = !seen.has(String(n.id));
+      return `<div class="notif-item${isUnread ? ' unread' : ''}" data-id="${n.id}" data-parent="${n.parent_id}">
+        <span class="notif-dot"></span>
+        <div class="notif-text">
+          <div class="notif-pseudo">${escapeHtml(n.pseudo)} a répondu à ton commentaire</div>
+          <p class="notif-snippet">${escapeHtml(n.text)}</p>
+          <span class="notif-date">${formatRelativeDate(n.created_at)}</span>
+        </div>
+      </div>`;
+    }).join('');
+
+    notifList.querySelectorAll('.notif-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        // Cliquer affiche/localise la réponse dans les commentaires ;
+        // l'utilisateur choisit ensuite librement d'interagir ou non.
+        markNotifSeen(item.dataset.id);
+        item.classList.remove('unread');
+        const stillUnread = notifList.querySelectorAll('.notif-item.unread').length;
+        notifBadge.textContent = stillUnread > 9 ? '9+' : String(stillUnread);
+        notifBadge.style.display = stillUnread ? 'flex' : 'none';
+
+        notifPanel.classList.remove('open');
+
+        const target = document.querySelector(`.comment[data-id="${item.dataset.parent}"]`);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          target.classList.add('highlight');
+          setTimeout(() => target.classList.remove('highlight'), 2000);
+        }
+      });
+    });
+  }
+
+  navNotifications.addEventListener('click', (e) => {
+    e.stopPropagation();
+    notifPanel.classList.toggle('open');
+  });
+
+  notifClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    notifPanel.classList.remove('open');
+  });
+
+  notifPanel.addEventListener('click', (e) => e.stopPropagation());
+
+  // Cliquer n'importe où ailleurs ferme le panneau sans rien changer :
+  // l'utilisateur peut ignorer ses notifications sans y interagir.
+  document.addEventListener('click', () => notifPanel.classList.remove('open'));
+
+  commentForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!requirePseudo('Choisis un pseudo pour publier.')) return;
+    const pseudo = pseudoInput.value.trim();
+    const text = messageInput.value.trim();
+    commentError.textContent = '';
+    if (!pseudo || !text) {
+      commentError.textContent = 'Pseudo et message requis.';
+      return;
+    }
+    if (!getPseudo()) setPseudo(pseudo);
+    try {
+      const res = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pseudo, text, image: pendingImageDataUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        commentError.textContent = data.error || 'Erreur lors de l\u2019envoi.';
+        return;
+      }
+      saveEditToken(data.id, data.edit_token);
+      messageInput.value = '';
+      mediaInput.value = '';
+      pendingImageDataUrl = null;
+      mediaPreview.classList.remove('show');
+      refreshComposerIdentity();
+      loadComments();
+    } catch (err) {
+      commentError.textContent = 'Erreur réseau.';
+    }
+  });
+
+  // --- Compte à rebours avant le prochain verset (minuit, heure locale) ---
+  const countdownEl = document.getElementById('countdown-timer');
+
+  function pad2(n) {
+    return String(n).padStart(2, '0');
+  }
+
+  function updateCountdown() {
+    const now = new Date();
+    const nextMidnight = new Date(now);
+    nextMidnight.setHours(24, 0, 0, 0);
+    const diff = nextMidnight - now;
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    countdownEl.textContent = `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // --- Horaires de Shabbat (Hebcal) ---
+  async function loadShabbat() {
+    const el = document.getElementById('shabbat-content');
+    try {
+      const res = await fetch('https://www.hebcal.com/shabbat?cfg=json&geonameid=3448439&M=on&leyning=off');
+      const data = await res.json();
+      const items = data.items || [];
+      const candle = items.find((i) => i.category === 'candles');
+      const havdalah = items.find((i) => i.category === 'havdalah');
+      const parasha = items.find((i) => i.category === 'parashat');
+
+      const timeOnly = (title) => (title || '').split(': ').slice(1).join(': ');
+
+      el.innerHTML = `
+        ${data.location?.title ? `<p class="shabbat-location">${escapeHtml(data.location.title)}</p>` : ''}
+        ${parasha ? `<p class="shabbat-parasha">${escapeHtml(parasha.title)}</p>` : ''}
+        ${candle ? `<p class="shabbat-row"><span>Allumage</span><span>${escapeHtml(timeOnly(candle.title))}</span></p>` : ''}
+        ${havdalah ? `<p class="shabbat-row"><span>Havdalah</span><span>${escapeHtml(timeOnly(havdalah.title))}</span></p>` : ''}
+      `;
+      if (!candle && !havdalah) el.textContent = 'Aucun horaire disponible pour cette période.';
+    } catch (err) {
+      el.textContent = 'Horaires indisponibles pour le moment.';
+    }
+  }
+
+  loadShabbat();
+</script>
+
+</body>
+</html>
