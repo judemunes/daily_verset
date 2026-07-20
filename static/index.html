@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Verset du jour</title>
-<!-- Ajout des icônes Flaticon -->
 <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
 <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
 
@@ -53,17 +52,9 @@ body {
   font-size: 15px; 
 }
 
-.nav-item:hover { 
-  background: rgba(247, 214, 88, 0.1); 
-}
-
-.nav-item.active { 
-  font-weight: bold; 
-}
-
-.nav-icon { 
-  font-size: 18px; 
-}
+.nav-item:hover { background: rgba(247, 214, 88, 0.1); }
+.nav-item.active { font-weight: bold; }
+.nav-icon { font-size: 18px; }
 
 .btn-publish-sidebar { 
   background: #f7d658; 
@@ -78,10 +69,7 @@ body {
   cursor: pointer; 
   transition: opacity 0.2s; 
 }
-
-.btn-publish-sidebar:hover { 
-  opacity: 0.9; 
-}
+.btn-publish-sidebar:hover { opacity: 0.9; }
 
 /* Header principal */
 .main-header {
@@ -102,17 +90,8 @@ body {
   gap: 8px;
 }
 
-.header-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #f7d658;
-  letter-spacing: 1px;
-}
-
-.header-date {
-  font-size: 13px;
-  color: #71767b;
-}
+.header-title { font-size: 20px; font-weight: bold; color: #f7d658; letter-spacing: 1px; }
+.header-date { font-size: 13px; color: #71767b; }
 
 /* Onglets */
 .tabs {
@@ -137,16 +116,8 @@ body {
   font-size: 15px;
 }
 
-.tab:hover {
-  background: rgba(247, 214, 88, 0.1);
-  color: #f7d658;
-}
-
-.tab.active {
-  color: #f7d658;
-  font-weight: bold;
-}
-
+.tab:hover { background: rgba(247, 214, 88, 0.1); color: #f7d658; }
+.tab.active { color: #f7d658; font-weight: bold; }
 .tab.active::after {
   content: '';
   position: absolute;
@@ -169,35 +140,13 @@ body {
   transition: all 0.3s ease; 
 }
 
-/* Panneaux */
-.panel { 
-  display: none; 
-  padding: 20px; 
-  width: 100%; 
-}
-
-.panel.active { 
-  display: block; 
-}
+.panel { display: none; padding: 20px; width: 100%; }
+.panel.active { display: block; }
 
 /* Layout Communauté */
-.community-layout { 
-  display: grid; 
-  grid-template-columns: 1fr 350px; 
-  gap: 20px; 
-}
-
-.comments-section { 
-  max-width: 600px; 
-}
-
-.section-title { 
-  font-size: 16px; 
-  font-weight: bold; 
-  margin-bottom: 16px; 
-  padding-bottom: 12px; 
-  border-bottom: 1px solid #2f3336; 
-}
+.community-layout { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
+.comments-section { max-width: 600px; }
+.section-title { font-size: 16px; font-weight: bold; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #2f3336; }
 
 /* Composer */
 .composer { 
@@ -220,10 +169,7 @@ body {
   min-height: 80px; 
   font-family: inherit; 
 }
-
-.composer-input::placeholder { 
-  color: #71767b; 
-}
+.composer-input::placeholder { color: #71767b; }
 
 .composer-toolbar {
   display: flex;
@@ -234,10 +180,7 @@ body {
   border-top: 1px solid #2f3336;
 }
 
-.composer-icons {
-  display: flex;
-  gap: 8px;
-}
+.composer-icons { display: flex; gap: 8px; }
 
 .icon-btn {
   background: transparent;
@@ -253,25 +196,10 @@ body {
   font-size: 18px;
   transition: all 0.2s;
 }
+.icon-btn:hover { background: rgba(247, 214, 88, 0.1); transform: scale(1.1); }
 
-.icon-btn:hover {
-  background: rgba(247, 214, 88, 0.1);
-  transform: scale(1.1);
-}
-
-.composer-actions { 
-  display: flex; 
-  align-items: center;
-  gap: 12px;
-}
-
-.composer-identity { 
-  background: none; 
-  border: none; 
-  color: #f7d658; 
-  cursor: pointer; 
-  font-size: 13px; 
-}
+.composer-actions { display: flex; align-items: center; gap: 12px; }
+.composer-identity { background: none; border: none; color: #f7d658; cursor: pointer; font-size: 13px; }
 
 .btn-submit { 
   background: #f7d658; 
@@ -284,15 +212,8 @@ body {
   transition: opacity 0.2s;
   font-size: 14px;
 }
-
-.btn-submit:hover { 
-  opacity: 0.9; 
-}
-
-.btn-submit:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+.btn-submit:hover { opacity: 0.9; }
+.btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Emoji Picker */
 .emoji-picker {
@@ -311,232 +232,62 @@ body {
   width: calc(100% - 32px);
   max-width: 400px;
 }
-
-.emoji-picker.active {
-  display: grid;
-}
-
+.emoji-picker.active { display: grid; }
 .emoji-btn {
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  transition: background 0.2s;
+  background: transparent; border: none; font-size: 24px; cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s;
 }
+.emoji-btn:hover { background: rgba(247, 214, 88, 0.2); }
 
-.emoji-btn:hover {
-  background: rgba(247, 214, 88, 0.2);
+/* Modal */
+.modal, .edit-modal {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.8); z-index: 1000; align-items: center; justify-content: center;
 }
+.modal.active, .edit-modal.active { display: flex; }
 
-/* Schedule Modal - Style Twitter */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
+.modal-content, .edit-modal-content {
+  background: #15202b; border-radius: 16px; padding: 0; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;
 }
+.edit-modal-content { padding: 24px; max-width: 500px; }
 
-.modal.active {
-  display: flex;
+.modal-header, .edit-modal-header {
+  display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #2f3336;
 }
+.modal-title, .edit-modal-title { font-size: 20px; font-weight: bold; }
+.modal-close, .edit-modal-close {
+  background: none; border: none; color: #e7e9ea; font-size: 24px; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover, .edit-modal-close:hover { background: rgba(247, 214, 88, 0.1); }
 
-.modal-content {
-  background: #15202b;
-  border-radius: 16px;
-  padding: 0;
-  max-width: 600px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-}
+.modal-body { padding: 20px; }
+.schedule-info { color: #71767b; font-size: 14px; margin-bottom: 24px; display: flex; align-items: center; gap: 8px; }
+.form-group { margin-bottom: 24px; }
+.form-label { display: block; margin-bottom: 12px; font-weight: 500; color: #71767b; font-size: 14px; }
+.form-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+.time-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #2f3336;
+.form-select, .form-input {
+  background: #0f1419; border: 1px solid #2f3336; border-radius: 8px; padding: 12px; color: #e7e9ea; font-size: 15px; cursor: pointer; outline: none; width: 100%; font-family: inherit;
 }
+.form-select:focus, .form-input:focus { border-color: #f7d658; }
+.form-select option { background: #0f1419; color: #e7e9ea; }
+.form-input { cursor: text; }
 
-.modal-title {
-  font-size: 20px;
-  font-weight: bold;
-}
+.timezone-info { color: #71767b; font-size: 14px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #2f3336; }
+.scheduled-posts-link { color: #1d9bf0; text-decoration: none; font-size: 14px; margin-top: 16px; display: block; cursor: pointer; }
+.scheduled-posts-link:hover { text-decoration: underline; }
 
-.modal-close {
-  background: none;
-  border: none;
-  color: #e7e9ea;
-  font-size: 24px;
-  cursor: pointer;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-close:hover {
-  background: rgba(247, 214, 88, 0.1);
-}
-
-.modal-body {
-  padding: 20px;
-}
-
-.schedule-info {
-  color: #71767b;
-  font-size: 14px;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.form-group {
-  margin-bottom: 24px;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 12px;
-  font-weight: 500;
-  color: #71767b;
-  font-size: 14px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.form-select {
-  background: #0f1419;
-  border: 1px solid #2f3336;
-  border-radius: 8px;
-  padding: 12px;
-  color: #e7e9ea;
-  font-size: 15px;
-  cursor: pointer;
-  outline: none;
-}
-
-.form-select:focus {
-  border-color: #f7d658;
-}
-
-.form-select option {
-  background: #0f1419;
-  color: #e7e9ea;
-}
-
-.time-row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.timezone-info {
-  color: #71767b;
-  font-size: 14px;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #2f3336;
-}
-
-.scheduled-posts-link {
-  color: #1d9bf0;
-  text-decoration: none;
-  font-size: 14px;
-  margin-top: 16px;
-  display: block;
-  cursor: pointer;
-}
-
-.scheduled-posts-link:hover {
-  text-decoration: underline;
-}
-
-.modal-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #2f3336;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.btn-confirm {
-  background: #e7e9ea;
-  color: #0f1419;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 9999px;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.btn-confirm:hover {
-  background: #fff;
-}
-
-.btn-primary {
-  background: #f7d658;
-  color: #0f1419;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 9999px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 16px;
-}
-
-.btn-primary:hover {
-  opacity: 0.9;
-}
+.modal-footer { padding: 16px 20px; border-top: 1px solid #2f3336; display: flex; justify-content: flex-end; }
+.btn-confirm { background: #e7e9ea; color: #0f1419; border: none; padding: 10px 24px; border-radius: 9999px; font-weight: bold; cursor: pointer; font-size: 15px; }
+.btn-confirm:hover { background: #fff; }
+.btn-primary { background: #f7d658; color: #0f1419; border: none; padding: 12px 24px; border-radius: 9999px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 16px; }
+.btn-primary:hover { opacity: 0.9; }
 
 /* Media Preview */
-.media-preview {
-  display: none;
-  margin-top: 12px;
-  padding: 12px;
-  background: #0f1419;
-  border-radius: 12px;
-  border: 1px solid #2f3336;
-}
-
-.media-preview.active {
-  display: block;
-}
-
-.media-preview img, .media-preview video {
-  max-width: 100%;
-  max-height: 200px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.media-preview-remove {
-  background: #f4212e;
-  color: white;
-  border: none;
-  padding: 4px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 8px;
-  font-size: 13px;
-}
+.media-preview { display: none; margin-top: 12px; padding: 12px; background: #0f1419; border-radius: 12px; border: 1px solid #2f3336; }
+.media-preview.active { display: block; }
+.media-preview img, .media-preview video { max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: cover; }
+.media-preview-remove { background: #f4212e; color: white; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; margin-top: 8px; font-size: 13px; }
 
 /* Style Twitter pour les commentaires */
 .comment { 
@@ -547,247 +298,57 @@ body {
   margin-bottom: 12px; 
   transition: border-color 0.2s; 
 }
+.comment.reply { margin-left: 40px; border-left: 2px solid #2f3336; border-radius: 0 16px 16px 16px; background: #0f1419; }
 
-.comment:hover { 
-  /* border-color: #f7d658; */ /* Désactivé - plus de bordure dorée au survol */
-}
-
-.comment.reply { 
-  margin-left: 40px; 
-  border-left: 2px solid #2f3336; 
-  border-radius: 0 16px 16px 16px; 
-  background: #0f1419; 
-}
-
-.comment-header { 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-  margin-bottom: 8px; 
-}
-
+.comment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .avatar { 
-  width: 40px; 
-  height: 40px; 
-  border-radius: 50%; 
-  background: #f7d658; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  font-weight: bold; 
-  color: #0f1419; 
-  font-size: 16px; 
-  flex-shrink: 0; 
+  width: 40px; height: 40px; border-radius: 50%; background: #f7d658; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0f1419; font-size: 16px; flex-shrink: 0; 
 }
+.comment-meta { flex: 1; }
+.comment-author { font-weight: bold; color: #e7e9ea; font-size: 14px; }
+.comment-date { color: #71767b; font-size: 12px; }
+.comment-text { color: #e7e9ea; line-height: 1.5; margin-bottom: 12px; font-size: 14px; white-space: pre-wrap; word-break: break-word; }
 
-.comment-meta { 
-  flex: 1; 
-}
-
-.comment-author { 
-  font-weight: bold; 
-  color: #e7e9ea; 
-  font-size: 14px; 
-}
-
-.comment-date { 
-  color: #71767b; 
-  font-size: 12px; 
-}
-
-.comment-text { 
-  color: #e7e9ea; 
-  line-height: 1.5; 
-  margin-bottom: 12px; 
-  font-size: 14px; 
-  white-space: pre-wrap; 
-  word-break: break-word; 
-}
-
-.comment-actions { 
-  display: flex; 
-  gap: 8px; 
-  flex-wrap: wrap; 
-  align-items: center; 
-}
+.comment-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
 .reaction-btn { 
-  background: #2f3336; 
-  border: none; 
-  padding: 4px 12px; 
-  border-radius: 9999px; 
-  font-size: 13px; 
-  cursor: pointer; 
-  transition: background 0.2s; 
-  color: #e7e9ea; 
-  display: flex; 
-  align-items: center; 
-  gap: 4px; 
+  background: #2f3336; border: none; padding: 4px 12px; border-radius: 9999px; font-size: 13px; cursor: pointer; transition: background 0.2s; color: #e7e9ea; display: flex; align-items: center; gap: 4px; 
 }
+.reaction-btn:hover { background: rgba(247, 214, 88, 0.2); }
+.reaction-btn.active { background: #f7d658; color: #0f1419; }
 
-.reaction-btn:hover { 
-  background: rgba(247, 214, 88, 0.2); 
-}
+.action-btn { background: transparent; border: none; color: #71767b; cursor: pointer; font-size: 12px; padding: 4px 8px; border-radius: 6px; transition: all 0.2s; }
+.action-btn:hover { color: #f7d658; background: rgba(247, 214, 88, 0.1); }
+.action-btn.delete:hover { color: #f4212e; background: rgba(244, 33, 46, 0.1); }
 
-.reaction-btn.active { 
-  background: #f7d658; 
-  color: #0f1419; 
-}
-
-.action-btn { 
-  background: transparent; 
-  border: none; 
-  color: #71767b; 
-  cursor: pointer; 
-  font-size: 12px; 
-  padding: 4px 8px; 
-  border-radius: 6px; 
-  transition: all 0.2s; 
-}
-
-.action-btn:hover { 
-  color: #f7d658; 
-  background: rgba(247, 214, 88, 0.1); 
-}
-
-.action-btn.delete:hover { 
-  color: #f4212e; 
-  background: rgba(244, 33, 46, 0.1); 
-}
-
-/* Formulaires inline (réponse, édition) */
-.inline-form { 
-  margin-top: 12px; 
-  padding-top: 12px; 
-  border-top: 1px solid #2f3336; 
-  display: none; 
-}
-
-.inline-form.active { 
-  display: block; 
-}
-
+/* Formulaires inline */
+.inline-form { margin-top: 12px; padding-top: 12px; border-top: 1px solid #2f3336; display: none; }
+.inline-form.active { display: block; }
 .inline-form textarea { 
-  width: 100%; 
-  background: #0f1419; 
-  border: 1px solid #2f3336; 
-  border-radius: 8px; 
-  color: #e7e9ea; 
-  padding: 12px; 
-  font-size: 14px; 
-  resize: vertical; 
-  min-height: 60px; 
-  outline: none; 
-  font-family: inherit; 
+  width: 100%; background: #0f1419; border: 1px solid #2f3336; border-radius: 8px; color: #e7e9ea; padding: 12px; font-size: 14px; resize: vertical; min-height: 60px; outline: none; font-family: inherit; 
 }
+.inline-form textarea:focus { border-color: #f7d658; }
+.inline-form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 
-.inline-form textarea:focus { 
-  border-color: #f7d658; 
-}
-
-.inline-form-actions { 
-  display: flex; 
-  justify-content: flex-end; 
-  gap: 8px; 
-  margin-top: 8px; 
-}
-
-.btn-small { 
-  padding: 6px 16px; 
-  border-radius: 9999px; 
-  font-size: 13px; 
-  font-weight: 600; 
-  cursor: pointer; 
-  border: none; 
-}
-
-.btn-small.primary { 
-  background: #f7d658; 
-  color: #0f1419; 
-}
-
-.btn-small.secondary { 
-  background: transparent; 
-  color: #e7e9ea; 
-  border: 1px solid #2f3336; 
-}
+.btn-small { padding: 6px 16px; border-radius: 9999px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+.btn-small.primary { background: #f7d658; color: #0f1419; }
+.btn-small.secondary { background: transparent; color: #e7e9ea; border: 1px solid #2f3336; }
 
 /* Sidebar droite */
-.sidebar-right { 
-  width: 350px; 
-  padding: 20px; 
-  transition: all 0.3s ease; 
-}
+.sidebar-right { width: 350px; padding: 20px; transition: all 0.3s ease; }
+.widget { background: #15202b; border: 1px solid #2f3336; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+.widget-title { font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-size: 15px; }
+.widget-content { color: #71767b; font-size: 14px; line-height: 1.6; }
 
-.widget { 
-  background: #15202b; 
-  border: 1px solid #2f3336; 
-  border-radius: 16px; 
-  padding: 16px; 
-  margin-bottom: 16px; 
-}
+.search-box { background: #15202b; border: 1px solid #2f3336; border-radius: 9999px; padding: 12px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+.search-box input { background: transparent; border: none; color: #e7e9ea; outline: none; width: 100%; font-size: 14px; }
 
-.widget-title { 
-  font-weight: bold; 
-  margin-bottom: 12px; 
-  display: flex; 
-  align-items: center; 
-  gap: 8px; 
-  font-size: 15px; 
-}
+.countdown { font-size: 20px; font-weight: bold; color: #f7d658; margin: 8px 0; }
+.shabbat-info { margin: 12px 0; padding: 8px 0; border-bottom: 1px solid #2f3336; }
+.shabbat-label { color: #71767b; font-size: 13px; }
+.shabbat-value { color: #e7e9ea; font-weight: 600; font-size: 14px; margin-top: 4px; }
 
-.widget-content { 
-  color: #71767b; 
-  font-size: 14px; 
-  line-height: 1.6; 
-}
-
-.search-box { 
-  background: #15202b; 
-  border: 1px solid #2f3336; 
-  border-radius: 9999px; 
-  padding: 12px 20px; 
-  margin-bottom: 20px; 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-}
-
-.search-box input { 
-  background: transparent; 
-  border: none; 
-  color: #e7e9ea; 
-  outline: none; 
-  width: 100%; 
-  font-size: 14px; 
-}
-
-.countdown { 
-  font-size: 20px; 
-  font-weight: bold; 
-  color: #f7d658; 
-  margin: 8px 0; 
-}
-
-.shabbat-info { 
-  margin: 12px 0; 
-  padding: 8px 0; 
-  border-bottom: 1px solid #2f3336; 
-}
-
-.shabbat-label { 
-  color: #71767b; 
-  font-size: 13px; 
-}
-
-.shabbat-value { 
-  color: #e7e9ea; 
-  font-weight: 600; 
-  font-size: 14px; 
-  margin-top: 4px; 
-}
-
-/* Carte de verset (Mode épuré) */
+/* Carte de verset */
 .verse-card { 
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
   border: 1px solid #2f3336; 
@@ -795,313 +356,64 @@ body {
   padding: 60px 40px; 
   text-align: center; 
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  max-width: 700px;
-  width: 100%;
-  margin: 0 auto;
+  max-width: 700px; width: 100%; margin: 0 auto;
 }
-
-.verse-text { 
-  font-size: 24px; 
-  font-style: italic; 
-  line-height: 1.6; 
-  margin-bottom: 20px; 
-  color: #ede6d6; 
-  font-family: Georgia, serif; 
-}
-
-.verse-reference { 
-  color: #f7d658; 
-  font-weight: 600; 
-  font-size: 18px; 
-  margin-bottom: 20px; 
-}
-
-.verse-note { 
-  color: #71767b; 
-  font-size: 14px; 
-}
+.verse-text { font-size: 24px; font-style: italic; line-height: 1.6; margin-bottom: 20px; color: #ede6d6; font-family: Georgia, serif; }
+.verse-reference { color: #f7d658; font-weight: 600; font-size: 18px; margin-bottom: 20px; }
+.verse-note { color: #71767b; font-size: 14px; }
 
 /* Page Profil */
-.profile-container {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.profile-banner {
-  height: 200px;
-  background: linear-gradient(135deg, #1e3a5f 0%, #0f1419 100%);
-  border-radius: 16px;
-  position: relative;
-  overflow: hidden;
-}
-
-.profile-banner-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.profile-avatar-section {
-  position: relative;
-  margin-top: -60px;
-  padding: 0 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
+.profile-container { max-width: 800px; margin: 0 auto; }
+.profile-banner { height: 200px; background: linear-gradient(135deg, #1e3a5f 0%, #0f1419 100%); border-radius: 16px; position: relative; overflow: hidden; }
+.profile-banner-image { width: 100%; height: 100%; object-fit: cover; }
+.profile-avatar-section { position: relative; margin-top: -60px; padding: 0 20px; display: flex; justify-content: space-between; align-items: flex-end; }
 .profile-avatar-large {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 4px solid #0f1419;
-  background: #f7d658;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-  font-weight: bold;
-  color: #0f1419;
-  position: relative;
-  cursor: pointer;
-  overflow: hidden;
+  width: 120px; height: 120px; border-radius: 50%; border: 4px solid #0f1419; background: #f7d658; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; color: #0f1419; position: relative; cursor: pointer; overflow: hidden;
 }
+.profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+.profile-edit-btn { background: transparent; border: 1px solid #2f3336; color: #f7d658; padding: 8px 16px; border-radius: 9999px; font-weight: 600; cursor: pointer; margin-bottom: 12px; transition: all 0.2s; }
+.profile-edit-btn:hover { background: rgba(247, 214, 88, 0.1); }
+.profile-info { padding: 20px; }
+.profile-name { font-size: 24px; font-weight: bold; margin-bottom: 4px; }
+.profile-handle { color: #71767b; margin-bottom: 16px; }
+.profile-bio { font-size: 15px; line-height: 1.5; margin-bottom: 20px; }
+.profile-stats { display: flex; gap: 24px; margin-bottom: 20px; }
+.stat-item { cursor: pointer; }
+.stat-value { font-weight: bold; font-size: 18px; }
+.stat-label { color: #71767b; font-size: 14px; }
+.profile-tabs { display: flex; border-bottom: 1px solid #2f3336; margin-top: 20px; }
+.profile-tab { flex: 1; padding: 16px; text-align: center; cursor: pointer; font-weight: 500; transition: all 0.2s; border: none; background: none; color: #71767b; font-size: 15px; }
+.profile-tab:hover { background: rgba(247, 214, 88, 0.1); }
+.profile-tab.active { color: #f7d658; font-weight: bold; border-bottom: 4px solid #f7d658; }
 
-.profile-avatar-large img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+.file-input-wrapper input[type=file] { position: absolute; left: -9999px; }
+.file-input-label { display: block; background: #2f3336; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; transition: background 0.2s; }
+.file-input-label:hover { background: #3a3f4b; }
 
-.profile-edit-btn {
-  background: transparent;
-  border: 1px solid #2f3336;
-  color: #f7d658;
-  padding: 8px 16px;
-  border-radius: 9999px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 12px;
-  transition: all 0.2s;
-}
-
-.profile-edit-btn:hover {
-  background: rgba(247, 214, 88, 0.1);
-}
-
-.profile-info {
-  padding: 20px;
-}
-
-.profile-name {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-
-.profile-handle {
-  color: #71767b;
-  margin-bottom: 16px;
-}
-
-.profile-bio {
-  font-size: 15px;
-  line-height: 1.5;
-  margin-bottom: 20px;
-}
-
-.profile-stats {
-  display: flex;
-  gap: 24px;
-  margin-bottom: 20px;
-}
-
-.stat-item {
-  cursor: pointer;
-}
-
-.stat-value {
-  font-weight: bold;
-  font-size: 18px;
-}
-
-.stat-label {
-  color: #71767b;
-  font-size: 14px;
-}
-
-.profile-tabs {
-  display: flex;
-  border-bottom: 1px solid #2f3336;
-  margin-top: 20px;
-}
-
-.profile-tab {
-  flex: 1;
-  padding: 16px;
-  text-align: center;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
-  border: none;
-  background: none;
-  color: #71767b;
-  font-size: 15px;
-}
-
-.profile-tab:hover {
-  background: rgba(247, 214, 88, 0.1);
-}
-
-.profile-tab.active {
-  color: #f7d658;
-  font-weight: bold;
-  border-bottom: 4px solid #f7d658;
-}
-
-/* Modal d'édition */
-.edit-modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-}
-
-.edit-modal.active {
-  display: flex;
-}
-
-.edit-modal-content {
-  background: #15202b;
-  border-radius: 16px;
-  padding: 24px;
-  max-width: 500px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.edit-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.edit-modal-title {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.edit-modal-close {
-  background: none;
-  border: none;
-  color: #71767b;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.file-input-wrapper {
-  position: relative;
-  overflow: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-.file-input-wrapper input[type=file] {
-  position: absolute;
-  left: -9999px;
-}
-
-.file-input-label {
-  display: block;
-  background: #2f3336;
-  padding: 12px;
-  border-radius: 8px;
-  text-align: center;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.file-input-label:hover {
-  background: #3a3f4b;
-}
-
-/* Médias dans les commentaires - Taille réduite */
-.comment-media {
-  max-width: 100%;
-  border-radius: 12px;
-  margin-top: 12px;
-  overflow: hidden;
-}
-
-.comment-media img {
-  max-width: 100%;
-  max-height: 300px;
-  object-fit: cover;
-  border-radius: 12px;
-  display: block;
-}
-
-.comment-media video {
-  max-width: 100%;
-  max-height: 300px;
-  border-radius: 12px;
-  display: block;
-}
+/* Médias dans les commentaires */
+.comment-media { max-width: 100%; border-radius: 12px; margin-top: 12px; overflow: hidden; }
+.comment-media img { max-width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px; display: block; }
+.comment-media video { max-width: 100%; max-height: 300px; border-radius: 12px; display: block; }
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .sidebar-right { 
-    display: none !important; 
-  }
-  .community-layout { 
-    grid-template-columns: 1fr; 
-  }
+  .sidebar-right { display: none !important; }
+  .community-layout { grid-template-columns: 1fr; }
 }
-
 @media (max-width: 768px) {
-  .sidebar-left { 
-    display: none !important; 
-  }
-  .main-content { 
-    margin-left: 0 !important; 
-    border: none !important; 
-  }
-  .comment.reply { 
-    margin-left: 20px; 
-  }
-  .verse-card { 
-    padding: 40px 20px; 
-  }
-  .verse-text { 
-    font-size: 20px; 
-  }
-  .profile-stats {
-    flex-direction: column;
-    gap: 12px;
-  }
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  .time-row {
-    grid-template-columns: 1fr;
-  }
-  .comment-media img,
-  .comment-media video {
-    max-height: 250px;
-  }
+  .sidebar-left { display: none !important; }
+  .main-content { margin-left: 0 !important; border: none !important; }
+  .comment.reply { margin-left: 20px; }
+  .verse-card { padding: 40px 20px; }
+  .verse-text { font-size: 20px; }
+  .profile-stats { flex-direction: column; gap: 12px; }
+  .form-row, .time-row { grid-template-columns: 1fr; }
+  .comment-media img, .comment-media video { max-height: 250px; }
 }
 </style>
 </head>
 <body>
-  <!-- Header principal -->
   <header class="main-header">
     <div class="header-content">
       <div class="header-title">✦ VERSET DU JOUR</div>
@@ -1114,20 +426,17 @@ body {
   </header>
 
   <div class="container">
-    <!-- Sidebar gauche (visible uniquement en mode communauté) -->
     <div class="sidebar-left">
       <div class="logo"><span>✦</span><span>Verset</span></div>
       <div class="nav-item active" onclick="switchTab('verse')"><span class="nav-icon">🏠</span><span>Accueil</span></div>
       <div class="nav-item" onclick="switchTab('community')"><span class="nav-icon">💬</span><span>Communauté</span></div>
-      <div class="nav-item"><span class="nav-icon"></span><span>Explorer</span></div>
+      <div class="nav-item"><span class="nav-icon">🔍</span><span>Explorer</span></div>
       <div class="nav-item"><span class="nav-icon">🔔</span><span>Notifications</span></div>
       <div class="nav-item" onclick="showProfile()"><span class="nav-icon">👤</span><span>Profil</span></div>
       <button class="btn-publish-sidebar" onclick="switchTab('community'); focusComposer()">Publier</button>
     </div>
 
-    <!-- Contenu principal -->
     <div class="main-content">
-      <!-- Panel Verset -->
       <div id="panel-verse" class="panel active">
         <div class="verse-card">
           <div class="verse-text" id="verse-text">Chargement du verset...</div>
@@ -1136,54 +445,34 @@ body {
         </div>
       </div>
 
-      <!-- Panel Communauté -->
       <div id="panel-community" class="panel">
         <div class="community-layout">
           <div class="comments-section">
             <div class="section-title">Commentaires</div>
-
-            <!-- Composer -->
             <div class="composer">
               <textarea class="composer-input" placeholder="Quoi de neuf ?" id="comment-text"></textarea>
-              
-              <!-- Media Preview -->
               <div class="media-preview" id="media-preview">
                 <img src="" alt="Aperçu" id="media-preview-img" style="display: none;">
                 <video src="" alt="Aperçu" id="media-preview-video" style="display: none;" controls></video>
                 <button class="media-preview-remove" onclick="removeMedia()">Supprimer</button>
               </div>
-              
               <div class="composer-toolbar">
                 <div class="composer-icons">
                   <input type="file" id="media-input" accept="image/*,video/*" style="display: none;" onchange="handleMediaSelect(event)">
-                  <button class="icon-btn" onclick="document.getElementById('media-input').click()" title="Média">
-                    <i class="fi fi-br-picture"></i>
-                  </button>
-                  <button class="icon-btn" onclick="toggleEmojiPicker()" title="Emoji">
-                    <i class="fi fi-rr-smile"></i>
-                  </button>
-                  <button class="icon-btn" onclick="openScheduleModal()" title="Programmer">
-                    <i class="fi fi-rr-calendar"></i>
-                  </button>
+                  <button class="icon-btn" onclick="document.getElementById('media-input').click()" title="Média"><i class="fi fi-br-picture"></i></button>
+                  <button class="icon-btn" onclick="toggleEmojiPicker()" title="Emoji"><i class="fi fi-rr-smile"></i></button>
+                  <button class="icon-btn" onclick="openScheduleModal()" title="Programmer"><i class="fi fi-rr-calendar"></i></button>
                 </div>
-                
                 <div class="composer-actions">
                   <button class="composer-identity" id="composer-identity" onclick="changePseudo()">Choisir un pseudo</button>
                   <button class="btn-submit" id="btn-submit" onclick="postComment()">Publier</button>
                 </div>
               </div>
-              
-              <!-- Emoji Picker -->
-              <div class="emoji-picker" id="emoji-picker">
-                <!-- Les emojis seront générés par JavaScript -->
-              </div>
+              <div class="emoji-picker" id="emoji-picker"></div>
             </div>
-
-            <!-- Liste des commentaires -->
             <div id="comments-list"></div>
           </div>
 
-          <!-- Sidebar droite -->
           <div class="sidebar-right">
             <div class="search-box">
               <span>🔍</span>
@@ -1194,7 +483,7 @@ body {
               <div class="countdown" id="countdown">--:--:--</div>
             </div>
             <div class="widget">
-              <div class="widget-title"><span>️</span><span>Horaires de Shabbat</span></div>
+              <div class="widget-title"><span>🕯️</span><span>Horaires de Shabbat</span></div>
               <div class="shabbat-info"><div class="shabbat-label">Chargement...</div></div>
             </div>
             <div class="widget">
@@ -1204,70 +493,47 @@ body {
         </div>
       </div>
 
-      <!-- Panel Profil -->
       <div id="panel-profile" class="panel">
         <div class="profile-container">
           <div class="profile-banner">
             <img src="" alt="Banner" class="profile-banner-image" id="profile-banner-img" style="display: none;">
           </div>
-          
           <div class="profile-avatar-section">
             <div class="profile-avatar-large" onclick="editProfilePhoto()">
               <span id="profile-avatar-text">?</span>
               <img src="" alt="Avatar" id="profile-avatar-img" style="display: none;">
             </div>
-            <button class="profile-edit-btn" onclick="openEditModal()">Éditer un profil</button>
+            <button class="profile-edit-btn" onclick="openEditModal()">Éditer le profil</button>
           </div>
-
           <div class="profile-info">
             <div class="profile-name" id="profile-name">Pseudo</div>
             <div class="profile-handle" id="profile-handle">@pseudo</div>
             <div class="profile-bio" id="profile-bio">Aucune bio pour l'instant.</div>
-            
             <div class="profile-stats">
-              <div class="stat-item" onclick="showUserComments()">
-                <div class="stat-value" id="stat-comments">0</div>
-                <div class="stat-label">Commentaires</div>
-              </div>
-              <div class="stat-item" onclick="showUserReactions()">
-                <div class="stat-value" id="stat-reactions">0</div>
-                <div class="stat-label">Réactions</div>
-              </div>
-              <div class="stat-item" onclick="showUserMedia()">
-                <div class="stat-value" id="stat-media">0</div>
-                <div class="stat-label">Médias</div>
-              </div>
+              <div class="stat-item" onclick="showUserComments()"><div class="stat-value" id="stat-comments">0</div><div class="stat-label">Commentaires</div></div>
+              <div class="stat-item" onclick="showUserReactions()"><div class="stat-value" id="stat-reactions">0</div><div class="stat-label">Réactions</div></div>
+              <div class="stat-item" onclick="showUserMedia()"><div class="stat-value" id="stat-media">0</div><div class="stat-label">Médias</div></div>
             </div>
-
             <div class="profile-tabs">
               <button class="profile-tab active" onclick="switchProfileTab('comments')">Commentaires</button>
               <button class="profile-tab" onclick="switchProfileTab('reactions')">Réactions</button>
               <button class="profile-tab" onclick="switchProfileTab('media')">Médias</button>
             </div>
-
-            <div id="profile-content" style="margin-top: 20px;">
-              <!-- Contenu dynamique du profil -->
-            </div>
+            <div id="profile-content" style="margin-top: 20px;"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal de programmation - Style Twitter -->
   <div class="modal" id="schedule-modal">
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title">Programmer</div>
         <button class="modal-close" onclick="closeScheduleModal()">✕</button>
       </div>
-      
       <div class="modal-body">
-        <div class="schedule-info">
-          <i class="fi fi-rr-calendar"></i>
-          <span id="schedule-preview">Sera envoyé le lun. 20 juil. 2026 à 7:01 PM</span>
-        </div>
-        
+        <div class="schedule-info"><i class="fi fi-rr-calendar"></i><span id="schedule-preview">Sera envoyé le lun. 20 juil. 2026 à 7:01 PM</span></div>
         <div class="form-group">
           <label class="form-label">Date</label>
           <div class="form-row">
@@ -1276,7 +542,6 @@ body {
             <select class="form-select" id="schedule-year"></select>
           </div>
         </div>
-        
         <div class="form-group">
           <label class="form-label">Heure</label>
           <div class="time-row">
@@ -1284,53 +549,38 @@ body {
             <select class="form-select" id="schedule-minute"></select>
           </div>
         </div>
-        
-        <div class="timezone-info">
-          Fuseau horaire<br>
-          <strong>heure d'Afrique de l'Ouest</strong>
-        </div>
-        
+        <div class="timezone-info">Fuseau horaire<br><strong>heure d'Afrique de l'Ouest</strong></div>
         <a class="scheduled-posts-link">Posts programmés</a>
       </div>
-      
-      <div class="modal-footer">
-        <button class="btn-confirm" onclick="confirmSchedule()">Confirmer</button>
-      </div>
+      <div class="modal-footer"><button class="btn-confirm" onclick="confirmSchedule()">Confirmer</button></div>
     </div>
   </div>
 
-  <!-- Modal d'édition de profil -->
   <div class="edit-modal" id="edit-modal">
     <div class="edit-modal-content">
       <div class="edit-modal-header">
-        <div class="edit-modal-title">Éditer un profil</div>
-        <button class="edit-modal-close" onclick="closeEditModal()">&times;</button>
+        <div class="edit-modal-title">Éditer le profil</div>
+        <button class="edit-modal-close" onclick="closeEditModal()">✕</button>
       </div>
-      
       <div class="form-group">
         <label class="form-label">Photo de profil</label>
         <div class="file-input-wrapper">
           <input type="file" id="edit-profile-photo" accept="image/*" onchange="previewProfilePhoto(this)">
-          <label for="edit-profile-photo" class="file-input-label">
-            Choisir une image
-          </label>
+          <label for="edit-profile-photo" class="file-input-label">Choisir une image</label>
         </div>
         <div id="profile-photo-preview" style="margin-top: 12px; display: none;">
           <img src="" alt="Aperçu" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
         </div>
       </div>
-
       <div class="form-group">
         <label class="form-label">Pseudo</label>
         <input type="text" class="form-input" id="edit-pseudo" maxlength="30" placeholder="Ton pseudo">
-        <div class="form-hint" id="pseudo-hint">Le pseudo peut être modifié tous les 3 jours (72h)</div>
+        <div class="form-hint" id="pseudo-hint" style="color: #71767b; font-size: 13px; margin-top: 8px;">Le pseudo peut être modifié tous les 3 jours (72h)</div>
       </div>
-
       <div class="form-group">
         <label class="form-label">Bio</label>
-        <textarea class="form-input" id="edit-bio" maxlength="160" placeholder="Parle-nous de toi..." rows="3"></textarea>
+        <textarea class="form-input" id="edit-bio" maxlength="160" placeholder="Parle-nous de toi..." rows="3" style="resize: vertical;"></textarea>
       </div>
-
       <button class="btn-primary" onclick="saveProfile()">Enregistrer</button>
     </div>
   </div>
@@ -1346,8 +596,7 @@ let selectedMedia = null;
 let selectedMediaType = null;
 let scheduledPost = null;
 
-// Emojis disponibles
-const emojis = ['😀', '😂', '😍', '🥰', '😎', '', '👍', '', '❤️', '', '🎉', '🙌', '😢', '💯', '✨', '🙏'];
+const emojis = ['😀', '😂', '😍', '🥰', '😎', '🤔', '👍', '👏', '❤️', '🔥', '🎉', '🙌', '😢', '💯', '✨', '🙏'];
 
 // --- Initialisation ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -1363,10 +612,22 @@ document.addEventListener('DOMContentLoaded', () => {
   loadShabbat();
   loadCommentsData();
   
+  // Mise à jour en temps réel du temps relatif toutes les secondes
+  setInterval(() => {
+    document.querySelectorAll('.comment-date').forEach(el => {
+      const commentDiv = el.closest('.comment');
+      if (!commentDiv) return;
+      const commentId = commentDiv.dataset.id;
+      const comment = findCommentById(allComments, commentId);
+      if (comment) {
+        el.textContent = getRelativeTime(comment.created_at) + (comment.edited_at ? ' · (modifié)' : '');
+      }
+    });
+  }, 1000);
+  
   switchTab('verse');
 });
 
-// Initialiser le sélecteur d'emojis
 function initEmojiPicker() {
   const picker = document.getElementById('emoji-picker');
   emojis.forEach(emoji => {
@@ -1378,14 +639,12 @@ function initEmojiPicker() {
   });
 }
 
-// Initialiser la modal de programmation
 function initScheduleModal() {
   const now = new Date();
   const currentYear = now.getFullYear();
-  
-  // Remplir les mois
-  const monthSelect = document.getElementById('schedule-month');
   const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+  
+  const monthSelect = document.getElementById('schedule-month');
   months.forEach((month, index) => {
     const option = document.createElement('option');
     option.value = index;
@@ -1394,7 +653,6 @@ function initScheduleModal() {
     monthSelect.appendChild(option);
   });
   
-  // Remplir les jours
   const daySelect = document.getElementById('schedule-day');
   for (let i = 1; i <= 31; i++) {
     const option = document.createElement('option');
@@ -1404,7 +662,6 @@ function initScheduleModal() {
     daySelect.appendChild(option);
   }
   
-  // Remplir les années
   const yearSelect = document.getElementById('schedule-year');
   for (let i = 0; i < 5; i++) {
     const year = currentYear + i;
@@ -1415,7 +672,6 @@ function initScheduleModal() {
     yearSelect.appendChild(option);
   }
   
-  // Remplir les heures
   const hourSelect = document.getElementById('schedule-hour');
   for (let i = 0; i < 24; i++) {
     const option = document.createElement('option');
@@ -1425,7 +681,6 @@ function initScheduleModal() {
     hourSelect.appendChild(option);
   }
   
-  // Remplir les minutes
   const minuteSelect = document.getElementById('schedule-minute');
   for (let i = 0; i < 60; i++) {
     const option = document.createElement('option');
@@ -1435,15 +690,12 @@ function initScheduleModal() {
     minuteSelect.appendChild(option);
   }
   
-  // Mettre à jour l'aperçu quand les valeurs changent
   ['schedule-month', 'schedule-day', 'schedule-year', 'schedule-hour', 'schedule-minute'].forEach(id => {
     document.getElementById(id).addEventListener('change', updateSchedulePreview);
   });
-  
   updateSchedulePreview();
 }
 
-// Mettre à jour l'aperçu de la date
 function updateSchedulePreview() {
   const month = parseInt(document.getElementById('schedule-month').value);
   const day = parseInt(document.getElementById('schedule-day').value);
@@ -1455,17 +707,13 @@ function updateSchedulePreview() {
   const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
   const dateStr = date.toLocaleDateString('fr-FR', options);
   const timeStr = date.toLocaleTimeString('fr-FR', { hour: 'numeric', minute: '2-digit', hour12: true });
-  
   document.getElementById('schedule-preview').textContent = `Sera envoyé le ${dateStr} à ${timeStr}`;
 }
 
-// Toggle emoji picker
 function toggleEmojiPicker() {
-  const picker = document.getElementById('emoji-picker');
-  picker.classList.toggle('active');
+  document.getElementById('emoji-picker').classList.toggle('active');
 }
 
-// Insérer un emoji dans le texte
 function insertEmoji(emoji) {
   const textarea = document.getElementById('comment-text');
   const start = textarea.selectionStart;
@@ -1477,22 +725,19 @@ function insertEmoji(emoji) {
   toggleEmojiPicker();
 }
 
-// Gérer la sélection de média
 function handleMediaSelect(event) {
   const file = event.target.files[0];
   if (file) {
     const reader = new FileReader();
     reader.onload = function(e) {
       selectedMedia = e.target.result;
-      
-      // Déterminer le type de média
       if (file.type.startsWith('video/')) {
         selectedMediaType = 'video';
         document.getElementById('media-preview-img').style.display = 'none';
         const videoEl = document.getElementById('media-preview-video');
         videoEl.src = selectedMedia;
         videoEl.style.display = 'block';
-        videoEl.play(); // Auto-play pour aperçu
+        videoEl.play();
       } else {
         selectedMediaType = 'image';
         document.getElementById('media-preview-video').style.display = 'none';
@@ -1500,14 +745,12 @@ function handleMediaSelect(event) {
         imgEl.src = selectedMedia;
         imgEl.style.display = 'block';
       }
-      
       document.getElementById('media-preview').classList.add('active');
     };
     reader.readAsDataURL(file);
   }
 }
 
-// Supprimer le média
 function removeMedia() {
   selectedMedia = null;
   selectedMediaType = null;
@@ -1517,18 +760,15 @@ function removeMedia() {
   document.getElementById('media-preview-video').style.display = 'none';
 }
 
-// Ouvrir la modal de programmation
 function openScheduleModal() {
   updateSchedulePreview();
   document.getElementById('schedule-modal').classList.add('active');
 }
 
-// Fermer la modal de programmation
 function closeScheduleModal() {
   document.getElementById('schedule-modal').classList.remove('active');
 }
 
-// Confirmer la programmation
 function confirmSchedule() {
   const month = parseInt(document.getElementById('schedule-month').value);
   const day = parseInt(document.getElementById('schedule-day').value);
@@ -1541,18 +781,11 @@ function confirmSchedule() {
   const dateStr = date.toLocaleDateString('fr-FR', options);
   const timeStr = date.toLocaleTimeString('fr-FR', { hour: 'numeric', minute: '2-digit', hour12: true });
   
-  scheduledPost = {
-    date: date,
-    text: document.getElementById('comment-text').value,
-    media: selectedMedia,
-    mediaType: selectedMediaType
-  };
-  
+  scheduledPost = { date, text: document.getElementById('comment-text').value, media: selectedMedia, mediaType: selectedMediaType };
   closeScheduleModal();
   alert(`Post programmé pour le ${dateStr} à ${timeStr}`);
 }
 
-// --- Navigation ---
 function switchTab(tab) {
   const sidebarLeft = document.querySelector('.sidebar-left');
   const sidebarRight = document.querySelector('.sidebar-right');
@@ -1565,7 +798,6 @@ function switchTab(tab) {
   if (tab === 'verse') {
     document.getElementById('tab-verse').classList.add('active');
     document.getElementById('panel-verse').classList.add('active');
-    
     sidebarLeft.style.display = 'none';
     sidebarRight.style.display = 'none';
     mainContent.style.marginLeft = '0';
@@ -1575,8 +807,7 @@ function switchTab(tab) {
     mainContent.style.alignItems = 'center';
     mainContent.style.justifyContent = 'center';
     mainContent.style.padding = '20px';
-  } 
-  else if (tab === 'community') {
+  } else if (tab === 'community') {
     document.getElementById('tab-community').classList.add('active');
     document.getElementById('panel-community').classList.add('active');
     
@@ -1601,7 +832,6 @@ function switchTab(tab) {
     mainContent.style.borderRight = '1px solid #2f3336';
     mainContent.style.display = 'block';
     mainContent.style.padding = '0';
-    
     loadComments();
   }
 }
@@ -1612,25 +842,19 @@ function showProfile() {
     switchTab('community');
     return;
   }
-  
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  
   document.getElementById('panel-profile').classList.add('active');
   
-  const sidebarLeft = document.querySelector('.sidebar-left');
-  const sidebarRight = document.querySelector('.sidebar-right');
+  document.querySelector('.sidebar-left').style.display = 'block';
+  document.querySelector('.sidebar-right').style.display = 'none';
   const mainContent = document.querySelector('.main-content');
-  
-  sidebarLeft.style.display = 'block';
-  sidebarRight.style.display = 'none';
   mainContent.style.marginLeft = '275px';
   mainContent.style.borderLeft = '1px solid #2f3336';
   mainContent.style.borderRight = '1px solid #2f3336';
   mainContent.style.display = 'block';
   mainContent.style.padding = '0';
-  
   loadProfileData();
 }
 
@@ -1651,25 +875,20 @@ function loadProfileData() {
     document.getElementById('profile-banner-img').src = userProfile.banner;
     document.getElementById('profile-banner-img').style.display = 'block';
   }
-  
   updateProfileStats();
   showUserComments();
 }
 
 function updateProfileStats() {
   const userComments = allComments.filter(c => c.pseudo === currentPseudo);
-  const userReactionsCount = Object.keys(userReactions).length;
-  const userMedia = userComments.filter(c => c.image_url).length;
-  
   document.getElementById('stat-comments').textContent = userComments.length;
-  document.getElementById('stat-reactions').textContent = userReactionsCount;
-  document.getElementById('stat-media').textContent = userMedia;
+  document.getElementById('stat-reactions').textContent = Object.keys(userReactions).length;
+  document.getElementById('stat-media').textContent = userComments.filter(c => c.image_url).length;
 }
 
 function switchProfileTab(tab) {
   document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
   event.target.classList.add('active');
-  
   if (tab === 'comments') showUserComments();
   else if (tab === 'reactions') showUserReactions();
   else if (tab === 'media') showUserMedia();
@@ -1678,34 +897,28 @@ function switchProfileTab(tab) {
 function showUserComments() {
   const userComments = allComments.filter(c => c.pseudo === currentPseudo);
   const container = document.getElementById('profile-content');
-  
   if (userComments.length === 0) {
     container.innerHTML = '<div style="text-align: center; padding: 40px; color: #71767b;">Aucun commentaire pour l\'instant.</div>';
     return;
   }
-  
   container.innerHTML = userComments.map(c => renderProfileComment(c)).join('');
 }
 
 function renderProfileComment(c) {
   const initial = c.pseudo.charAt(0).toUpperCase();
-  const dateStr = getRelativeTime(c.created_at);
-  
-  // Style Twitter pour les commentaires du profil
   return `
     <div class="comment" style="margin-bottom: 16px;">
       <div class="comment-header">
         <div class="avatar">${initial}</div>
         <div class="comment-meta">
           <div class="comment-author">${c.pseudo}</div>
-          <div class="comment-date">${dateStr}</div>
+          <div class="comment-date">${getRelativeTime(c.created_at)}</div>
         </div>
       </div>
       <div class="comment-text">${escapeHtml(c.text)}</div>
       ${c.image_url ? renderMedia(c.image_url, c.media_type) : ''}
       <div class="comment-actions">
         <button class="action-btn" onclick="toggleForm('reply-form-${c.id}')">💬 Répondre</button>
-        <button class="action-btn">🔄 Repartager</button>
         <button class="reaction-btn" onclick="react(${c.id}, '❤️')">❤️ ${c.reactions?.['❤️'] || 0}</button>
       </div>
       <div class="inline-form" id="reply-form-${c.id}">
@@ -1722,12 +935,10 @@ function renderProfileComment(c) {
 function showUserReactions() {
   const container = document.getElementById('profile-content');
   const reactions = Object.entries(userReactions);
-  
   if (reactions.length === 0) {
     container.innerHTML = '<div style="text-align: center; padding: 40px; color: #71767b;">Aucune réaction pour l\'instant.</div>';
     return;
   }
-  
   container.innerHTML = reactions.map(([commentId, emoji]) => `
     <div style="padding: 16px; border-bottom: 1px solid #2f3336;">
       <span style="font-size: 20px;">${emoji}</span>
@@ -1739,12 +950,10 @@ function showUserReactions() {
 function showUserMedia() {
   const userComments = allComments.filter(c => c.pseudo === currentPseudo && c.image_url);
   const container = document.getElementById('profile-content');
-  
   if (userComments.length === 0) {
     container.innerHTML = '<div style="text-align: center; padding: 40px; color: #71767b;">Aucun média pour l\'instant.</div>';
     return;
   }
-  
   container.innerHTML = userComments.map(c => `
     <div style="margin-bottom: 16px;">
       ${renderMedia(c.image_url, c.media_type)}
@@ -1753,17 +962,14 @@ function showUserMedia() {
   `).join('');
 }
 
-// --- Édition de profil ---
 function openEditModal() {
   document.getElementById('edit-modal').classList.add('active');
   document.getElementById('edit-pseudo').value = currentPseudo;
   document.getElementById('edit-bio').value = userProfile.bio || '';
-  
   if (userProfile.avatar) {
     document.getElementById('profile-photo-preview').style.display = 'block';
     document.getElementById('profile-photo-preview').querySelector('img').src = userProfile.avatar;
   }
-  
   checkPseudoEditDelay();
 }
 
@@ -1774,7 +980,6 @@ function closeEditModal() {
 function checkPseudoEditDelay() {
   const lastEdit = localStorage.getItem('versetPseudoLastEdit');
   const hint = document.getElementById('pseudo-hint');
-  
   if (lastEdit) {
     const hoursPassed = (Date.now() - parseInt(lastEdit)) / (1000 * 60 * 60);
     if (hoursPassed < 72) {
@@ -1831,13 +1036,11 @@ function saveProfile() {
         return;
       }
     }
-    
     currentPseudo = newPseudo;
     localStorage.setItem('versetPseudo', currentPseudo);
     localStorage.setItem('versetPseudoLastEdit', Date.now().toString());
     updateComposerIdentity();
   }
-  
   userProfile.bio = newBio;
   
   if (photoInput.files && photoInput.files[0]) {
@@ -1852,7 +1055,6 @@ function saveProfile() {
     localStorage.setItem('versetUserProfile', JSON.stringify(userProfile));
     loadProfileData();
   }
-  
   closeEditModal();
 }
 
@@ -1862,11 +1064,7 @@ function focusComposer() {
 
 function updateComposerIdentity() {
   const btn = document.getElementById('composer-identity');
-  if (currentPseudo) {
-    btn.textContent = `Publier en tant que ${currentPseudo} · changer`;
-  } else {
-    btn.textContent = 'Choisir un pseudo pour publier';
-  }
+  btn.textContent = currentPseudo ? `Publier en tant que ${currentPseudo} · changer` : 'Choisir un pseudo pour publier';
 }
 
 function changePseudo() {
@@ -1878,7 +1076,6 @@ function changePseudo() {
       return;
     }
   }
-
   const newPseudo = prompt("Entre ton pseudo (max 30 caractères) :", currentPseudo);
   if (newPseudo !== null) {
     const trimmed = newPseudo.trim().substring(0, 30);
@@ -1929,12 +1126,10 @@ async function loadComments() {
     const comments = await res.json();
     allComments = comments;
     const container = document.getElementById('comments-list');
-    
     if (comments.length === 0) {
       container.innerHTML = '<div style="text-align: center; padding: 40px; color: #71767b;">Aucun commentaire pour l\'instant. Sois le premier à écrire !</div>';
       return;
     }
-    
     container.innerHTML = comments.map(c => renderComment(c, false)).join('');
   } catch (e) {
     console.error('Erreur chargement commentaires:', e);
@@ -1943,7 +1138,6 @@ async function loadComments() {
 
 async function postComment(parentId = null) {
   if (!requirePseudo()) return;
-  
   const inputId = parentId ? `reply-text-${parentId}` : 'comment-text';
   const text = document.getElementById(inputId).value.trim();
   if (!text && !selectedMedia) {
@@ -1955,24 +1149,15 @@ async function postComment(parentId = null) {
     const res = await fetch('/api/comments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        pseudo: currentPseudo, 
-        text: text, 
-        parent_id: parentId,
-        image: selectedMedia 
-      })
+      body: JSON.stringify({ pseudo: currentPseudo, text: text, parent_id: parentId, image: selectedMedia })
     });
-    
     if (res.ok) {
       const data = await res.json();
       editTokens[data.id] = data.edit_token;
       localStorage.setItem('versetEditTokens', JSON.stringify(editTokens));
-      
       document.getElementById(inputId).value = '';
       removeMedia();
-      if (parentId) {
-        document.getElementById(`reply-form-${parentId}`).classList.remove('active');
-      }
+      if (parentId) document.getElementById(`reply-form-${parentId}`).classList.remove('active');
       loadComments();
       loadCommentsData();
     } else {
@@ -1984,21 +1169,14 @@ async function postComment(parentId = null) {
   }
 }
 
+// --- FONCTION TOGGLE RÉACTION CORRIGÉE ---
 async function react(commentId, emoji) {
   if (!requirePseudo()) return;
-  
   const currentReaction = userReactions[commentId];
-  
+
   try {
-    if (currentReaction && currentReaction !== emoji) {
-      await fetch(`/api/comments/${commentId}/unreact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ emoji: currentReaction })
-      });
-    }
-    
     if (currentReaction === emoji) {
+      // L'utilisateur a déjà mis cette réaction : on l'enlève
       await fetch(`/api/comments/${commentId}/unreact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2006,6 +1184,16 @@ async function react(commentId, emoji) {
       });
       delete userReactions[commentId];
     } else {
+      // L'utilisateur a une réaction différente (ou aucune)
+      if (currentReaction) {
+        // On enlève l'ancienne réaction
+        await fetch(`/api/comments/${commentId}/unreact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ emoji: currentReaction })
+        });
+      }
+      // On ajoute la nouvelle réaction
       await fetch(`/api/comments/${commentId}/react`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2013,7 +1201,7 @@ async function react(commentId, emoji) {
       });
       userReactions[commentId] = emoji;
     }
-    
+
     localStorage.setItem('versetUserReactions', JSON.stringify(userReactions));
     loadComments();
     updateProfileStats();
@@ -2022,31 +1210,15 @@ async function react(commentId, emoji) {
   }
 }
 
-async function unreact(commentId, emoji) {
-  try {
-    await fetch(`/api/comments/${commentId}/unreact`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ emoji })
-    });
-    delete userReactions[commentId];
-    localStorage.setItem('versetUserReactions', JSON.stringify(userReactions));
-    loadComments();
-    updateProfileStats();
-  } catch (e) { console.error(e); }
-}
-
 async function deleteComment(commentId) {
   if (!confirm("Supprimer ce commentaire définitivement ?")) return;
   const token = editTokens[commentId] || "";
-  
   try {
     const res = await fetch(`/api/comments/${commentId}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ edit_token: token })
     });
-    
     if (res.ok) {
       delete editTokens[commentId];
       localStorage.setItem('versetEditTokens', JSON.stringify(editTokens));
@@ -2065,14 +1237,12 @@ async function deleteComment(commentId) {
 async function submitEdit(commentId) {
   const text = document.getElementById(`edit-text-${commentId}`).value.trim();
   const token = editTokens[commentId];
-  
   try {
     const res = await fetch(`/api/comments/${commentId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ edit_token: token, text })
     });
-    
     if (res.ok) {
       loadComments();
       loadCommentsData();
@@ -2085,63 +1255,55 @@ async function submitEdit(commentId) {
   }
 }
 
-// Fonction pour afficher le temps relatif
+// --- FONCTION TEMPS RELATIF CORRIGÉE (Plus de négatif) ---
 function getRelativeTime(dateString) {
   const date = new Date(dateString);
   const now = new Date();
   const diffInSeconds = Math.floor((now - date) / 1000);
   
+  if (diffInSeconds < 1) {
+    return "à l'instant";
+  }
   if (diffInSeconds < 60) {
     return `il y a ${diffInSeconds} seconde${diffInSeconds > 1 ? 's' : ''}`;
   }
-  
   const diffInMinutes = Math.floor(diffInSeconds / 60);
   if (diffInMinutes < 60) {
     return `il y a ${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''}`;
   }
-  
   const diffInHours = Math.floor(diffInMinutes / 60);
   if (diffInHours < 24) {
     return `il y a ${diffInHours} heure${diffInHours > 1 ? 's' : ''}`;
   }
-  
   const diffInDays = Math.floor(diffInHours / 24);
   return `il y a ${diffInDays} jour${diffInDays > 1 ? 's' : ''}`;
 }
 
-// Fonction pour rendre les médias
 function renderMedia(url, type) {
   if (!url) return '';
-  
   if (type === 'video' || url.includes('video')) {
-    return `
-      <div class="comment-media">
-        <video src="${url}" controls autoplay muted loop style="max-width: 100%; max-height: 300px; border-radius: 12px;"></video>
-      </div>
-    `;
+    return `<div class="comment-media"><video src="${url}" controls autoplay muted loop style="max-width: 100%; max-height: 300px; border-radius: 12px;"></video></div>`;
   } else {
-    return `
-      <div class="comment-media">
-        <img src="${url}" alt="Média" style="max-width: 100%; max-height: 300px; border-radius: 12px; object-fit: cover;">
-      </div>
-    `;
+    return `<div class="comment-media"><img src="${url}" alt="Média" style="max-width: 100%; max-height: 300px; border-radius: 12px; object-fit: cover;"></div>`;
   }
 }
 
 function renderComment(c, isReply) {
   const initial = c.pseudo.charAt(0).toUpperCase();
-  const dateStr = getRelativeTime(c.created_at);
   const canEdit = !!editTokens[c.id];
   
-  const userReaction = userReactions[c.id];
-  
-  // Une seule réaction (la première trouvée ou celle de l'utilisateur)
+  // Affichage des réactions : Cœur toujours visible + autres
   let reactionsHtml = '';
-  const userReactionEmoji = userReaction || Object.keys(c.reactions || {})[0];
-  if (userReactionEmoji) {
-    const count = c.reactions?.[userReactionEmoji] || 0;
-    reactionsHtml = `<button class="reaction-btn${userReaction === userReactionEmoji ? ' active' : ''}" onclick="react(${c.id}, '${userReactionEmoji}')">${userReactionEmoji} ${count > 0 ? count : ''}</button>`;
-  }
+  const heartCount = c.reactions?.['❤️'] || 0;
+  const userHasHeart = userReactions[c.id] === '❤️';
+  reactionsHtml += `<button class="reaction-btn${userHasHeart ? ' active' : ''}" onclick="react(${c.id}, '❤️')">❤️ ${heartCount > 0 ? heartCount : ''}</button>`;
+
+  Object.entries(c.reactions || {}).forEach(([emoji, count]) => {
+    if (emoji !== '❤️') {
+      const userHasReaction = userReactions[c.id] === emoji;
+      reactionsHtml += `<button class="reaction-btn${userHasReaction ? ' active' : ''}" onclick="react(${c.id}, '${emoji}')">${emoji} ${count > 0 ? count : ''}</button>`;
+    }
+  });
 
   const editForm = canEdit ? `
     <div class="inline-form" id="edit-form-${c.id}">
@@ -2164,17 +1326,12 @@ function renderComment(c, isReply) {
   `;
 
   let actionsHtml = `<button class="action-btn" onclick="toggleForm('reply-form-${c.id}')">💬 Répondre</button>`;
-  
   if (canEdit) {
-    actionsHtml += `
-      <button class="action-btn" onclick="toggleForm('edit-form-${c.id}')">✏️ Modifier</button>
-      <button class="action-btn delete" onclick="deleteComment(${c.id})">🗑️ Supprimer</button>
-    `;
+    actionsHtml += `<button class="action-btn" onclick="toggleForm('edit-form-${c.id}')">✏️ Modifier</button>`;
+    actionsHtml += `<button class="action-btn delete" onclick="deleteComment(${c.id})">🗑️ Supprimer</button>`;
   }
 
-  const repliesHtml = c.replies && c.replies.length > 0 
-    ? c.replies.map(r => renderComment(r, true)).join('') 
-    : '';
+  const repliesHtml = c.replies && c.replies.length > 0 ? c.replies.map(r => renderComment(r, true)).join('') : '';
 
   return `
     <div class="comment ${isReply ? 'reply' : ''}" data-id="${c.id}">
@@ -2182,7 +1339,7 @@ function renderComment(c, isReply) {
         <div class="avatar">${initial}</div>
         <div class="comment-meta">
           <div class="comment-author">${escapeHtml(c.pseudo)}</div>
-          <div class="comment-date">${dateStr}${c.edited_at ? ' · (modifié)' : ''}</div>
+          <div class="comment-date">${getRelativeTime(c.created_at)}${c.edited_at ? ' · (modifié)' : ''}</div>
         </div>
       </div>
       <div class="comment-text">${escapeHtml(c.text)}</div>
@@ -2199,8 +1356,7 @@ function renderComment(c, isReply) {
 }
 
 function toggleForm(id) {
-  const form = document.getElementById(id);
-  form.classList.toggle('active');
+  document.getElementById(id).classList.toggle('active');
 }
 
 function escapeHtml(text) {
@@ -2209,19 +1365,27 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+function findCommentById(list, id) {
+  for (const c of list) {
+    if (c.id == id) return c;
+    if (c.replies) {
+      const found = findCommentById(c.replies, id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 function updateCountdown() {
   const now = new Date();
   const tomorrow = new Date(now);
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
-  
   const diff = tomorrow - now;
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
   const s = Math.floor((diff % 60000) / 1000);
-  
-  document.getElementById('countdown').textContent = 
-    `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  document.getElementById('countdown').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
 async function loadShabbat() {
@@ -2230,12 +1394,10 @@ async function loadShabbat() {
     const data = await res.json();
     const candle = data.items?.find(i => i.category === 'candles');
     const havdalah = data.items?.find(i => i.category === 'havdalah');
-    
     let html = '';
     if (data.location?.title) html += `<div class="shabbat-label">${data.location.title}</div>`;
     if (candle) html += `<div class="shabbat-info"><div class="shabbat-label">Allumage</div><div class="shabbat-value">${candle.title.split(': ').slice(1).join(': ')}</div></div>`;
     if (havdalah) html += `<div class="shabbat-info"><div class="shabbat-label">Havdalah</div><div class="shabbat-value">${havdalah.title.split(': ').slice(1).join(': ')}</div></div>`;
-    
     if (!candle && !havdalah) html = '<div class="shabbat-label">Aucun horaire cette semaine.</div>';
     
     const widgets = document.querySelectorAll('.widget');
@@ -2251,20 +1413,11 @@ async function loadShabbat() {
   }
 }
 
-// Fermer les modals en cliquant à l'extérieur
 window.onclick = function(event) {
-  const scheduleModal = document.getElementById('schedule-modal');
-  const editModal = document.getElementById('edit-modal');
-  const emojiPicker = document.getElementById('emoji-picker');
-  
-  if (event.target === scheduleModal) {
-    closeScheduleModal();
-  }
-  if (event.target === editModal) {
-    closeEditModal();
-  }
-  if (event.target !== document.querySelector('.icon-btn') && !emojiPicker.contains(event.target)) {
-    emojiPicker.classList.remove('active');
+  if (event.target === document.getElementById('schedule-modal')) closeScheduleModal();
+  if (event.target === document.getElementById('edit-modal')) closeEditModal();
+  if (event.target !== document.querySelector('.icon-btn') && !document.getElementById('emoji-picker').contains(event.target)) {
+    document.getElementById('emoji-picker').classList.remove('active');
   }
 }
 </script>
