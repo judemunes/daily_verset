@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Verset du jour</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,8 +39,6 @@
     overflow-x: hidden;
   }
 
-  /* Signature : lueur de lampe qui respire doucement derrière la carte,
-     écho discret de Psaume 119:105 — "ta parole est une lampe à mes pieds" */
   .glow {
     position: fixed;
     top: 50%;
@@ -181,7 +178,6 @@
     color: var(--text-muted);
   }
 
-  /* --- Onglets façon Twitter/X --- */
   .tabs {
     display: flex;
     border-bottom: 1px solid rgba(201, 162, 39, 0.18);
@@ -237,10 +233,6 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* --- Mise en page 3 colonnes façon X, uniquement pour l'onglet Communauté ---
-     Technique de "full bleed" : on sort du conteneur centré (main, 620px)
-     via des marges négatives basées sur le viewport, sans toucher au JS
-     ni à la largeur de main lui-même. */
   #panel-community {
     max-width: 1160px;
     width: 100vw;
@@ -440,7 +432,6 @@
     }
   }
 
-  /* --- Communauté --- */
   .community-card {
     background: var(--bg-panel);
     border: 1px solid rgba(201, 162, 39, 0.18);
@@ -468,7 +459,6 @@
     color: var(--text-muted);
   }
 
-  /* --- Profil façon X : bannière, avatar qui chevauche, bio, stats réelles --- */
   .profile-banner {
     height: 110px;
     background: linear-gradient(120deg, rgba(201, 162, 39, 0.35), rgba(181, 101, 29, 0.25) 60%, rgba(201, 162, 39, 0.15));
@@ -1228,7 +1218,6 @@
     padding: 24px 20px;
   }
 
-  /* --- Notifications (onglet Communauté) --- */
   .notif-trigger {
     position: relative;
     cursor: pointer;
@@ -1368,37 +1357,42 @@
     from { background: rgba(201, 162, 39, 0.3); }
     to { background: transparent; }
   }
-  /* --- CORRECTIONS SPÉCIFIQUES MOBILE --- */
+
   /* === CORRECTIONS MOBILE === */
-@media (max-width: 600px) {
-  /* Empêche le zoom automatique sur iPhone */
-  input, textarea, select {
-    font-size: 16px !important;
+  @media (max-width: 600px) {
+    input, textarea, select {
+      font-size: 16px !important;
+    }
+    
+    body {
+      padding: 12px;
+    }
+    
+    .card {
+      padding: 24px 16px;
+    }
+    
+    .notif-panel {
+      width: 100%;
+      left: 0;
+      right: 0;
+      max-width: 100vw;
+    }
+    
+    .comment-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin: 8px 0;
+      display: block;
+    }
+    
+    .comment-form button[type="submit"] {
+      width: 100%;
+      margin-top: 8px;
+      padding: 12px;
+    }
   }
-  
-  /* Réduit les marges sur mobile */
-  body {
-    padding: 12px;
-  }
-  
-  .card {
-    padding: 24px 16px;
-  }
-  
-  /* Ajuste le panneau de notifications */
-  .notif-panel {
-    width: 100%;
-    left: 0;
-    right: 0;
-    max-width: 100vw;
-  }
-  
-  /* Les images s'adaptent à l'écran */
-  .comment-image {
-    max-width: 100%;
-    height: auto;
-  }
-}
 </style>
 </head>
 <body>
@@ -1433,7 +1427,7 @@
     <div class="community-layout">
       <aside class="community-nav">
         <div class="nav-brand">
-          <span class="flame">✦</span> Verset
+          <span class="flame"></span> Verset
         </div>
         <div class="nav-item active" id="nav-home" data-view="home"><span class="nav-icon">🏠</span> Accueil</div>
         <div class="nav-item" id="nav-explore" data-view="explore"><span class="nav-icon">🔍</span> Explorer</div>
@@ -1522,7 +1516,6 @@
           </div>
         </form>
 
-
         <div class="comments-list" id="comments-list"></div>
         <p class="empty-note" id="comments-empty" style="display:none;">Aucun commentaire pour l'instant. Sois le premier à écrire !</p>
       </div>
@@ -1555,28 +1548,6 @@
 
 <script>
   const dateEl = document.getElementById('today-date');
-  // Debug : vérifier si le pseudo est bien stocké
-console.log('Pseudo dans localStorage:', localStorage.getItem('versetPseudo'));
-
-// Forcer la récupération du pseudo au chargement
-const savedPseudo = localStorage.getItem('versetPseudo');
-if (savedPseudo) {
-  console.log('Pseudo trouvé:', savedPseudo);
-  // Mettre à jour l'affichage immédiatement
-  setTimeout(() => {
-    const pseudoInput = document.getElementById('comment-pseudo');
-    const composerAvatar = document.getElementById('composer-avatar');
-    const composerIdentity = document.getElementById('composer-identity');
-    
-    if (pseudoInput) {
-      pseudoInput.value = savedPseudo;
-      composerAvatar.textContent = savedPseudo.charAt(0).toUpperCase();
-      composerIdentity.textContent = `Publier en tant que ${savedPseudo} · changer`;
-      pseudoInput.classList.remove('show');
-      pseudoInput.readOnly = true;
-    }
-  }, 100);
-}
   dateEl.textContent = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
   const textEl = document.getElementById('verse-text');
@@ -1601,7 +1572,6 @@ if (savedPseudo) {
       footerEl.classList.add('error-note');
     });
 
-  // --- Notifications navigateur ---
   const notifyBtn = document.getElementById('notify-btn');
   const notifyStatus = document.getElementById('notify-status');
 
@@ -1665,7 +1635,6 @@ if (savedPseudo) {
 
   setupNotifications();
 
-  // --- Onglets ---
   document.querySelectorAll('.tab-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
@@ -1676,7 +1645,6 @@ if (savedPseudo) {
     });
   });
 
-  // --- Communauté ---
   const REACTION_EMOJIS = ['❤️', '🙏', '👏', '🙌'];
   const EDIT_WINDOW_MS = 5 * 60 * 1000;
   const PSEUDO_CHANGE_COOLDOWN_MS = 72 * 60 * 60 * 1000;
@@ -1691,8 +1659,6 @@ if (savedPseudo) {
   const savedPseudo = localStorage.getItem('versetPseudo');
   if (savedPseudo) pseudoInput.value = savedPseudo;
 
-  // --- Pseudo : première inscription libre, puis changement limité à
-  // une fois toutes les 72h (uniquement depuis l'onglet Profil). ---
   function getPseudo() {
     return (localStorage.getItem('versetPseudo') || '').trim();
   }
@@ -1721,8 +1687,6 @@ if (savedPseudo) {
     return `${m} min`;
   }
 
-  // --- Identité du composer : avatar + pseudo, façon Twitter (on ne redemande
-  // le pseudo qu'une fois, ensuite on l'affiche comme "Publier en tant que…") ---
   const composerAvatar = document.getElementById('composer-avatar');
   const composerIdentity = document.getElementById('composer-identity');
 
@@ -1756,8 +1720,6 @@ if (savedPseudo) {
   composerAvatar.addEventListener('click', handleComposerIdentityClick);
   composerIdentity.addEventListener('click', handleComposerIdentityClick);
 
-  // Exige un pseudo avant toute interaction (commenter, répondre, réagir) ;
-  // les commentaires restent visibles sans inscription.
   function requirePseudo(message) {
     if (getPseudo()) return true;
     pseudoInput.classList.add('show');
@@ -1767,7 +1729,6 @@ if (savedPseudo) {
     return false;
   }
 
-  // --- Boutons média + emoji du champ de commentaire ---
   const mediaBtn = document.getElementById('comment-media-btn');
   const mediaInput = document.getElementById('comment-media-input');
   const mediaPreview = document.getElementById('comment-media-preview');
@@ -1776,7 +1737,7 @@ if (savedPseudo) {
   const mediaRemoveBtn = document.getElementById('comment-media-remove');
   const emojiBtn = document.getElementById('comment-emoji-btn');
   const emojiPicker = document.getElementById('emoji-picker');
-  const PICKER_EMOJIS = ['😀', '😂', '😍', '🙏', '👏', '🔥', '❤️', '😢', '😮', '🙌', '✨', '💯'];
+  const PICKER_EMOJIS = ['😀', '😂', '😍', '🙏', '👏', '🔥', '❤️', '😢', '😮', '', '✨', '💯'];
 
   emojiPicker.innerHTML = PICKER_EMOJIS
     .map((e) => `<button type="button" data-emoji="${e}">${e}</button>`)
@@ -1855,8 +1816,6 @@ if (savedPseudo) {
     }
   });
 
-  // Jetons d'édition reçus à la création de chacun de nos commentaires,
-  // gardés en local pour pouvoir les modifier dans les 5 minutes.
   function editTokens() {
     return JSON.parse(localStorage.getItem('versetEditTokens') || '{}');
   }
@@ -1867,9 +1826,6 @@ if (savedPseudo) {
     localStorage.setItem('versetEditTokens', JSON.stringify(tokens));
   }
 
-  // Réaction déjà posée par ce visiteur sur chaque commentaire (une seule à
-  // la fois, comme un like classique : cliquer sur une autre bascule vers
-  // elle, recliquer sur la même la retire).
   function myReactions() {
     return JSON.parse(localStorage.getItem('versetMyReactions') || '{}');
   }
@@ -1880,8 +1836,6 @@ if (savedPseudo) {
     localStorage.setItem('versetMyReactions', JSON.stringify(mine));
   }
 
-  // Réponses déjà consultées via le panneau de notifications, pour ne plus
-  // les compter comme "non lues" (badge) une fois qu'on a cliqué dessus.
   function seenNotifIds() {
     return new Set(JSON.parse(localStorage.getItem('versetSeenReplies') || '[]'));
   }
@@ -1904,9 +1858,6 @@ if (savedPseudo) {
       ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   }
 
-  // Temps relatif façon réseau social : d'abord en minutes, puis en heures
-  // une fois que 60 minutes sont passées, puis en jours au-delà de 24h,
-  // et enfin la date complète au-delà d'une semaine.
   function formatRelativeDate(iso) {
     const diffMs = Date.now() - new Date(iso).getTime();
     const diffMin = Math.max(0, Math.floor(diffMs / 60000));
@@ -1998,7 +1949,6 @@ if (savedPseudo) {
         try {
           let reactions;
           if (current === emoji) {
-            // On reclique sur la même réaction : on la retire.
             const res = await fetch(`/api/comments/${id}/unreact`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -2008,8 +1958,6 @@ if (savedPseudo) {
             reactions = (await res.json()).reactions;
             setMyReaction(id, null);
           } else {
-            // On bascule vers une autre réaction : on retire l'ancienne
-            // (si présente) puis on pose la nouvelle.
             if (current) {
               await fetch(`/api/comments/${id}/unreact`, {
                 method: 'POST',
@@ -2129,7 +2077,6 @@ if (savedPseudo) {
     }
   }
 
-  // --- Onglets de la barre latérale Communauté (Accueil / Explorer / Profil) ---
   const communityNavItems = document.querySelectorAll('.community-nav .nav-item[data-view]');
   const communityTitle = document.getElementById('community-title');
   const communitySubtitle = document.getElementById('community-subtitle');
@@ -2159,9 +2106,6 @@ if (savedPseudo) {
     return `${n} ${mot}${n > 1 ? 's' : ''}`;
   }
 
-  // --- Profil : bio et date d'inscription réelles, stockées localement
-  // (aucune fabrication : la date est celle du tout premier pseudo enregistré
-  // sur cet appareil, la bio est écrite par l'utilisateur lui-même). ---
   function getBio() {
     return localStorage.getItem('versetBio') || '';
   }
@@ -2295,9 +2239,6 @@ if (savedPseudo) {
     });
   });
 
-  // --- Recherche (barre latérale) ---
-  // Filtre côté client sur le pseudo et le texte, en gardant un commentaire
-  // parent dès que lui-même ou l'une de ses réponses correspond.
   let searchQuery = '';
 
   function matchesSearch(c) {
@@ -2378,8 +2319,6 @@ if (savedPseudo) {
 
   communityNavItems.forEach((item) => {
     item.addEventListener('click', () => {
-      // "Accueil" ramène vers l'onglet Verset du jour (comportement demandé),
-      // sans toucher au fonctionnement des autres vues (Explorer / Profil).
       if (item.id === 'nav-home') {
         document.getElementById('tab-verse').click();
         return;
@@ -2401,7 +2340,6 @@ if (savedPseudo) {
     document.getElementById('comment-message').focus();
   }
 
-  // --- Notifications (réponses reçues sur mes propres commentaires) ---
   const navNotifications = document.getElementById('nav-notifications');
   const notifPanel = document.getElementById('notif-panel');
   const notifList = document.getElementById('notif-list');
@@ -2409,10 +2347,6 @@ if (savedPseudo) {
   const notifBadge = document.getElementById('notif-badge');
   const notifClose = document.getElementById('notif-close');
 
-  // On ne connaît pas d'"utilisateur" côté serveur (pas de compte) : on
-  // considère qu'un commentaire est "à moi" si on possède son jeton
-  // d'édition local. Une notification = une réponse reçue par quelqu'un
-  // d'autre sur l'un de mes commentaires.
   function computeNotifications(comments) {
     const myIds = new Set(Object.keys(editTokens()));
     const notifs = [];
@@ -2450,8 +2384,6 @@ if (savedPseudo) {
 
     notifList.querySelectorAll('.notif-item').forEach((item) => {
       item.addEventListener('click', () => {
-        // Cliquer affiche/localise la réponse dans les commentaires ;
-        // l'utilisateur choisit ensuite librement d'interagir ou non.
         markNotifSeen(item.dataset.id);
         item.classList.remove('unread');
         const stillUnread = notifList.querySelectorAll('.notif-item.unread').length;
@@ -2482,8 +2414,6 @@ if (savedPseudo) {
 
   notifPanel.addEventListener('click', (e) => e.stopPropagation());
 
-  // Cliquer n'importe où ailleurs ferme le panneau sans rien changer :
-  // l'utilisateur peut ignorer ses notifications sans y interagir.
   document.addEventListener('click', () => notifPanel.classList.remove('open'));
 
   commentForm.addEventListener('submit', async (e) => {
@@ -2520,7 +2450,6 @@ if (savedPseudo) {
     }
   });
 
-  // --- Compte à rebours avant le prochain verset (minuit, heure locale) ---
   const countdownEl = document.getElementById('countdown-timer');
 
   function pad2(n) {
@@ -2541,7 +2470,6 @@ if (savedPseudo) {
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  // --- Horaires de Shabbat (Hebcal) ---
   async function loadShabbat() {
     const el = document.getElementById('shabbat-content');
     try {
