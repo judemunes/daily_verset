@@ -450,6 +450,59 @@ body {
   .form-row { grid-template-columns: 1fr; }
   .time-row { grid-template-columns: 1fr; }
   .comment-text img, .comment-text video { max-height: 250px; }
+
+  .container { display: block; }
+  .panel { padding: 16px; }
+  .header-content { padding: 0 12px; }
+  .header-title { font-size: 17px; }
+  .tabs .tab { padding: 12px 8px; font-size: 14px; }
+
+  .composer-toolbar { flex-wrap: wrap; gap: 10px; }
+  .composer-actions { width: 100%; justify-content: space-between; }
+  .emoji-picker { grid-template-columns: repeat(6, 1fr); left: 0; right: 0; margin: 0 auto; }
+
+  .comment { padding: 12px; }
+  .avatar { width: 36px; height: 36px; font-size: 14px; }
+  .comment-actions { gap: 4px; }
+  .action-btn { font-size: 11px; padding: 4px 6px; }
+  .reaction-btn { padding: 4px 8px; font-size: 12px; }
+
+  .modal-content, .edit-modal-content { width: 95%; }
+  .profile-avatar-section { flex-wrap: wrap; gap: 12px; }
+  .profile-avatar-large { width: 90px; height: 90px; font-size: 36px; }
+  .profile-banner { height: 140px; }
+  .profile-stats { flex-direction: row; flex-wrap: wrap; gap: 16px; }
+}
+
+@media (max-width: 480px) {
+  .header-title { font-size: 15px; letter-spacing: 0.5px; }
+  .header-date { font-size: 11px; }
+  .tabs .tab { padding: 10px 4px; font-size: 13px; }
+
+  .verse-card { padding: 24px 14px; }
+  .verse-text { font-size: 16px; }
+  .verse-reference { font-size: 14px; }
+  .verse-note { font-size: 12px; }
+
+  .composer { padding: 12px; }
+  .composer-input { font-size: 14px; min-height: 60px; }
+  .icon-btn { width: 32px; height: 32px; font-size: 16px; }
+  .btn-submit { padding: 6px 14px; font-size: 13px; }
+
+  .comment.reply { margin-left: 10px; }
+  .comment-author { font-size: 13px; }
+  .comment-text { font-size: 13px; }
+
+  .modal-header, .edit-modal-header { padding: 12px 14px; }
+  .edit-modal-content { padding: 16px; }
+  .modal-title, .edit-modal-title { font-size: 17px; }
+  .form-select, .form-input { padding: 10px; font-size: 14px; }
+  .btn-primary, .btn-confirm { padding: 10px 16px; font-size: 14px; }
+
+  .profile-avatar-large { width: 72px; height: 72px; font-size: 28px; }
+  .profile-name { font-size: 19px; }
+  .profile-bio { font-size: 13px; }
+  .profile-tab { padding: 12px 4px; font-size: 13px; }
 }
 </style>
 </head>
