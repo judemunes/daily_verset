@@ -1,12 +1,10 @@
 import base64
 import os
 import re
-
 from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-
 import push
 from verset_du_jour import (
     DB_FILE,
@@ -24,15 +22,27 @@ from verset_du_jour import (
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
 MAX_IMAGE_BYTES = 5 * 1024 * 1024  # 5 Mo
 MAX_VIDEO_BYTES = 30 * 1024 * 1024  # 30 Mo
 ALLOWED_IMAGE_TYPES = {"jpeg": "jpg", "jpg": "jpg", "png": "png", "gif": "gif", "webp": "webp"}
 ALLOWED_VIDEO_TYPES = {"mp4": "mp4", "webm": "webm", "ogg": "ogv", "quicktime": "mov"}
-ALLOWED_LINK_TYPES = {"youtube.com": "youtube", "youtu.be": "youtube", "instagram.com": "instagram", "facebook.com": "facebook", "twitter.com": "twitter", "tiktok.com": "tiktok", "linkedin.com": "linkedin", "x.com": "x", "y.be": "youtube", "vk.com": "vk", "vk.ru": "vk"}
 
-
-
+# ==========================================
+# NOUVEAU : Plateformes de liens sociaux supportées
+# ==========================================
+ALLOWED_LINK_TYPES = {
+    "youtube.com": "youtube",
+    "youtu.be": "youtube",
+    "y.be": "youtube",
+    "instagram.com": "instagram",
+    "facebook.com": "facebook",
+    "twitter.com": "twitter",
+    "x.com": "x",
+    "tiktok.com": "tiktok",
+    "linkedin.com": "linkedin",
+    "vk.com": "vk",
+    "vk.ru": "vk",
+}
 
 PUSH_HOUR, PUSH_MINUTE = (int(p) for p in os.environ.get("PUSH_TIME", "08:00").split(":"))
 
@@ -111,11 +121,9 @@ def save_comment_media(data_url: str | None) -> tuple[str | None, str | None]:
     si aucun média n'est fourni."""
     if not data_url:
         return None, None
-
     match = re.match(r"^data:(image|video)/([\w.+-]+);base64,(.+)$", data_url)
     if not match:
         raise ValueError("Format de média non pris en charge.")
-
     kind, subtype = match.group(1), match.group(2).lower()
     allowed = ALLOWED_IMAGE_TYPES if kind == "image" else ALLOWED_VIDEO_TYPES
     extension = allowed.get(subtype)
@@ -125,18 +133,15 @@ def save_comment_media(data_url: str | None) -> tuple[str | None, str | None]:
             if kind == "image"
             else "Type de vidéo non autorisé (mp4, webm, ogg, mov uniquement)."
         )
-
     try:
         encoded = match.group(3)
         raw = base64.b64decode(encoded)
     except Exception as exc:
         raise ValueError("Média invalide.") from exc
-
     max_bytes = MAX_IMAGE_BYTES if kind == "image" else MAX_VIDEO_BYTES
     if len(raw) > max_bytes:
         limit_mb = max_bytes // (1024 * 1024)
         raise ValueError(f"Le fichier dépasse la taille maximale autorisée ({limit_mb} Mo).")
-
     return data_url, kind
 
 
@@ -173,18 +178,17 @@ async def api_edit_comment(comment_id: int, request: Request) -> JSONResponse:
     return JSONResponse(result)
 
 
-# === NOUVEAU : Route pour supprimer un commentaire ===
 @app.delete("/api/comments/{comment_id}")
 async def api_delete_comment(comment_id: int, request: Request) -> JSONResponse:
     body = await request.json()
     edit_token = body.get("edit_token", "")
-    
     success = delete_comment(comment_id, edit_token, db_path=DB_FILE)
     if not success:
-        return JSONResponse({"error": "Tu ne peux supprimer que tes propres commentaires."}, status_code=403)
-    
+        return JSONResponse(
+            {"error": "Tu ne peux supprimer que tes propres commentaires."},
+            status_code=403,
+        )
     return JSONResponse({"status": "ok"})
-# =====================================================
 
 
 @app.post("/api/comments/{comment_id}/react")
