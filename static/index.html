@@ -1083,7 +1083,8 @@
   }
 
   .comment-actions .reply-toggle,
-  .comment-actions .edit-toggle {
+  .comment-actions .edit-toggle,
+  .comment-actions .delete-toggle {
     background: none;
     border: none;
     color: var(--text-muted);
@@ -1103,6 +1104,11 @@
   .comment-actions .edit-toggle:hover {
     color: var(--accent-gold);
     background: rgba(201, 162, 39, 0.1);
+  }
+
+  .comment-actions .delete-toggle:hover {
+    color: var(--accent-ember);
+    background: rgba(181, 101, 29, 0.1);
   }
 
   .comment-edited {
@@ -1427,7 +1433,7 @@
     <div class="community-layout">
       <aside class="community-nav">
         <div class="nav-brand">
-          <span class="flame"></span> Verset
+          <span class="flame">✦</span> Verset
         </div>
         <div class="nav-item active" id="nav-home" data-view="home"><span class="nav-icon">🏠</span> Accueil</div>
         <div class="nav-item" id="nav-explore" data-view="explore"><span class="nav-icon">🔍</span> Explorer</div>
@@ -1737,7 +1743,7 @@
   const mediaRemoveBtn = document.getElementById('comment-media-remove');
   const emojiBtn = document.getElementById('comment-emoji-btn');
   const emojiPicker = document.getElementById('emoji-picker');
-  const PICKER_EMOJIS = ['😀', '😂', '😍', '🙏', '👏', '🔥', '❤️', '😢', '😮', '', '✨', '💯'];
+  const PICKER_EMOJIS = ['😀', '😂', '😍', '🙏', '👏', '🔥', '❤️', '😢', '😮', '🙌', '✨', '💯'];
 
   emojiPicker.innerHTML = PICKER_EMOJIS
     .map((e) => `<button type="button" data-emoji="${e}">${e}</button>`)
@@ -1908,6 +1914,7 @@
     html += `<div class="reactions-row">${reactionsHtml(c)}</div>`;
     if (canStillEdit(c)) {
       html += `<button class="edit-toggle" data-id="${c.id}">\u270f\ufe0f Modifier</button>`;
+      html += `<button class="delete-toggle" data-id="${c.id}">\ud83d\uddd1\ufe0f Supprimer</button>`;
     }
     html += `</div>`;
     html += `<form class="edit-form comment-form" id="edit-form-${c.id}" data-id="${c.id}">
@@ -1999,6 +2006,39 @@
     commentsList.querySelectorAll('.edit-toggle').forEach((btn) => {
       btn.addEventListener('click', () => {
         document.getElementById(`edit-form-${btn.dataset.id}`).classList.toggle('active');
+      });
+    });
+
+    commentsList.querySelectorAll('.delete-toggle').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        if (!confirm("Es-tu sûr de vouloir supprimer ce commentaire ? Cette action est irréversible.")) {
+          return;
+        }
+        
+        const id = btn.dataset.id;
+        const token = editTokens()[id];
+        
+        try {
+          const res = await fetch(`/api/comments/${id}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ edit_token: token }),
+          });
+          
+          if (!res.ok) {
+            const err = await res.json();
+            alert(err.error || "Erreur lors de la suppression.");
+            return;
+          }
+          
+          const tokens = editTokens();
+          delete tokens[id];
+          localStorage.setItem('versetEditTokens', JSON.stringify(tokens));
+          
+          loadComments();
+        } catch (err) {
+          alert("Erreur réseau lors de la suppression.");
+        }
       });
     });
 
