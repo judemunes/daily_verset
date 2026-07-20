@@ -277,8 +277,7 @@ body {
 
 .media-preview { display: none; margin-top: 12px; padding: 12px; background: #0f1419; border-radius: 12px; border: 1px solid #2f3336; }
 .media-preview.active { display: block; }
-.media-preview img { max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: cover; }
-.media-preview video { max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: cover; width: 100%; }
+.media-preview img, .media-preview video { max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: cover; }
 .media-preview-remove { background: #f4212e; color: white; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; margin-top: 8px; font-size: 13px; }
 
 .comment { 
@@ -290,6 +289,8 @@ body {
   transition: border-color 0.2s; 
 }
 .comment.reply { margin-left: 40px; border-left: 2px solid #2f3336; border-radius: 0 16px 16px 16px; background: #0f1419; }
+
+/* Style pour les reposts */
 .comment-repost {
   background: #0f1419;
   border: 1px solid #2f3336;
@@ -302,8 +303,6 @@ body {
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
-  font-size: 13px;
-  color: #71767b;
 }
 .comment-repost .repost-header .avatar {
   width: 24px;
@@ -472,8 +471,8 @@ body {
       <div class="nav-item active" onclick="switchTab('verse')"><span class="nav-icon">🏠</span><span>Accueil</span></div>
       <div class="nav-item" onclick="switchTab('community')"><span class="nav-icon">💬</span><span>Communauté</span></div>
       <div class="nav-item"><span class="nav-icon">🔍</span><span>Explorer</span></div>
-      <div class="nav-item"><span class="nav-icon"></span><span>Notifications</span></div>
-      <div class="nav-item" onclick="showProfile()"><span class="nav-icon"></span><span>Profil</span></div>
+      <div class="nav-item"><span class="nav-icon">🔔</span><span>Notifications</span></div>
+      <div class="nav-item" onclick="showProfile()"><span class="nav-icon">👤</span><span>Profil</span></div>
       <button class="btn-publish-sidebar" onclick="switchTab('community'); focusComposer()">Publier</button>
     </div>
 
@@ -493,7 +492,8 @@ body {
             <div class="composer">
               <textarea class="composer-input" placeholder="Quoi de neuf ?" id="comment-text"></textarea>
               <div class="media-preview" id="media-preview">
-                <img src="" alt="Aperçu" id="media-preview-img">
+                <img src="" alt="Aperçu" id="media-preview-img" style="display: none;">
+                <video src="" alt="Aperçu" id="media-preview-video" style="display: none;" controls></video>
                 <button class="media-preview-remove" onclick="removeMedia()">Supprimer</button>
               </div>
               <div class="composer-toolbar">
@@ -523,7 +523,7 @@ body {
               <div class="countdown" id="countdown">--:--:--</div>
             </div>
             <div class="widget">
-              <div class="widget-title"><span>️</span><span>Horaires de Shabbat</span></div>
+              <div class="widget-title"><span>🕯️</span><span>Horaires de Shabbat</span></div>
               <div class="shabbat-info"><div class="shabbat-label">Chargement...</div></div>
             </div>
             <div class="widget">
@@ -570,7 +570,7 @@ body {
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title">Programmer</div>
-        <button class="modal-close" onclick="closeScheduleModal()"></button>
+        <button class="modal-close" onclick="closeScheduleModal()">✕</button>
       </div>
       <div class="modal-body">
         <div class="schedule-info"><i class="fi fi-rr-calendar"></i><span id="schedule-preview">Sera envoyé le lun. 20 juil. 2026 à 7:01 PM</span></div>
@@ -635,7 +635,7 @@ let selectedMedia = null;
 let selectedMediaType = null;
 let scheduledPost = null;
 
-const emojis = ['😀', '😂', '😍', '', '😎', '', '', '👏', '❤️', '🔥', '', '🙌', '😢', '💯', '✨', '🙏'];
+const emojis = ['😀', '😂', '😍', '🥰', '😎', '🤔', '👍', '👏', '❤️', '🔥', '🎉', '🙌', '😢', '💯', '✨', '🙏'];
 
 document.addEventListener('DOMContentLoaded', () => {
   const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -1281,10 +1281,7 @@ async function submitEdit(commentId) {
 // Fonction de repost SANS pop-up
 async function repost(originalId, originalPseudo, originalText, originalImage, originalMediaType) {
   if (!requirePseudo()) return;
-  
-  // Création directe du repost sans demander de confirmation
   const fullText = `🔄 Repost de @${originalPseudo} :\n${originalText}`;
-  
   try {
     const res = await fetch('/api/comments', {
       method: 'POST',
@@ -1296,7 +1293,6 @@ async function repost(originalId, originalPseudo, originalText, originalImage, o
         image: null 
       })
     });
-    
     if (res.ok) {
       const data = await res.json();
       editTokens[data.id] = data.edit_token;
@@ -1314,16 +1310,29 @@ async function repost(originalId, originalPseudo, originalText, originalImage, o
 
 function renderMedia(url, type) {
   if (!url) return '';
-  if (type === 'video' || url.includes('video')) {
+  if (type === 'video' || (url && url.includes('video'))) {
     return `<div style="margin-top: 12px;"><video src="${url}" controls autoplay loop muted style="max-width: 100%; border-radius: 12px; max-height: 300px;"></video></div>`;
   } else {
     return `<img src="${url}" alt="Média" style="max-width: 100%; border-radius: 12px; margin-top: 12px; max-height: 300px; object-fit: cover;">`;
   }
 }
 
+// === FONCTION RENDU COMMENTAIRE AMÉLIORÉE POUR LES REPOSTS ===
 function renderComment(c, isReply) {
   const initial = c.pseudo.charAt(0).toUpperCase();
   const canEdit = !!editTokens[c.id];
+  
+  // Vérifier si c'est un repost et extraire le contenu original
+  let repostInfo = null;
+  if (c.text && c.text.startsWith('🔄 Repost de @')) {
+    const match = c.text.match(/🔄 Repost de @([a-zA-Z0-9_À-ÿ]+) :\n([\s\S]*)/);
+    if (match) {
+      repostInfo = {
+        originalPseudo: match[1],
+        originalText: match[2]
+      };
+    }
+  }
   
   let reactionsHtml = '';
   const heartCount = c.reactions?.['❤️'] || 0;
@@ -1339,7 +1348,7 @@ function renderComment(c, isReply) {
 
   const editForm = canEdit ? `
     <div class="inline-form" id="edit-form-${c.id}">
-      <textarea id="edit-text-${c.id}">${c.text}</textarea>
+      <textarea id="edit-text-${c.id}">${escapeHtml(c.text)}</textarea>
       <div class="inline-form-actions">
         <button class="btn-small secondary" onclick="toggleForm('edit-form-${c.id}')">Annuler</button>
         <button class="btn-small primary" onclick="submitEdit(${c.id})">Enregistrer</button>
@@ -1358,7 +1367,11 @@ function renderComment(c, isReply) {
   `;
 
   let actionsHtml = `<button class="action-btn" onclick="toggleForm('reply-form-${c.id}')">💬 Répondre</button>`;
-  actionsHtml += `<button class="action-btn" onclick="repost(${c.id}, '${escapeHtml(c.pseudo)}', '${escapeHtml(c.text).replace(/'/g, "\\'")}', '${c.image_url || ''}', '${c.media_type || ''}')">🔄 Repartager</button>`;
+  
+  // Ne pas permettre de repost un repost (évite l'imbrication infinie)
+  if (!repostInfo) {
+    actionsHtml += `<button class="action-btn" onclick="repost(${c.id}, '${escapeHtml(c.pseudo)}', '${escapeHtml(c.text).replace(/'/g, "\\'")}', '${c.image_url || ''}', '${c.media_type || ''}')">🔄 Repartager</button>`;
+  }
   
   if (canEdit) {
     actionsHtml += `<button class="action-btn" onclick="toggleForm('edit-form-${c.id}')">✏️ Modifier</button>`;
@@ -1366,6 +1379,22 @@ function renderComment(c, isReply) {
   }
 
   const repliesHtml = c.replies && c.replies.length > 0 ? c.replies.map(r => renderComment(r, true)).join('') : '';
+
+  // Affichage du repost avec le contenu original visible dans un encadré
+  let contentHtml = '';
+  if (repostInfo) {
+    contentHtml = `
+      <div class="comment-repost">
+        <div class="repost-header">
+          <div class="avatar" style="width: 24px; height: 24px; font-size: 12px;">${repostInfo.originalPseudo.charAt(0).toUpperCase()}</div>
+          <span style="color: #71767b; font-size: 13px;">${escapeHtml(repostInfo.originalPseudo)}</span>
+        </div>
+        <div class="comment-text" style="margin: 8px 0; font-size: 14px; color: #e7e9ea;">${escapeHtml(repostInfo.originalText)}</div>
+      </div>
+    `;
+  } else {
+    contentHtml = `<div class="comment-text">${escapeHtml(c.text)}</div>`;
+  }
 
   return `
     <div class="comment ${isReply ? 'reply' : ''}" data-id="${c.id}">
@@ -1376,7 +1405,8 @@ function renderComment(c, isReply) {
           <div class="comment-date">${formatCommentDate(c.created_at)}${c.edited_at ? ' · (modifié)' : ''}</div>
         </div>
       </div>
-      <div class="comment-text">${escapeHtml(c.text)}</div>
+      ${repostInfo ? `<div style="color: #71767b; font-size: 13px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="fi fi-rr-retweet" style="font-size: 14px;"></i> Repost</div>` : ''}
+      ${contentHtml}
       ${c.image_url ? renderMedia(c.image_url, c.media_type) : ''}
       <div class="comment-actions">
         ${reactionsHtml}
@@ -1449,7 +1479,7 @@ async function loadShabbat() {
     
     const widgets = document.querySelectorAll('.widget');
     for (const w of widgets) {
-      if (w.querySelector('.widget-title span')?.textContent === '️') {
+      if (w.querySelector('.widget-title span')?.textContent === '🕯️') {
         const title = w.querySelector('.widget-title').outerHTML;
         w.innerHTML = title + html;
         break;
