@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Verset du jour</title>
+<!-- Ajout des icônes Flaticon -->
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
+
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -202,6 +206,7 @@ body {
   border-radius: 16px; 
   padding: 16px; 
   margin-bottom: 20px; 
+  position: relative;
 }
 
 .composer-input { 
@@ -220,38 +225,44 @@ body {
   color: #71767b; 
 }
 
-.composer-tools { 
-  display: flex; 
-  gap: 12px; 
-  margin-bottom: 12px; 
+.composer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #2f3336;
 }
 
-.tool-btn { 
-  background: #2f3336; 
-  border: none; 
-  width: 36px; 
-  height: 36px; 
-  border-radius: 50%; 
-  cursor: pointer; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  font-size: 18px; 
-  transition: transform 0.2s; 
-  color: #f7d658; 
+.composer-icons {
+  display: flex;
+  gap: 8px;
 }
 
-.tool-btn:hover { 
-  transform: scale(1.1); 
-  background: rgba(247, 214, 88, 0.2); 
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: #f7d658;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  background: rgba(247, 214, 88, 0.1);
+  transform: scale(1.1);
 }
 
 .composer-actions { 
   display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  padding-top: 12px; 
-  border-top: 1px solid #2f3336; 
+  align-items: center;
+  gap: 12px;
 }
 
 .composer-identity { 
@@ -266,15 +277,265 @@ body {
   background: #f7d658; 
   color: #0f1419; 
   border: none; 
-  padding: 10px 24px; 
+  padding: 8px 20px; 
   border-radius: 9999px; 
   font-weight: bold; 
   cursor: pointer; 
-  transition: opacity 0.2s; 
+  transition: opacity 0.2s;
+  font-size: 14px;
 }
 
 .btn-submit:hover { 
   opacity: 0.9; 
+}
+
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Emoji Picker */
+.emoji-picker {
+  position: absolute;
+  bottom: 60px;
+  left: 16px;
+  background: #15202b;
+  border: 1px solid #2f3336;
+  border-radius: 12px;
+  padding: 12px;
+  display: none;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+  z-index: 1000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  width: calc(100% - 32px);
+  max-width: 400px;
+}
+
+.emoji-picker.active {
+  display: grid;
+}
+
+.emoji-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.emoji-btn:hover {
+  background: rgba(247, 214, 88, 0.2);
+}
+
+/* Schedule Modal - Style Twitter */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background: #15202b;
+  border-radius: 16px;
+  padding: 0;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #2f3336;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #e7e9ea;
+  font-size: 24px;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  background: rgba(247, 214, 88, 0.1);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.schedule-info {
+  color: #71767b;
+  font-size: 14px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 500;
+  color: #71767b;
+  font-size: 14px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.form-select {
+  background: #0f1419;
+  border: 1px solid #2f3336;
+  border-radius: 8px;
+  padding: 12px;
+  color: #e7e9ea;
+  font-size: 15px;
+  cursor: pointer;
+  outline: none;
+}
+
+.form-select:focus {
+  border-color: #f7d658;
+}
+
+.form-select option {
+  background: #0f1419;
+  color: #e7e9ea;
+}
+
+.time-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.timezone-info {
+  color: #71767b;
+  font-size: 14px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #2f3336;
+}
+
+.scheduled-posts-link {
+  color: #1d9bf0;
+  text-decoration: none;
+  font-size: 14px;
+  margin-top: 16px;
+  display: block;
+  cursor: pointer;
+}
+
+.scheduled-posts-link:hover {
+  text-decoration: underline;
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #2f3336;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-confirm {
+  background: #e7e9ea;
+  color: #0f1419;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.btn-confirm:hover {
+  background: #fff;
+}
+
+.btn-primary {
+  background: #f7d658;
+  color: #0f1419;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+/* Media Preview */
+.media-preview {
+  display: none;
+  margin-top: 12px;
+  padding: 12px;
+  background: #0f1419;
+  border-radius: 12px;
+  border: 1px solid #2f3336;
+}
+
+.media-preview.active {
+  display: block;
+}
+
+.media-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.media-preview-remove {
+  background: #f4212e;
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 8px;
+  font-size: 13px;
 }
 
 /* Style Twitter pour les commentaires */
@@ -564,6 +825,218 @@ body {
   font-size: 14px; 
 }
 
+/* Page Profil */
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.profile-banner {
+  height: 200px;
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f1419 100%);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-avatar-section {
+  position: relative;
+  margin-top: -60px;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.profile-avatar-large {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid #0f1419;
+  background: #f7d658;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  font-weight: bold;
+  color: #0f1419;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.profile-avatar-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-edit-btn {
+  background: transparent;
+  border: 1px solid #2f3336;
+  color: #f7d658;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+}
+
+.profile-edit-btn:hover {
+  background: rgba(247, 214, 88, 0.1);
+}
+
+.profile-info {
+  padding: 20px;
+}
+
+.profile-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.profile-handle {
+  color: #71767b;
+  margin-bottom: 16px;
+}
+
+.profile-bio {
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.profile-stats {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  cursor: pointer;
+}
+
+.stat-value {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.stat-label {
+  color: #71767b;
+  font-size: 14px;
+}
+
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid #2f3336;
+  margin-top: 20px;
+}
+
+.profile-tab {
+  flex: 1;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  border: none;
+  background: none;
+  color: #71767b;
+  font-size: 15px;
+}
+
+.profile-tab:hover {
+  background: rgba(247, 214, 88, 0.1);
+}
+
+.profile-tab.active {
+  color: #f7d658;
+  font-weight: bold;
+  border-bottom: 4px solid #f7d658;
+}
+
+/* Modal d'édition */
+.edit-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-modal.active {
+  display: flex;
+}
+
+.edit-modal-content {
+  background: #15202b;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.edit-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.edit-modal-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.edit-modal-close {
+  background: none;
+  border: none;
+  color: #71767b;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.file-input-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+.file-input-wrapper input[type=file] {
+  position: absolute;
+  left: -9999px;
+}
+
+.file-input-label {
+  display: block;
+  background: #2f3336;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.file-input-label:hover {
+  background: #3a3f4b;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .sidebar-right { 
@@ -591,6 +1064,16 @@ body {
   .verse-text { 
     font-size: 20px; 
   }
+  .profile-stats {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .time-row {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
 </head>
@@ -610,12 +1093,12 @@ body {
   <div class="container">
     <!-- Sidebar gauche (visible uniquement en mode communauté) -->
     <div class="sidebar-left">
-      <div class="logo"><span></span><span>Verset</span></div>
+      <div class="logo"><span>✦</span><span>Verset</span></div>
       <div class="nav-item active" onclick="switchTab('verse')"><span class="nav-icon">🏠</span><span>Accueil</span></div>
       <div class="nav-item" onclick="switchTab('community')"><span class="nav-icon">💬</span><span>Communauté</span></div>
       <div class="nav-item"><span class="nav-icon">🔍</span><span>Explorer</span></div>
       <div class="nav-item"><span class="nav-icon">🔔</span><span>Notifications</span></div>
-      <div class="nav-item"><span class="nav-icon">👤</span><span>Profil</span></div>
+      <div class="nav-item" onclick="showProfile()"><span class="nav-icon">👤</span><span>Profil</span></div>
       <button class="btn-publish-sidebar" onclick="switchTab('community'); focusComposer()">Publier</button>
     </div>
 
@@ -639,9 +1122,36 @@ body {
             <!-- Composer -->
             <div class="composer">
               <textarea class="composer-input" placeholder="Quoi de neuf ?" id="comment-text"></textarea>
-              <div class="composer-actions">
-                <button class="composer-identity" id="composer-identity" onclick="changePseudo()">Choisir un pseudo</button>
-                <button class="btn-submit" onclick="postComment()">Publier</button>
+              
+              <!-- Media Preview -->
+              <div class="media-preview" id="media-preview">
+                <img src="" alt="Aperçu" id="media-preview-img">
+                <button class="media-preview-remove" onclick="removeMedia()">Supprimer</button>
+              </div>
+              
+              <div class="composer-toolbar">
+                <div class="composer-icons">
+                  <input type="file" id="media-input" accept="image/*" style="display: none;" onchange="handleMediaSelect(event)">
+                  <button class="icon-btn" onclick="document.getElementById('media-input').click()" title="Média">
+                    <i class="fi fi-br-picture"></i>
+                  </button>
+                  <button class="icon-btn" onclick="toggleEmojiPicker()" title="Emoji">
+                    <i class="fi fi-rr-smile"></i>
+                  </button>
+                  <button class="icon-btn" onclick="openScheduleModal()" title="Programmer">
+                    <i class="fi fi-rr-calendar"></i>
+                  </button>
+                </div>
+                
+                <div class="composer-actions">
+                  <button class="composer-identity" id="composer-identity" onclick="changePseudo()">Choisir un pseudo</button>
+                  <button class="btn-submit" id="btn-submit" onclick="postComment()">Publier</button>
+                </div>
+              </div>
+              
+              <!-- Emoji Picker -->
+              <div class="emoji-picker" id="emoji-picker">
+                <!-- Les emojis seront générés par JavaScript -->
               </div>
             </div>
 
@@ -660,7 +1170,7 @@ body {
               <div class="countdown" id="countdown">--:--:--</div>
             </div>
             <div class="widget">
-              <div class="widget-title"><span>️</span><span>Horaires de Shabbat</span></div>
+              <div class="widget-title"><span>🕯️</span><span>Horaires de Shabbat</span></div>
               <div class="shabbat-info"><div class="shabbat-label">Chargement...</div></div>
             </div>
             <div class="widget">
@@ -669,6 +1179,159 @@ body {
           </div>
         </div>
       </div>
+
+      <!-- Panel Profil -->
+      <div id="panel-profile" class="panel">
+        <div class="profile-container">
+          <div class="profile-banner">
+            <img src="" alt="Banner" class="profile-banner-image" id="profile-banner-img" style="display: none;">
+          </div>
+          
+          <div class="profile-avatar-section">
+            <div class="profile-avatar-large" onclick="editProfilePhoto()">
+              <span id="profile-avatar-text">?</span>
+              <img src="" alt="Avatar" id="profile-avatar-img" style="display: none;">
+            </div>
+            <button class="profile-edit-btn" onclick="openEditModal()">Éditer un profil</button>
+          </div>
+
+          <div class="profile-info">
+            <div class="profile-name" id="profile-name">Pseudo</div>
+            <div class="profile-handle" id="profile-handle">@pseudo</div>
+            <div class="profile-bio" id="profile-bio">Aucune bio pour l'instant.</div>
+            
+            <div class="profile-stats">
+              <div class="stat-item" onclick="showUserComments()">
+                <div class="stat-value" id="stat-comments">0</div>
+                <div class="stat-label">Commentaires</div>
+              </div>
+              <div class="stat-item" onclick="showUserReactions()">
+                <div class="stat-value" id="stat-reactions">0</div>
+                <div class="stat-label">Réactions</div>
+              </div>
+              <div class="stat-item" onclick="showUserMedia()">
+                <div class="stat-value" id="stat-media">0</div>
+                <div class="stat-label">Médias</div>
+              </div>
+            </div>
+
+            <div class="profile-tabs">
+              <button class="profile-tab active" onclick="switchProfileTab('comments')">Commentaires</button>
+              <button class="profile-tab" onclick="switchProfileTab('reactions')">Réactions</button>
+              <button class="profile-tab" onclick="switchProfileTab('media')">Médias</button>
+            </div>
+
+            <div id="profile-content" style="margin-top: 20px;">
+              <!-- Contenu dynamique du profil -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de programmation - Style Twitter -->
+  <div class="modal" id="schedule-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Programmer</div>
+        <button class="modal-close" onclick="closeScheduleModal()">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="schedule-info">
+          <i class="fi fi-rr-calendar"></i>
+          <span id="schedule-preview">Sera envoyé le lun. 20 juil. 2026 à 7:01 PM</span>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <div class="form-row">
+            <select class="form-select" id="schedule-month">
+              <option value="0">Janvier</option>
+              <option value="1">Février</option>
+              <option value="2">Mars</option>
+              <option value="3">Avril</option>
+              <option value="4">Mai</option>
+              <option value="5">Juin</option>
+              <option value="6">Juillet</option>
+              <option value="7">Août</option>
+              <option value="8">Septembre</option>
+              <option value="9">Octobre</option>
+              <option value="10">Novembre</option>
+              <option value="11">Décembre</option>
+            </select>
+            <select class="form-select" id="schedule-day">
+              ${Array.from({length: 31}, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')}
+            </select>
+            <select class="form-select" id="schedule-year">
+              ${Array.from({length: 5}, (_, i) => {
+                const year = new Date().getFullYear() + i;
+                return `<option value="${year}">${year}</option>`;
+              }).join('')}
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Heure</label>
+          <div class="time-row">
+            <select class="form-select" id="schedule-hour">
+              ${Array.from({length: 24}, (_, i) => `<option value="${i}">${String(i).padStart(2, '0')}</option>`).join('')}
+            </select>
+            <select class="form-select" id="schedule-minute">
+              ${Array.from({length: 60}, (_, i) => `<option value="${i}">${String(i).padStart(2, '0')}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        
+        <div class="timezone-info">
+          Fuseau horaire<br>
+          <strong>heure d'Afrique de l'Ouest</strong>
+        </div>
+        
+        <a class="scheduled-posts-link">Posts programmés</a>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-confirm" onclick="confirmSchedule()">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal d'édition de profil -->
+  <div class="edit-modal" id="edit-modal">
+    <div class="edit-modal-content">
+      <div class="edit-modal-header">
+        <div class="edit-modal-title">Éditer un profil</div>
+        <button class="edit-modal-close" onclick="closeEditModal()">&times;</button>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Photo de profil</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="edit-profile-photo" accept="image/*" onchange="previewProfilePhoto(this)">
+          <label for="edit-profile-photo" class="file-input-label">
+            Choisir une image
+          </label>
+        </div>
+        <div id="profile-photo-preview" style="margin-top: 12px; display: none;">
+          <img src="" alt="Aperçu" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Pseudo</label>
+        <input type="text" class="form-input" id="edit-pseudo" maxlength="30" placeholder="Ton pseudo">
+        <div class="form-hint" id="pseudo-hint">Le pseudo peut être modifié tous les 3 jours (72h)</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Bio</label>
+        <textarea class="form-input" id="edit-bio" maxlength="160" placeholder="Parle-nous de toi..." rows="3"></textarea>
+      </div>
+
+      <button class="btn-primary" onclick="saveProfile()">Enregistrer</button>
     </div>
   </div>
 
@@ -677,24 +1340,150 @@ body {
 let currentPseudo = localStorage.getItem('versetPseudo') || '';
 let editTokens = JSON.parse(localStorage.getItem('versetEditTokens') || '{}');
 let userReactions = JSON.parse(localStorage.getItem('versetUserReactions') || '{}');
+let userProfile = JSON.parse(localStorage.getItem('versetUserProfile') || '{}');
+let allComments = [];
+let selectedMedia = null;
+let scheduledPost = null;
+
+// Emojis disponibles
+const emojis = ['😀', '😂', '😍', '🥰', '😎', '', '👍', '👎', '❤️', '🔥', '', '🙌', '😢', '💯', '✨', '🙏'];
 
 // --- Initialisation ---
 document.addEventListener('DOMContentLoaded', () => {
-  // Afficher la date
   const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   document.getElementById('current-date').textContent = new Date().toLocaleDateString('fr-FR', dateOptions);
   
+  initEmojiPicker();
+  initScheduleModal();
   updateComposerIdentity();
   loadVerse();
   updateCountdown();
   setInterval(updateCountdown, 1000);
   loadShabbat();
+  loadCommentsData();
   
-  // Forcer l'affichage initial en mode "Verset" épuré
   switchTab('verse');
 });
 
-// --- Navigation et Gestion des Vues ---
+// Initialiser le sélecteur d'emojis
+function initEmojiPicker() {
+  const picker = document.getElementById('emoji-picker');
+  emojis.forEach(emoji => {
+    const btn = document.createElement('button');
+    btn.className = 'emoji-btn';
+    btn.textContent = emoji;
+    btn.onclick = () => insertEmoji(emoji);
+    picker.appendChild(btn);
+  });
+}
+
+// Initialiser la modal de programmation
+function initScheduleModal() {
+  const now = new Date();
+  document.getElementById('schedule-month').value = now.getMonth();
+  document.getElementById('schedule-day').value = now.getDate();
+  document.getElementById('schedule-year').value = now.getFullYear();
+  document.getElementById('schedule-hour').value = now.getHours();
+  document.getElementById('schedule-minute').value = now.getMinutes();
+  
+  // Mettre à jour l'aperçu quand les valeurs changent
+  ['schedule-month', 'schedule-day', 'schedule-year', 'schedule-hour', 'schedule-minute'].forEach(id => {
+    document.getElementById(id).addEventListener('change', updateSchedulePreview);
+  });
+  
+  updateSchedulePreview();
+}
+
+// Mettre à jour l'aperçu de la date
+function updateSchedulePreview() {
+  const month = parseInt(document.getElementById('schedule-month').value);
+  const day = parseInt(document.getElementById('schedule-day').value);
+  const year = parseInt(document.getElementById('schedule-year').value);
+  const hour = parseInt(document.getElementById('schedule-hour').value);
+  const minute = parseInt(document.getElementById('schedule-minute').value);
+  
+  const date = new Date(year, month, day, hour, minute);
+  const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+  const dateStr = date.toLocaleDateString('fr-FR', options);
+  const timeStr = date.toLocaleTimeString('fr-FR', { hour: 'numeric', minute: '2-digit', hour12: true });
+  
+  document.getElementById('schedule-preview').textContent = `Sera envoyé le ${dateStr} à ${timeStr}`;
+}
+
+// Toggle emoji picker
+function toggleEmojiPicker() {
+  const picker = document.getElementById('emoji-picker');
+  picker.classList.toggle('active');
+}
+
+// Insérer un emoji dans le texte
+function insertEmoji(emoji) {
+  const textarea = document.getElementById('comment-text');
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const text = textarea.value;
+  textarea.value = text.substring(0, start) + emoji + text.substring(end);
+  textarea.focus();
+  textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+  toggleEmojiPicker();
+}
+
+// Gérer la sélection de média
+function handleMediaSelect(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      selectedMedia = e.target.result;
+      document.getElementById('media-preview-img').src = selectedMedia;
+      document.getElementById('media-preview').classList.add('active');
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Supprimer le média
+function removeMedia() {
+  selectedMedia = null;
+  document.getElementById('media-input').value = '';
+  document.getElementById('media-preview').classList.remove('active');
+}
+
+// Ouvrir la modal de programmation
+function openScheduleModal() {
+  updateSchedulePreview();
+  document.getElementById('schedule-modal').classList.add('active');
+}
+
+// Fermer la modal de programmation
+function closeScheduleModal() {
+  document.getElementById('schedule-modal').classList.remove('active');
+}
+
+// Confirmer la programmation
+function confirmSchedule() {
+  const month = parseInt(document.getElementById('schedule-month').value);
+  const day = parseInt(document.getElementById('schedule-day').value);
+  const year = parseInt(document.getElementById('schedule-year').value);
+  const hour = parseInt(document.getElementById('schedule-hour').value);
+  const minute = parseInt(document.getElementById('schedule-minute').value);
+  
+  const date = new Date(year, month, day, hour, minute);
+  const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+  const dateStr = date.toLocaleDateString('fr-FR', options);
+  const timeStr = date.toLocaleTimeString('fr-FR', { hour: 'numeric', minute: '2-digit', hour12: true });
+  
+  scheduledPost = {
+    date: date,
+    text: document.getElementById('comment-text').value,
+    media: selectedMedia
+  };
+  
+  closeScheduleModal();
+  alert(`Post programmé pour le ${dateStr} à ${timeStr}`);
+}
+
+// --- Navigation ---
 function switchTab(tab) {
   const sidebarLeft = document.querySelector('.sidebar-left');
   const sidebarRight = document.querySelector('.sidebar-right');
@@ -704,11 +1493,10 @@ function switchTab(tab) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   
-  document.getElementById(`tab-${tab}`).classList.add('active');
-  document.getElementById(`panel-${tab}`).classList.add('active');
-  
   if (tab === 'verse') {
-    // MODE ÉPURÉ : Uniquement le verset du jour, sans sidebars
+    document.getElementById('tab-verse').classList.add('active');
+    document.getElementById('panel-verse').classList.add('active');
+    
     sidebarLeft.style.display = 'none';
     sidebarRight.style.display = 'none';
     mainContent.style.marginLeft = '0';
@@ -720,21 +1508,23 @@ function switchTab(tab) {
     mainContent.style.padding = '20px';
   } 
   else if (tab === 'community') {
-    // DEMANDE DE PSEUDO OBLIGATOIRE POUR ACCÉDER
+    document.getElementById('tab-community').classList.add('active');
+    document.getElementById('panel-community').classList.add('active');
+    
     if (!currentPseudo) {
       let pseudo = prompt("Bienvenue dans la Communauté !\nVeuillez choisir un pseudo pour participer aux échanges :");
       if (pseudo && pseudo.trim().length > 0) {
         currentPseudo = pseudo.trim().substring(0, 30);
         localStorage.setItem('versetPseudo', currentPseudo);
+        localStorage.setItem('versetPseudoLastEdit', Date.now().toString());
         updateComposerIdentity();
       } else {
         alert("Un pseudo est requis pour accéder à la communauté.");
-        switchTab('verse'); // Retour forcé si annulation
+        switchTab('verse');
         return;
       }
     }
     
-    // RÉTABLIR L'INTERFACE COMPLÈTE
     sidebarLeft.style.display = 'block';
     sidebarRight.style.display = 'block';
     mainContent.style.marginLeft = '275px';
@@ -747,11 +1537,239 @@ function switchTab(tab) {
   }
 }
 
+function showProfile() {
+  if (!currentPseudo) {
+    alert("Vous devez d'abord choisir un pseudo dans la communauté.");
+    switchTab('community');
+    return;
+  }
+  
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  
+  document.getElementById('panel-profile').classList.add('active');
+  
+  const sidebarLeft = document.querySelector('.sidebar-left');
+  const sidebarRight = document.querySelector('.sidebar-right');
+  const mainContent = document.querySelector('.main-content');
+  
+  sidebarLeft.style.display = 'block';
+  sidebarRight.style.display = 'none';
+  mainContent.style.marginLeft = '275px';
+  mainContent.style.borderLeft = '1px solid #2f3336';
+  mainContent.style.borderRight = '1px solid #2f3336';
+  mainContent.style.display = 'block';
+  mainContent.style.padding = '0';
+  
+  loadProfileData();
+}
+
+function loadProfileData() {
+  document.getElementById('profile-name').textContent = currentPseudo;
+  document.getElementById('profile-handle').textContent = '@' + currentPseudo.toLowerCase();
+  document.getElementById('profile-bio').textContent = userProfile.bio || 'Aucune bio pour l\'instant.';
+  
+  if (userProfile.avatar) {
+    document.getElementById('profile-avatar-img').src = userProfile.avatar;
+    document.getElementById('profile-avatar-img').style.display = 'block';
+    document.getElementById('profile-avatar-text').style.display = 'none';
+  } else {
+    document.getElementById('profile-avatar-text').textContent = currentPseudo.charAt(0).toUpperCase();
+  }
+  
+  if (userProfile.banner) {
+    document.getElementById('profile-banner-img').src = userProfile.banner;
+    document.getElementById('profile-banner-img').style.display = 'block';
+  }
+  
+  updateProfileStats();
+  showUserComments();
+}
+
+function updateProfileStats() {
+  const userComments = allComments.filter(c => c.pseudo === currentPseudo);
+  const userReactionsCount = Object.keys(userReactions).length;
+  const userMedia = userComments.filter(c => c.image_url).length;
+  
+  document.getElementById('stat-comments').textContent = userComments.length;
+  document.getElementById('stat-reactions').textContent = userReactionsCount;
+  document.getElementById('stat-media').textContent = userMedia;
+}
+
+function switchProfileTab(tab) {
+  document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  if (tab === 'comments') showUserComments();
+  else if (tab === 'reactions') showUserReactions();
+  else if (tab === 'media') showUserMedia();
+}
+
+function showUserComments() {
+  const userComments = allComments.filter(c => c.pseudo === currentPseudo);
+  const container = document.getElementById('profile-content');
+  
+  if (userComments.length === 0) {
+    container.innerHTML = '<div style="text-align: center; padding: 40px; color: #71767b;">Aucun commentaire pour l\'instant.</div>';
+    return;
+  }
+  
+  container.innerHTML = userComments.map(c => `
+    <div class="comment" style="margin-bottom: 16px;">
+      <div class="comment-header">
+        <div class="avatar">${c.pseudo.charAt(0).toUpperCase()}</div>
+        <div class="comment-meta">
+          <div class="comment-author">${c.pseudo}</div>
+          <div class="comment-date">${new Date(c.created_at).toLocaleString('fr-FR')}</div>
+        </div>
+      </div>
+      <div class="comment-text">${c.text}</div>
+    </div>
+  `).join('');
+}
+
+function showUserReactions() {
+  const container = document.getElementById('profile-content');
+  const reactions = Object.entries(userReactions);
+  
+  if (reactions.length === 0) {
+    container.innerHTML = '<div style="text-align: center; padding: 40px; color: #71767b;">Aucune réaction pour l\'instant.</div>';
+    return;
+  }
+  
+  container.innerHTML = reactions.map(([commentId, emoji]) => `
+    <div style="padding: 16px; border-bottom: 1px solid #2f3336;">
+      <span style="font-size: 20px;">${emoji}</span>
+      <span style="margin-left: 12px; color: #71767b;">Réaction sur un commentaire</span>
+    </div>
+  `).join('');
+}
+
+function showUserMedia() {
+  const userComments = allComments.filter(c => c.pseudo === currentPseudo && c.image_url);
+  const container = document.getElementById('profile-content');
+  
+  if (userComments.length === 0) {
+    container.innerHTML = '<div style="text-align: center; padding: 40px; color: #71767b;">Aucun média pour l\'instant.</div>';
+    return;
+  }
+  
+  container.innerHTML = userComments.map(c => `
+    <div style="margin-bottom: 16px;">
+      <img src="${c.image_url}" alt="Média" style="max-width: 100%; border-radius: 12px;">
+      <div style="margin-top: 8px; color: #71767b; font-size: 14px;">${new Date(c.created_at).toLocaleString('fr-FR')}</div>
+    </div>
+  `).join('');
+}
+
+// --- Édition de profil ---
+function openEditModal() {
+  document.getElementById('edit-modal').classList.add('active');
+  document.getElementById('edit-pseudo').value = currentPseudo;
+  document.getElementById('edit-bio').value = userProfile.bio || '';
+  
+  if (userProfile.avatar) {
+    document.getElementById('profile-photo-preview').style.display = 'block';
+    document.getElementById('profile-photo-preview').querySelector('img').src = userProfile.avatar;
+  }
+  
+  checkPseudoEditDelay();
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('active');
+}
+
+function checkPseudoEditDelay() {
+  const lastEdit = localStorage.getItem('versetPseudoLastEdit');
+  const hint = document.getElementById('pseudo-hint');
+  
+  if (lastEdit) {
+    const hoursPassed = (Date.now() - parseInt(lastEdit)) / (1000 * 60 * 60);
+    if (hoursPassed < 72) {
+      const remaining = Math.ceil(72 - hoursPassed);
+      hint.textContent = `Vous pourrez modifier votre pseudo dans ${remaining} heure${remaining > 1 ? 's' : ''}`;
+      document.getElementById('edit-pseudo').disabled = true;
+    } else {
+      hint.textContent = 'Le pseudo peut être modifié tous les 3 jours (72h)';
+      document.getElementById('edit-pseudo').disabled = false;
+    }
+  }
+}
+
+function previewProfilePhoto(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('profile-photo-preview').style.display = 'block';
+      document.getElementById('profile-photo-preview').querySelector('img').src = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function editProfilePhoto() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = function(e) {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        userProfile.avatar = event.target.result;
+        localStorage.setItem('versetUserProfile', JSON.stringify(userProfile));
+        loadProfileData();
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+  input.click();
+}
+
+function saveProfile() {
+  const newPseudo = document.getElementById('edit-pseudo').value.trim();
+  const newBio = document.getElementById('edit-bio').value.trim();
+  const photoInput = document.getElementById('edit-profile-photo');
+  
+  if (newPseudo && newPseudo !== currentPseudo) {
+    const lastEdit = localStorage.getItem('versetPseudoLastEdit');
+    if (lastEdit) {
+      const hoursPassed = (Date.now() - parseInt(lastEdit)) / (1000 * 60 * 60);
+      if (hoursPassed < 72) {
+        alert("Votre profil ne peut pas être changé maintenant. Veuillez patienter 72h.");
+        return;
+      }
+    }
+    
+    currentPseudo = newPseudo;
+    localStorage.setItem('versetPseudo', currentPseudo);
+    localStorage.setItem('versetPseudoLastEdit', Date.now().toString());
+    updateComposerIdentity();
+  }
+  
+  userProfile.bio = newBio;
+  
+  if (photoInput.files && photoInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      userProfile.avatar = e.target.result;
+      localStorage.setItem('versetUserProfile', JSON.stringify(userProfile));
+      loadProfileData();
+    };
+    reader.readAsDataURL(photoInput.files[0]);
+  } else {
+    localStorage.setItem('versetUserProfile', JSON.stringify(userProfile));
+    loadProfileData();
+  }
+  
+  closeEditModal();
+}
+
 function focusComposer() {
   document.getElementById('comment-text').focus();
 }
 
-// --- Gestion du Pseudo ---
 function updateComposerIdentity() {
   const btn = document.getElementById('composer-identity');
   if (currentPseudo) {
@@ -762,12 +1780,22 @@ function updateComposerIdentity() {
 }
 
 function changePseudo() {
+  const lastEdit = localStorage.getItem('versetPseudoLastEdit');
+  if (lastEdit) {
+    const hoursPassed = (Date.now() - parseInt(lastEdit)) / (1000 * 60 * 60);
+    if (hoursPassed < 72) {
+      alert("Votre profil ne peut pas être changé maintenant. Veuillez patienter 72h.");
+      return;
+    }
+  }
+
   const newPseudo = prompt("Entre ton pseudo (max 30 caractères) :", currentPseudo);
   if (newPseudo !== null) {
     const trimmed = newPseudo.trim().substring(0, 30);
     if (trimmed.length > 0) {
       currentPseudo = trimmed;
       localStorage.setItem('versetPseudo', currentPseudo);
+      localStorage.setItem('versetPseudoLastEdit', Date.now().toString());
       updateComposerIdentity();
     } else {
       localStorage.removeItem('versetPseudo');
@@ -785,7 +1813,6 @@ function requirePseudo() {
   return true;
 }
 
-// --- Appels API ---
 async function loadVerse() {
   try {
     const res = await fetch('/api/verset');
@@ -797,10 +1824,20 @@ async function loadVerse() {
   }
 }
 
+async function loadCommentsData() {
+  try {
+    const res = await fetch('/api/comments');
+    allComments = await res.json();
+  } catch (e) {
+    console.error('Erreur chargement commentaires:', e);
+  }
+}
+
 async function loadComments() {
   try {
     const res = await fetch('/api/comments');
     const comments = await res.json();
+    allComments = comments;
     const container = document.getElementById('comments-list');
     
     if (comments.length === 0) {
@@ -819,13 +1856,21 @@ async function postComment(parentId = null) {
   
   const inputId = parentId ? `reply-text-${parentId}` : 'comment-text';
   const text = document.getElementById(inputId).value.trim();
-  if (!text) return;
+  if (!text && !selectedMedia) {
+    alert('Veuillez écrire un message ou sélectionner un média');
+    return;
+  }
 
   try {
     const res = await fetch('/api/comments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pseudo: currentPseudo, text, parent_id: parentId })
+      body: JSON.stringify({ 
+        pseudo: currentPseudo, 
+        text: text, 
+        parent_id: parentId,
+        image: selectedMedia 
+      })
     });
     
     if (res.ok) {
@@ -834,10 +1879,12 @@ async function postComment(parentId = null) {
       localStorage.setItem('versetEditTokens', JSON.stringify(editTokens));
       
       document.getElementById(inputId).value = '';
+      removeMedia();
       if (parentId) {
         document.getElementById(`reply-form-${parentId}`).classList.remove('active');
       }
       loadComments();
+      loadCommentsData();
     } else {
       const err = await res.json();
       alert(err.error || 'Erreur lors de la publication');
@@ -850,11 +1897,9 @@ async function postComment(parentId = null) {
 async function react(commentId, emoji) {
   if (!requirePseudo()) return;
   
-  // Récupérer la réaction actuelle de l'utilisateur pour ce commentaire
   const currentReaction = userReactions[commentId];
   
   try {
-    // Si l'utilisateur a déjà réagi avec un autre emoji, on le retire d'abord
     if (currentReaction && currentReaction !== emoji) {
       await fetch(`/api/comments/${commentId}/unreact`, {
         method: 'POST',
@@ -863,7 +1908,6 @@ async function react(commentId, emoji) {
       });
     }
     
-    // Si on clique sur le même emoji, on retire la réaction (toggle)
     if (currentReaction === emoji) {
       await fetch(`/api/comments/${commentId}/unreact`, {
         method: 'POST',
@@ -872,7 +1916,6 @@ async function react(commentId, emoji) {
       });
       delete userReactions[commentId];
     } else {
-      // Sinon on ajoute la nouvelle réaction
       await fetch(`/api/comments/${commentId}/react`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -883,6 +1926,7 @@ async function react(commentId, emoji) {
     
     localStorage.setItem('versetUserReactions', JSON.stringify(userReactions));
     loadComments();
+    updateProfileStats();
   } catch (e) { 
     console.error(e); 
   }
@@ -898,6 +1942,7 @@ async function unreact(commentId, emoji) {
     delete userReactions[commentId];
     localStorage.setItem('versetUserReactions', JSON.stringify(userReactions));
     loadComments();
+    updateProfileStats();
   } catch (e) { console.error(e); }
 }
 
@@ -916,6 +1961,8 @@ async function deleteComment(commentId) {
       delete editTokens[commentId];
       localStorage.setItem('versetEditTokens', JSON.stringify(editTokens));
       loadComments();
+      loadCommentsData();
+      updateProfileStats();
     } else {
       const err = await res.json();
       alert(err.error || "Impossible de supprimer ce commentaire.");
@@ -938,6 +1985,7 @@ async function submitEdit(commentId) {
     
     if (res.ok) {
       loadComments();
+      loadCommentsData();
     } else {
       const err = await res.json();
       alert(err.error || "Impossible de modifier ce commentaire.");
@@ -947,17 +1995,15 @@ async function submitEdit(commentId) {
   }
 }
 
-// --- Rendu Twitter-style ---
 function renderComment(c, isReply) {
   const initial = c.pseudo.charAt(0).toUpperCase();
   const dateStr = new Date(c.created_at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   const canEdit = !!editTokens[c.id];
   
-  // Récupérer la réaction de l'utilisateur pour ce commentaire
   const userReaction = userReactions[c.id];
   
   let reactionsHtml = '';
-  const allowedEmojis = ['❤️', '🙏', '👏', '🙌'];
+  const allowedEmojis = ['❤️', '🙏', '👏', ''];
   allowedEmojis.forEach(emoji => {
     const count = c.reactions?.[emoji] || 0;
     const isActive = userReaction === emoji;
@@ -1007,6 +2053,7 @@ function renderComment(c, isReply) {
         </div>
       </div>
       <div class="comment-text">${escapeHtml(c.text)}</div>
+      ${c.image_url ? `<img src="${c.image_url}" alt="Média" style="max-width: 100%; border-radius: 12px; margin-top: 12px;">` : ''}
       <div class="comment-actions">
         ${reactionsHtml}
         ${actionsHtml}
@@ -1018,7 +2065,6 @@ function renderComment(c, isReply) {
   `;
 }
 
-// --- Utilitaires ---
 function toggleForm(id) {
   const form = document.getElementById(id);
   form.classList.toggle('active');
@@ -1069,6 +2115,23 @@ async function loadShabbat() {
     }
   } catch (e) {
     console.error('Erreur Shabbat', e);
+  }
+}
+
+// Fermer les modals en cliquant à l'extérieur
+window.onclick = function(event) {
+  const scheduleModal = document.getElementById('schedule-modal');
+  const editModal = document.getElementById('edit-modal');
+  const emojiPicker = document.getElementById('emoji-picker');
+  
+  if (event.target === scheduleModal) {
+    closeScheduleModal();
+  }
+  if (event.target === editModal) {
+    closeEditModal();
+  }
+  if (event.target !== document.querySelector('.icon-btn') && !emojiPicker.contains(event.target)) {
+    emojiPicker.classList.remove('active');
   }
 }
 </script>
